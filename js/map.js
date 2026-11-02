@@ -1,5 +1,6 @@
-// The map on screen: one element per visible card or open topic, a layer of
-// arrows underneath the cards, and the animation from one layout to the next.
+// The map on screen: one element per visible card or open topic, and a layer of
+// arrows underneath the cards. A new layout is applied at once, without any
+// animation, so the map stays quick however much of it is open.
 
 import { computeLayout, direction } from './layout.js'
 import {
@@ -13,29 +14,26 @@ import { mountQuiz } from './quiz.js'
 import * as progress from './progress.js'
 
 const SVG = 'http://www.w3.org/2000/svg'
-const DURATION = 560
-const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2)
-const lerp = (a, b, t) => a + (b - a) * t
+const GRID_MARGIN = 4000 // how far the survey grid runs past the edges of the map; a multiple of its 160px squares
 const r1 = v => Math.round(v * 10) / 10
-const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches
 
 export class AtlasMap {
-  constructor({ viewport, world, svg, atlas, onSelect, onView }) {
+  constructor({ viewport, world, svg, grid, atlas, onSelect, onView }) {
     this.viewport = viewport
     this.world = world
     this.svg = svg
+    this.grid = grid
     this.onSelect = onSelect
     this.onView = onView
     this.open = new Set() // ids of open topics
     this.els = new Map() // id → element, for everything on screen
-    this.cur = new Map() // id → box as currently drawn (mid-animation too)
+    this.boxes = new Map() // id → its box on the map
     this.paths = new Map() // edge key → <path>
     this.edges = new Map()
     this.sizes = new Map()
     this.heads = new Map()
     this.selected = null
     this.hl = null
-    this.anim = null
     this.quiz = null
     this.camera = new Camera(viewport, world, () => this.cameraMoved())
     viewport.addEventListener('click', e => this.click(e))
@@ -55,12 +53,11 @@ export class AtlasMap {
   }
 
   setAtlas(atlas) {
-    this.finish()
     this.closeQuiz()
     this.atlas = atlas
     for (const el of this.els.values()) el.remove()
     for (const p of this.paths.values()) p.remove()
-    for (const m of [this.els, this.cur, this.paths, this.sizes, this.heads]) m.clear()
+    for (const m of [this.els, this.boxes, this.paths, this.sizes, this.heads]) m.clear()
     this.edges = new Map()
     this.open = new Set([...this.open].filter(id => atlas.nodes.get(id)?.children.length))
     this.selected = (this.selected && atlas.nodes.get(this.selected.id)) || null
@@ -90,7 +87,6 @@ export class AtlasMap {
     el = document.createElement('div')
     el.dataset.id = n.id
     el.style.setProperty('--c', n.color)
-    el.style.opacity = '0'
     el.tabIndex = 0
     el.setAttribute('role', 'button')
     if (n.children.length) {
@@ -119,154 +115,91 @@ export class AtlasMap {
     return el
   }
 
-  cardSize(n) {
-    let s = this.sizes.get(n.id)
-    if (s) return s
-    const el = this.element(n)
-    const wasOpen = el.classList.contains('is-open')
-    const { width, height } = el.style
-    el.classList.remove('is-open')
-    el.style.width = ''
-    el.style.height = ''
-    s = { w: el.offsetWidth, h: el.offsetHeight }
-    el.classList.toggle('is-open', wasOpen)
-    el.style.width = width
-    el.style.height = height
-    this.sizes.set(n.id, s)
-    return s
+  // Card sizes and frame-title widths are measured once each and remembered. Every new element
+  // is put in place before any is measured, so the browser lays the page out once rather than
+  // once per card.
+  measure(visible) {
+    for (const n of visible) this.element(n)
+    const cards = visible.filter(n => !this.sizes.has(n.id))
+    const frames = visible.filter(n => this.isOpen(n) && !this.heads.has(n.id))
+    const probes = frames.map(n => {
+      const probe = document.createElement('div')
+      probe.className = `node group is-open probe depth-${Math.min(n.depth, 4)}`
+      probe.innerHTML = frameHead(n)
+      this.world.append(probe)
+      return probe
+    })
+    for (const n of cards) {
+      const el = this.els.get(n.id)
+      this.sizes.set(n.id, { w: el.offsetWidth, h: el.offsetHeight })
+    }
+    frames.forEach((n, i) => this.heads.set(n.id, probes[i].firstElementChild.scrollWidth + 4))
+    for (const probe of probes) probe.remove()
   }
 
-  headWidth(n) {
-    let w = this.heads.get(n.id)
-    if (w !== undefined) return w
-    const probe = document.createElement('div')
-    probe.className = `node group is-open probe depth-${Math.min(n.depth, 4)}`
-    probe.innerHTML = frameHead(n)
-    this.world.append(probe)
-    w = probe.firstElementChild.scrollWidth + 4
-    probe.remove()
-    this.heads.set(n.id, w)
-    return w
-  }
+  // ---- layout ----
 
-  // ---- layout and animation ----
-
-  /** Lays the map out again and animates to it. Returns the new boxes at once, and a promise for the end. */
-  relayout({ animate = true } = {}) {
-    this.finish()
+  /** Lays the map out again and puts everything in its new place at once. Returns the boxes by id. */
+  relayout() {
     const visible = this.visibleNodes()
     const shown = new Set(visible.map(n => n.id))
-    for (const n of visible) this.element(n).classList.toggle('is-open', this.isOpen(n))
-    const layout = computeLayout(this.atlas.root, n => this.isOpen(n), n => this.cardSize(n), n => this.headWidth(n))
-    this.bounds = { x: 0, y: 0, w: layout.width, h: layout.height }
-    const target = layout.boxes
-
-    // New cards grow out of the topic they were inside; departing ones shrink back into it.
-    const moves = []
-    for (const n of visible) {
-      const to = target.get(n.id)
-      const from = this.cur.get(n.id)
-      if (from) { moves.push({ id: n.id, el: this.els.get(n.id), from, to, s0: 1, o0: 1, s1: 1, o1: 1 }); continue }
-      const home = ancestors(n).map(a => this.cur.get(a.id)).find(Boolean)
-      moves.push({
-        id: n.id, el: this.els.get(n.id), to, s1: 1, o1: 1, o0: 0, s0: home ? 0.35 : 1,
-        from: home ? { x: home.x + home.w / 2 - to.w / 2, y: home.y + Math.min(home.h, 160) / 2 - to.h / 2, w: to.w, h: to.h } : to,
-      })
-    }
-    for (const [id, box] of this.cur) {
+    for (const [id, el] of this.els) {
       if (shown.has(id)) continue
-      const n = this.atlas.nodes.get(id)
-      const home = n && ancestors(n).map(a => target.get(a.id)).find(Boolean)
-      moves.push({
-        id, el: this.els.get(id), from: box, s0: 1, o0: 1, s1: 0.35, o1: 0, leaving: true,
-        to: home ? { x: home.x + home.w / 2 - box.w / 2, y: home.y + Math.min(home.h, 160) / 2 - box.h / 2, w: box.w, h: box.h } : box,
-      })
+      el.remove()
+      this.els.delete(id)
     }
-
-    const before = this.edges
+    this.measure(visible)
+    for (const n of visible) this.els.get(n.id).classList.toggle('is-open', this.isOpen(n))
+    const layout = computeLayout(this.atlas.root, n => this.isOpen(n), n => this.sizes.get(n.id), n => this.heads.get(n.id))
+    this.bounds = { x: 0, y: 0, w: layout.width, h: layout.height }
+    for (const n of visible) {
+      const b = layout.boxes.get(n.id)
+      const was = this.boxes.get(n.id)
+      if (was && was.x === b.x && was.y === b.y && was.w === b.w && was.h === b.h) continue
+      const s = this.els.get(n.id).style
+      s.transform = `translate(${r1(b.x)}px, ${r1(b.y)}px)`
+      s.width = `${r1(b.w)}px`
+      s.height = `${r1(b.h)}px`
+    }
+    this.boxes = layout.boxes
+    const g = this.grid.style
+    g.transform = `translate(${-GRID_MARGIN}px, ${-GRID_MARGIN}px)`
+    g.width = `${Math.ceil(layout.width) + 2 * GRID_MARGIN}px`
+    g.height = `${Math.ceil(layout.height) + 2 * GRID_MARGIN}px`
     this.edges = visibleEdges(this.atlas, n => this.isOpen(n))
+    this.drawEdges()
     this.highlight()
-    let done
-    const finished = new Promise(resolve => { done = resolve })
-    this.anim = { moves, before, start: performance.now(), done }
-    if (!animate || reduceMotion()) this.finish()
-    else this.raf = requestAnimationFrame(this.tick)
-    return { boxes: target, finished }
-  }
-
-  tick = now => {
-    const a = this.anim
-    if (!a) return
-    const u = Math.min(1, (now - a.start) / DURATION)
-    this.frame(a, ease(u))
-    if (u < 1) this.raf = requestAnimationFrame(this.tick)
-    else this.finish()
-  }
-
-  frame(a, t) {
-    for (const m of a.moves) {
-      const b = { x: lerp(m.from.x, m.to.x, t), y: lerp(m.from.y, m.to.y, t), w: lerp(m.from.w, m.to.w, t), h: lerp(m.from.h, m.to.h, t) }
-      this.cur.set(m.id, b)
-      const s = lerp(m.s0, m.s1, t)
-      m.el.style.transform = `translate(${r1(b.x)}px, ${r1(b.y)}px)${s !== 1 ? ` scale(${s.toFixed(3)})` : ''}`
-      m.el.style.width = `${r1(b.w)}px`
-      m.el.style.height = `${r1(b.h)}px`
-      const settled = (m.o0 === 1 && m.o1 === 1) || (t === 1 && !m.leaving)
-      m.el.style.opacity = settled ? '' : lerp(m.o0, m.o1, t).toFixed(3)
-    }
-    this.drawEdges(a.before, t)
     this.placeQuiz()
-  }
-
-  finish() {
-    const a = this.anim
-    if (!a) return
-    cancelAnimationFrame(this.raf)
-    this.anim = null
-    this.frame(a, 1)
-    for (const m of a.moves) {
-      if (!m.leaving) continue
-      m.el.remove()
-      this.els.delete(m.id)
-      this.cur.delete(m.id)
-    }
-    this.drawEdges(null, 1)
-    a.done()
+    return layout.boxes
   }
 
   // ---- arrows ----
 
-  drawEdges(before, t) {
-    const items = []
-    for (const e of this.edges.values()) items.push({ e, alpha: before && !before.has(e.key) ? t : 1 })
-    if (before) for (const e of before.values()) if (!this.edges.has(e.key)) items.push({ e, alpha: 1 - t })
+  drawEdges() {
     const outs = new Map()
     const ins = new Map()
     const live = []
-    for (const it of items) {
-      it.a = this.cur.get(it.e.from.id)
-      it.b = this.cur.get(it.e.to.id)
-      if (!it.a || !it.b) continue
+    for (const e of this.edges.values()) {
+      const a = this.boxes.get(e.from.id)
+      const b = this.boxes.get(e.to.id)
+      if (!a || !b) continue
       // An arrow follows the flow of the topic it runs within: out of a right side into a left one, or bottom into top.
-      it.dir = direction(it.e.within ? it.e.within.depth : -1)
-      addTo(outs, it.e.from.id + it.dir, it)
-      addTo(ins, it.e.to.id + it.dir, it)
+      const it = { e, a, b, dir: direction(e.within ? e.within.depth : -1) }
+      addTo(outs, e.from.id + it.dir, it)
+      addTo(ins, e.to.id + it.dir, it)
       live.push(it)
     }
     // Several arrows leaving (or entering) one side spread out along it, in the order of their other ends.
     fan(outs, 'out')
     fan(ins, 'in')
-    const keep = new Set()
     for (const it of live) {
       const p = this.paths.get(it.e.key) ?? this.makePath(it.e)
       p.setAttribute('d', it.dir === 'down'
         ? curve(it.out, it.a.y + it.a.h, it.in, it.b.y, true)
         : curve(it.a.x + it.a.w, it.out, it.b.x, it.in, false))
-      p.style.opacity = it.alpha === 1 ? '' : it.alpha.toFixed(3)
-      keep.add(it.e.key)
     }
     for (const [key, p] of this.paths) {
-      if (keep.has(key)) continue
+      if (this.edges.has(key)) continue
       p.remove()
       this.paths.delete(key)
     }
@@ -277,14 +210,8 @@ export class AtlasMap {
     p.classList.add('edge')
     // Arrows between cards in different topics run across other cards and frames; draw them lighter.
     if (e.from.parent !== e.to.parent) p.classList.add('cross')
-    if (this.hovered && (e.from === this.hovered || e.to === this.hovered)) p.classList.add('lit')
     p.style.setProperty('--c', e.from.color)
     p.style.setProperty('--w', (1.2 + Math.min(2.6, Math.log2(e.pairs.length) * 0.65)).toFixed(2))
-    const title = document.createElementNS(SVG, 'title')
-    title.textContent = edgeLabel(e)
-    p.append(title)
-    const state = this.edgeState(e)
-    if (state) p.classList.add(state)
     this.svg.append(p)
     this.paths.set(e.key, p)
     return p
@@ -297,8 +224,8 @@ export class AtlasMap {
     this.highlight()
     this.onSelect?.(n)
     if (n && pan) {
-      const box = this.cur.get(visibleRep(n, x => this.isOpen(x)).id)
-      if (box && !this.camera.shows(box)) this.camera.animateTo(this.camera.centre(box))
+      const box = this.boxes.get(visibleRep(n, x => this.isOpen(x)).id)
+      if (box && !this.camera.shows(box)) this.camera.moveTo(this.camera.centre(box))
     }
   }
 
@@ -322,10 +249,11 @@ export class AtlasMap {
     }
     for (const [id, el] of this.els) this.markNode(this.atlas.nodes.get(id), el)
     for (const [key, p] of this.paths) {
-      p.classList.remove('pre', 'post', 'dim')
-      const e = this.edges.get(key)
-      const state = e && this.edgeState(e)
-      if (state) p.classList.add(state)
+      const state = this.edgeState(this.edges.get(key))
+      p.classList.toggle('pre', state === 'pre')
+      p.classList.toggle('post', state === 'post')
+      p.classList.toggle('dim', state === 'dim')
+      p.classList.toggle('lit', !!this.hovered && (this.edges.get(key).from === this.hovered || this.edges.get(key).to === this.hovered))
     }
   }
 
@@ -389,16 +317,15 @@ export class AtlasMap {
 
   expand(n) {
     this.open.add(n.id)
-    const { boxes } = this.relayout()
-    this.camera.animateTo(this.camera.fit(boxes.get(n.id), { pad: 36, maxK: Math.max(1, this.camera.k) }), DURATION + 120)
+    const boxes = this.relayout()
+    this.camera.moveTo(this.camera.fit(boxes.get(n.id), { pad: 36, maxK: Math.max(1, this.camera.k) }))
   }
 
   collapse(n) {
     this.open.delete(n.id)
     for (const d of descendants(n)) this.open.delete(d.id)
-    const { boxes } = this.relayout()
-    const box = boxes.get(n.id)
-    if (box && !this.camera.shows(box)) this.camera.animateTo(this.camera.centre(box), DURATION + 120)
+    const box = this.relayout().get(n.id)
+    if (box && !this.camera.shows(box)) this.camera.moveTo(this.camera.centre(box))
     this.onView?.()
   }
 
@@ -410,10 +337,10 @@ export class AtlasMap {
       this.open.add(a.id)
       changed = true
     }
-    const boxes = changed ? this.relayout().boxes : this.cur
+    const boxes = changed ? this.relayout() : this.boxes
     this.select(n, { pan: false })
     const box = boxes.get(n.id)
-    if (box) this.camera.animateTo(this.camera.centre(box, Math.min(1.25, Math.max(this.camera.k, 0.9))), DURATION + 150)
+    if (box) this.camera.moveTo(this.camera.centre(box, Math.min(1.25, Math.max(this.camera.k, 0.9))))
   }
 
   /** Opens topics until `n` and its direct prerequisites (or dependents) show as separate cards, then frames them. */
@@ -423,36 +350,33 @@ export class AtlasMap {
       ? [...(group ? externalPrereqs(n) : n.prereqs)]
       : [...(group ? externalDependents(n) : n.dependents)]
     for (const t of [n, ...others]) for (const a of ancestors(t)) this.open.add(a.id)
-    const { boxes } = this.relayout()
+    const boxes = this.relayout()
     this.select(n, { pan: false })
     const all = [n, ...others].map(t => boxes.get(t.id)).filter(Boolean)
-    this.camera.animateTo(this.camera.fit(union(all), { pad: 60, maxK: 1.1 }), DURATION + 150)
+    this.camera.moveTo(this.camera.fit(union(all), { pad: 60, maxK: 1.1 }))
   }
 
   overview() {
     this.closeQuiz()
     this.open.clear()
     this.relayout()
-    this.camera.animateTo(this.camera.fit(this.bounds, { maxK: 1 }), DURATION + 150)
+    this.fitAll()
   }
 
   openAll() {
     for (const n of this.atlas.nodes.values()) if (n.children.length) this.open.add(n.id)
     this.relayout()
-    this.camera.animateTo(this.camera.fit(this.bounds, { maxK: 1 }), DURATION + 150)
+    this.fitAll()
   }
 
-  fitAll(animate = true) {
-    this.camera.animateTo(this.camera.fit(this.bounds, { maxK: 1 }), animate ? 600 : 0)
+  fitAll() {
+    this.camera.moveTo(this.camera.fit(this.bounds, { maxK: 1 }))
   }
 
   zoomBy(f) {
     const c = this.camera
     const { w, h } = c.size()
-    const px = c.inset.left + (w - c.inset.left - c.inset.right) / 2
-    const py = c.inset.top + (h - c.inset.top - c.inset.bottom) / 2
-    const k = Math.min(c.maxK, Math.max(c.minK, c.k * f))
-    c.animateTo({ x: px - (px - c.x) * (k / c.k), y: py - (py - c.y) * (k / c.k), k }, 220)
+    c.zoomAt(c.inset.left + (w - c.inset.left - c.inset.right) / 2, c.inset.top + (h - c.inset.top - c.inset.bottom) / 2, f)
   }
 
   // ---- quizzes inside the map ----
@@ -473,10 +397,10 @@ export class AtlasMap {
     this.quiz = { node: n, el: pop }
     this.els.get(n.id)?.classList.add('has-quiz-open')
     this.placeQuiz()
-    const b = this.cur.get(n.id)
+    const b = this.boxes.get(n.id)
     if (b) {
       const area = { x: b.x - 12, y: b.y - 16, w: b.w + 14 + pop.offsetWidth + 24, h: Math.max(b.h, pop.offsetHeight) + 32 }
-      if (!this.camera.shows(area)) this.camera.animateTo(this.camera.fit(area, { pad: 24, maxK: Math.max(1, this.camera.k) }))
+      if (!this.camera.shows(area)) this.camera.moveTo(this.camera.fit(area, { pad: 24, maxK: Math.max(1, this.camera.k) }))
     }
   }
 
@@ -489,7 +413,7 @@ export class AtlasMap {
 
   placeQuiz() {
     if (!this.quiz) return
-    const b = this.cur.get(this.quiz.node.id)
+    const b = this.boxes.get(this.quiz.node.id)
     if (!b) return this.closeQuiz()
     this.quiz.el.style.transform = `translate(${r1(b.x + b.w + 14)}px, ${r1(b.y - 6)}px)`
   }
@@ -514,15 +438,16 @@ export class AtlasMap {
     }
   }
 
+  // Runs on every frame of a pan or zoom, so it does as little as possible: it touches the
+  // page only when the zoom crosses into another band (far out, the grid and small labels go).
   cameraMoved() {
-    const { x, y, k } = this.camera
-    const minor = 32 * k
-    const major = minor * 5
-    const s = this.viewport.style
-    s.backgroundSize = `${major}px ${major}px, ${major}px ${major}px, ${minor}px ${minor}px, ${minor}px ${minor}px`
-    s.backgroundPosition = `${x}px ${y}px`
-    s.setProperty('--minor', Math.max(0, Math.min(1, (k - 0.3) / 0.5)).toFixed(2))
-    this.viewport.classList.toggle('is-far', k < 0.45)
+    const k = this.camera.k
+    const level = k < 0.2 ? 2 : k < 0.45 ? 1 : 0
+    if (level !== this.level) {
+      this.level = level
+      this.viewport.classList.toggle('is-far', level >= 1)
+      this.viewport.classList.toggle('is-tiny', level === 2)
+    }
     this.onView?.()
   }
 }
@@ -533,14 +458,6 @@ const frameHead = n => `<div class="frame-head">
   <button type="button" class="about" title="About this topic" aria-label="About ${esc(n.plainTitle)}">i</button>
   <button type="button" class="shut" title="Close this topic" aria-label="Close ${esc(n.plainTitle)}">×</button>
 </div>`
-
-function edgeLabel(e) {
-  const n = e.pairs.length
-  if (n === 1) return `${e.pairs[0][0].plainTitle} → ${e.pairs[0][1].plainTitle}`
-  return `${e.from.plainTitle} → ${e.to.plainTitle}: ${n} prerequisites\n` +
-    e.pairs.slice(0, 8).map(([p, c]) => `  ${p.plainTitle} → ${c.plainTitle}`).join('\n') +
-    (n > 8 ? `\n  …and ${n - 8} more` : '')
-}
 
 function addTo(map, key, item) {
   const list = map.get(key)

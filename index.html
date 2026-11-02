@@ -7,6 +7,18 @@
   <meta name="description" content="A zoomable map of mathematics from counting to calculus, showing how every idea builds on the ones before it.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23f3ead7'/%3E%3Cpath d='M18 44 L32 20 L46 44' fill='none' stroke='%237a5a2e' stroke-width='3'/%3E%3Ccircle cx='18' cy='44' r='6' fill='%238f2d2d'/%3E%3Ccircle cx='32' cy='20' r='6' fill='%23a06a1c'/%3E%3Ccircle cx='46' cy='44' r='6' fill='%232f4f86'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/atlas.css">
+  <!-- Fetch every script at once, instead of each only after the one that imports it. -->
+  <link rel="modulepreload" href="js/content.js">
+  <link rel="modulepreload" href="js/map.js">
+  <link rel="modulepreload" href="js/panel.js">
+  <link rel="modulepreload" href="js/search.js">
+  <link rel="modulepreload" href="js/markdown.js">
+  <link rel="modulepreload" href="js/tex.js">
+  <link rel="modulepreload" href="js/quiz.js">
+  <link rel="modulepreload" href="js/model.js">
+  <link rel="modulepreload" href="js/layout.js">
+  <link rel="modulepreload" href="js/camera.js">
+  <link rel="modulepreload" href="js/progress.js">
   <script type="module" src="js/main.js"></script>
 </head>
 <body>
@@ -30,6 +42,7 @@
 
   <main id="viewport" aria-label="Concept map">
     <div id="world">
+      <div id="grid" aria-hidden="true"></div>
       <svg id="edges" aria-hidden="true"></svg>
     </div>
     <p id="loading">Unrolling the map…</p>

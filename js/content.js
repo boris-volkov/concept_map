@@ -27,18 +27,20 @@ const DEFAULT_COLOR = '#6b5a45'
 const HEADING = /^(#{1,6})\s+(.+?)\s*#*\s*$/
 const META = /^([A-Za-z][\w-]*)\s*:\s*(.*)$/
 
-export async function fetchText(url) {
-  const res = await fetch(url, { cache: 'no-cache' })
+// `fresh` asks the server whether each file changed, for writing content; otherwise the
+// browser may reuse its cached copy, which makes repeat visits quicker.
+export async function fetchText(url, fresh = false) {
+  const res = await fetch(url, { cache: fresh ? 'no-cache' : 'default' })
   if (!res.ok) throw new Error(`${res.status} ${res.statusText || 'error'} for ${url}`)
   return res.text()
 }
 
 /** Fetches content/index.md and every file it links to. */
-export async function loadSources(base) {
-  const indexText = await fetchText(base + 'index.md')
+export async function loadSources(base, { fresh = false } = {}) {
+  const indexText = await fetchText(base + 'index.md', fresh)
   const index = parseIndex(indexText)
   const files = await Promise.all(index.files.map(path =>
-    fetchText(base + path).then(text => ({ path, text }), error => ({ path, error }))))
+    fetchText(base + path, fresh).then(text => ({ path, text }), error => ({ path, error }))))
   return { index, indexText, files }
 }
 

@@ -20,13 +20,13 @@ start()
 async function start() {
   let sources
   try {
-    sources = await loadSources(CONTENT)
+    sources = await loadSources(CONTENT, { fresh: LOCAL })
   } catch (e) {
     return fail(e)
   }
   sourceKey = keyOf(sources)
   atlas = buildAtlas(sources)
-  map = new AtlasMap({ viewport: $('viewport'), world: $('world'), svg: $('edges'), atlas, onSelect: selected, onView: saveView })
+  map = new AtlasMap({ viewport: $('viewport'), world: $('world'), svg: $('edges'), grid: $('grid'), atlas, onSelect: selected, onView: saveView })
   panel = new Panel($('panel'), { onClose: () => map.select(null), onReveal: (n, which) => map.revealAround(n, which) })
   panel.setAtlas(atlas)
   search = new Search($('search'), $('search-results'), { onPick: n => go(n.id) })
@@ -37,10 +37,10 @@ async function start() {
 
   const view = readView()
   if (view?.open) map.open = new Set(view.open.filter(id => atlas.nodes.get(id)?.children.length))
-  map.relayout({ animate: false })
+  map.relayout()
   await map.camera.ready()
   if (view?.camera) map.camera.set(view.camera.x, view.camera.y, view.camera.k)
-  else map.fitAll(false)
+  else map.fitAll()
   $('loading').remove()
   const n = atlas.nodes.get(hashId())
   if (n) map.reveal(n)
@@ -74,6 +74,7 @@ function hashId() {
 function fitAroundPanel() {
   const p = $('panel')
   const inset = { top: 0, right: 0, bottom: 0, left: 0 }
+  document.body.classList.toggle('panel-open', !p.hidden)
   if (!p.hidden) {
     const r = p.getBoundingClientRect()
     if (r.width < window.innerWidth * 0.8) inset.right = window.innerWidth - r.left
@@ -172,13 +173,13 @@ function watch() {
     if (document.hidden || busy) return
     busy = true
     try {
-      const sources = await loadSources(CONTENT)
+      const sources = await loadSources(CONTENT, { fresh: true })
       const key = keyOf(sources)
       if (key === sourceKey) return
       sourceKey = key
       atlas = buildAtlas(sources)
       map.setAtlas(atlas)
-      map.relayout({ animate: false })
+      map.relayout()
       panel.setAtlas(atlas)
       search.setAtlas(atlas)
       titles()
@@ -197,8 +198,7 @@ function toast(text) {
   t.className = 'toast'
   t.textContent = text
   document.body.append(t)
-  setTimeout(() => t.classList.add('is-leaving'), 1800)
-  setTimeout(() => t.remove(), 2400)
+  setTimeout(() => t.remove(), 2000)
 }
 
 let saveTimer
@@ -223,9 +223,8 @@ function hint() {
   if (seen) return h.remove()
   h.classList.add('is-shown')
   const dismiss = () => {
-    h.classList.remove('is-shown')
+    h.remove()
     try { localStorage.setItem(HINT_KEY, '1') } catch { /* fine */ }
-    setTimeout(() => h.remove(), 500)
   }
   $('viewport').addEventListener('click', dismiss, { once: true })
   setTimeout(dismiss, 15000)

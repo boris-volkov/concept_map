@@ -1,10 +1,10 @@
 // Pan and zoom. Drag to move; wheel, pinch or trackpad-pinch to zoom.
 //
 // The world element carries one CSS transform, translate(x, y) scale(k), so a
-// point p on the map appears on screen at (x + p.x·k, y + p.y·k).
-
-const ease = t => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2)
-const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches
+// point p on the map appears on screen at (x + p.x·k, y + p.y·k). The world is
+// its own GPU layer (will-change in the CSS), so panning only slides a finished
+// picture; after zooming stops, the picture is redrawn once at the new scale.
+// Nothing glides: every move happens at once, which keeps the map quick.
 
 export class Camera {
   constructor(viewport, world, onChange) {
@@ -27,9 +27,37 @@ export class Camera {
       const before = this.seen
       this.seen = now
       if (!before.w || !before.h || !now.w || !now.h) return
-      this.stop()
       this.set(this.x + (now.w - before.w) / 2, this.y + (now.h - before.h) / 2, this.k)
     }).observe(viewport)
+  }
+
+  set(x, y, k) {
+    k = Math.min(this.maxK, Math.max(this.minK, k))
+    const zoomed = k !== this.k
+    this.k = k
+    this.x = x
+    this.y = y
+    this.world.style.transform = `translate(${x}px, ${y}px) scale(${k})`
+    if (zoomed) this.sharpenSoon()
+    this.onChange?.(this)
+  }
+
+  moveTo(t) {
+    this.set(t.x, t.y, t.k)
+  }
+
+  // The GPU scales the layer it already has, which softens text; once zooming pauses,
+  // drop the layer for one frame so the browser redraws it sharp at the new scale.
+  sharpenSoon() {
+    clearTimeout(this.sharpenTimer)
+    this.sharpenTimer = setTimeout(() => {
+      this.world.style.willChange = 'auto'
+      requestAnimationFrame(() => requestAnimationFrame(() => { this.world.style.willChange = '' }))
+    }, 160)
+  }
+
+  size() {
+    return { w: this.viewport.clientWidth, h: this.viewport.clientHeight }
   }
 
   /** Resolves once the map has a size on screen; a hidden tab or frame can start out at 0 × 0. */
@@ -45,18 +73,6 @@ export class Camera {
       })
       watch.observe(this.viewport)
     })
-  }
-
-  set(x, y, k) {
-    this.k = Math.min(this.maxK, Math.max(this.minK, k))
-    this.x = x
-    this.y = y
-    this.world.style.transform = `translate(${this.x}px, ${this.y}px) scale(${this.k})`
-    this.onChange?.(this)
-  }
-
-  size() {
-    return { w: this.viewport.clientWidth, h: this.viewport.clientHeight }
   }
 
   zoomAt(px, py, factor) {
@@ -79,7 +95,7 @@ export class Camera {
   }
 
   /** The transform that centres a box at zoom k. */
-  centre(box, k = (this.target ?? this).k) {
+  centre(box, k = this.k) {
     const { w, h } = this.size()
     const i = this.inset
     return {
@@ -89,49 +105,14 @@ export class Camera {
     }
   }
 
-  /** Whether a box is fully inside the uncovered part of the screen, once any glide in progress ends. */
+  /** Whether a box is fully inside the uncovered part of the screen. */
   shows(box, margin = 16) {
     const { w, h } = this.size()
     const i = this.inset
-    const t = this.target ?? this
-    const x0 = t.x + box.x * t.k
-    const y0 = t.y + box.y * t.k
+    const x0 = this.x + box.x * this.k
+    const y0 = this.y + box.y * this.k
     return x0 >= i.left + margin && y0 >= i.top + margin &&
-      x0 + box.w * t.k <= w - i.right - margin && y0 + box.h * t.k <= h - i.bottom - margin
-  }
-
-  stop() {
-    if (this.raf) cancelAnimationFrame(this.raf)
-    this.raf = null
-    this.target = null
-  }
-
-  /** Glides to a transform, easing out a little in zoom on long journeys so the way stays readable. */
-  animateTo(t, duration = 650) {
-    this.stop()
-    if (duration <= 0 || reduceMotion()) { this.set(t.x, t.y, t.k); return Promise.resolve() }
-    const { w, h } = this.size()
-    const k0 = this.k
-    const k1 = Math.min(this.maxK, Math.max(this.minK, t.k))
-    const c0 = { x: (w / 2 - this.x) / k0, y: (h / 2 - this.y) / k0 }
-    const c1 = { x: (w / 2 - t.x) / t.k, y: (h / 2 - t.y) / t.k }
-    const screens = Math.hypot(c1.x - c0.x, c1.y - c0.y) * Math.min(k0, k1) / Math.max(w, h)
-    const dip = screens > 1 ? Math.min(0.45, (screens - 1) * 0.2) : 0
-    const start = performance.now()
-    this.target = { x: t.x, y: t.y, k: k1 }
-    return new Promise(resolve => {
-      const step = now => {
-        const u = Math.min(1, (now - start) / duration)
-        const e = ease(u)
-        const k = k0 * (k1 / k0) ** e * (1 - dip * Math.sin(Math.PI * e))
-        const cx = c0.x + (c1.x - c0.x) * e
-        const cy = c0.y + (c1.y - c0.y) * e
-        this.set(w / 2 - cx * k, h / 2 - cy * k, k)
-        if (u < 1) this.raf = requestAnimationFrame(step)
-        else { this.raf = null; this.target = null; resolve() }
-      }
-      this.raf = requestAnimationFrame(step)
-    })
+      x0 + box.w * this.k <= w - i.right - margin && y0 + box.h * this.k <= h - i.bottom - margin
   }
 
   listen() {
@@ -144,7 +125,6 @@ export class Camera {
     vp.addEventListener('pointerdown', e => {
       if (e.pointerType === 'mouse' && e.button !== 0) return
       if (e.target.closest('input, textarea, select, .quiz-pop .quiz')) return
-      this.stop()
       this.pointers.set(e.pointerId, local(e))
       if (this.pointers.size === 1) {
         this.dragged = false
@@ -171,9 +151,8 @@ export class Camera {
       } else if (this.pointers.size === 2 && this.pinch) {
         const [a, b] = [...this.pointers.values()]
         const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
-        const k = this.pinch.k * Math.hypot(a.x - b.x, a.y - b.y) / this.pinch.dist
-        const kk = Math.min(this.maxK, Math.max(this.minK, k))
-        this.set(mid.x - this.pinch.wx * kk, mid.y - this.pinch.wy * kk, kk)
+        const k = Math.min(this.maxK, Math.max(this.minK, this.pinch.k * Math.hypot(a.x - b.x, a.y - b.y) / this.pinch.dist))
+        this.set(mid.x - this.pinch.wx * k, mid.y - this.pinch.wy * k, k)
       }
     })
 
@@ -203,7 +182,6 @@ export class Camera {
     vp.addEventListener('wheel', e => {
       if (e.target.closest('.quiz-pop')) return
       e.preventDefault()
-      this.stop()
       const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1
       if (!e.ctrlKey && Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
         this.set(this.x - e.deltaX * unit, this.y, this.k)
