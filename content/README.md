@@ -1,0 +1,146 @@
+# Writing the atlas
+
+Everything on the map comes from the Markdown files in this folder. There is nothing to compile: save a file and the map redraws (when it is running from `python serve.py`; see the main README). This file is not part of the map; only the files linked from [index.md](index.md) are.
+
+## The shape of a file
+
+Each file is one **domain**, written as an outline. The heading level says what is inside what:
+
+```markdown
+# Arithmetic                      ← a domain: one per file
+color: #a06a1c
+
+Numbers and the four operations.  ← its description, shown on its card
+
+## Fractions                      ← a topic inside Arithmetic
+
+Parts of a whole, and the arithmetic of parts.
+
+### Adding Fractions              ← a concept inside Fractions
+kind: skill
+prereqs: equivalent-fractions, lcm
+
+Fractions can only be added when they count pieces of the same size…
+```
+
+A heading with headings under it is a **topic**: it shows as a card that opens up to reveal what's inside. A heading with nothing under it is a **concept**. You can nest as deep as `######`, so a topic can hold smaller topics.
+
+The first paragraph under a heading is its summary, shown on cards and in search results. Everything after that is the explanation, shown in the side panel.
+
+## Ids
+
+Every concept has an id, which is how other concepts refer to it. By default it is the title in lowercase with dashes, dropping a leading "The", "A" or "An", with "&" read as "and":
+
+| Title | Id |
+| --- | --- |
+| Adding Fractions | `adding-fractions` |
+| The Unit Circle | `unit-circle` |
+| Adding & Subtracting Integers | `adding-and-subtracting-integers` |
+| L'Hôpital's Rule | `lhopitals-rule` |
+
+To choose the id yourself, put it in braces at the end of the heading:
+
+```markdown
+### Least Common Multiple {#lcm}
+```
+
+Ids have to be unique across the whole atlas. The id is also the concept's web address (`…/#lcm`), so a link you send a student keeps working as long as the id doesn't change. **If you rename a concept that other concepts depend on, keep its old id** with `{#old-id}` and nothing else needs to change.
+
+## Lines under a heading
+
+Right under a heading, before the summary, these lines describe it. All are optional.
+
+| Line | Meaning |
+| --- | --- |
+| `prereqs: lcm, equivalent-fractions` | What this builds on, by id. The map draws these as arrows. |
+| `kind: theorem` | A label on the card: `definition`, `axiom`, `property`, `theorem`, `formula`, `skill` or `technique`. Leave it out for a plain concept. |
+| `color: #8f2d2d` | The colour of this domain or topic and everything inside it. Usually only on the `#` heading. |
+| `summary: …` | A summary, when the first paragraph won't do. |
+| `tags: grade-6, exam` | Extra words for the search box to find. |
+| `id: lcm` | The same as `{#lcm}` on the heading. |
+| `parent: algebra` | Only on a file's `#` heading: put this file's contents inside another topic (see *Splitting a big domain*). |
+
+## Prerequisites
+
+List only what a concept **directly** builds on. "Adding Fractions" needs "Least Common Multiple"; it doesn't need to list "Multiplication" too, because LCM already builds on multiplication, and the panel's *Everything it rests on* list follows the whole chain back to counting.
+
+A prerequisite can be a whole topic, `prereqs: fractions`, which means everything in it. A prerequisite on a topic applies to everything inside the topic. Use both sparingly: arrows between single concepts say more.
+
+Two things are not allowed, and are reported if they happen: a concept can't require the topic it sits in (or something inside itself), and prerequisites can't go round in a loop.
+
+## Explanations
+
+The text under the summary is ordinary Markdown: `**bold**`, `*italic*`, lists, tables, `> quotes` (good for examples and warnings), `[links](https://…)` and images, `![a diagram](images/diagram.png)`.
+
+**Math** goes between dollar signs, in LaTeX: `$\frac{1}{4}$` inline, or on its own lines between `$$`:
+
+```markdown
+$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
+```
+
+Fractions, roots, powers, Greek letters, `\sin`, `\lim`, `\int`, `\sum`, `\begin{cases}`, matrices and the like all work. A command the atlas doesn't know is drawn in red, and can be added to the lists at the top of `js/tex.js`. For a literal dollar sign, write `\$5`.
+
+**Links to other concepts**: `[[lcm]]` becomes a link titled "Least Common Multiple", and `[[lcm|the LCM]]` uses your own words.
+
+**Embeds**: raw HTML passes through, so an interactive graph can sit in a concept:
+
+```html
+<iframe src="https://www.desmos.com/calculator/abcdef1234?embed"></iframe>
+```
+
+## Quizzes
+
+A quiz is a fenced block marked `quiz`, anywhere in a concept's explanation. A small **?** appears on the concept's card, and the quiz opens right there on the map, and in the side panel too.
+
+````markdown
+```quiz
+Q: What is $\operatorname{lcm}(4, 6)$?
+- 2
++ 12
+- 24
+Hint: List the multiples of 6.
+Why: 6, **12**: and 4 divides 12.
+
+Q: $\frac{1}{4} + \frac{1}{6} = \;?$
+A: 5/12
+```
+````
+
+- `Q:` starts a question. The question can run over several lines.
+- Lines starting `-` are wrong choices and `+` the right one.
+- Or `A:` asks for a typed answer instead.
+  - A number also accepts any equal form: `A: 5/12` accepts `10/24`, and a correctly rounded decimal like `0.417`.
+  - A decimal answer matches to the precision you write it: `A: 2.65` accepts anything that rounds to 2.65. For a tolerance of your own, `A: 3.14 ± 0.01`.
+  - Text is compared ignoring capitals and spacing. Separate alternatives with `|`: `A: commutative | commutativity`.
+- `Hint:` shows after a wrong try; `Why:` shows after the right answer.
+
+A student who gets every question right on the first try has the concept marked as mastered. Progress is saved in their own browser; it is never sent anywhere.
+
+## Adding a domain, or splitting a big one
+
+To add a domain, create a file here, start it with a `#` heading, and add a link to it in [index.md](index.md). The order of the links is the order the map reads them in; the layout itself follows the arrows.
+
+When a domain's file grows long, move a topic to a file of its own. Make its heading a `#` heading, say where it belongs, and link the new file from index.md:
+
+```markdown
+# Infinite Series
+parent: calculus
+
+## Series & Convergence
+…
+```
+
+## Notes to yourself
+
+Anything inside `<!-- … -->` is ignored, including whole headings. Comment out a concept that isn't ready:
+
+```markdown
+<!--
+### Conic Sections in Polar Form
+prereqs: polar-coordinates, conics
+-->
+```
+
+## When something is wrong
+
+Mistakes never break the map. A misspelled prerequisite, two concepts with the same id, a quiz with no right answer or a loop of prerequisites shows up in a **content problems** button at the bottom left of the map. Each one gives the file and line and, for a misspelled id, the one you probably meant.

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Concept Atlas</title>
+  <meta name="description" content="A zoomable map of mathematics from counting to calculus, showing how every idea builds on the ones before it.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23f3ead7'/%3E%3Cpath d='M18 44 L32 20 L46 44' fill='none' stroke='%237a5a2e' stroke-width='3'/%3E%3Ccircle cx='18' cy='44' r='6' fill='%238f2d2d'/%3E%3Ccircle cx='32' cy='20' r='6' fill='%23a06a1c'/%3E%3Ccircle cx='46' cy='44' r='6' fill='%232f4f86'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/atlas.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <header id="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">§</span>
+      <span class="brand-title" id="atlas-title">Concept Atlas</span>
+    </div>
+    <div class="search" role="search">
+      <input id="search" type="search" placeholder="Find a concept…" autocomplete="off" spellcheck="false"
+             aria-label="Find a concept" aria-controls="search-results" aria-expanded="false">
+      <kbd class="search-key" aria-hidden="true">/</kbd>
+      <ul id="search-results" role="listbox" hidden></ul>
+    </div>
+    <nav class="tools" aria-label="Map controls">
+      <button id="btn-overview" type="button" title="Close everything and show the whole map (H)">Overview</button>
+      <button id="btn-expand" type="button" title="Open every topic">Open all</button>
+      <button id="btn-index" type="button" title="Every concept as a list (I)">Index</button>
+    </nav>
+  </header>
+
+  <main id="viewport" aria-label="Concept map">
+    <div id="world">
+      <svg id="edges" aria-hidden="true"></svg>
+    </div>
+    <p id="loading">Unrolling the map…</p>
+  </main>
+
+  <div id="zoom" aria-label="Zoom">
+    <button id="btn-zoom-in" type="button" title="Zoom in (+)">+</button>
+    <button id="btn-zoom-out" type="button" title="Zoom out (−)">−</button>
+    <button id="btn-fit" type="button" title="Fit to screen (0)">⤢</button>
+  </div>
+
+  <div id="key" hidden>
+    <span class="key-pre">Builds on</span>
+    <span class="key-sel">Selected</span>
+    <span class="key-post">Leads to</span>
+  </div>
+
+  <p id="hint">Click a topic to open it · click a concept to see what it builds on · scroll to zoom, drag to move</p>
+
+  <aside id="panel" aria-label="Concept details" hidden></aside>
+
+  <button id="issues" type="button" hidden></button>
+  <div id="issues-list" hidden></div>
+</body>
+</html>
