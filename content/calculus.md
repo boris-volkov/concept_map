@@ -71,6 +71,16 @@ $\lim_{x \to a} f(x) = L$ means: for every $\varepsilon > 0$ there is a $\delta 
 
 The instantaneous rate of change: the slope of a curve at a point.
 
+### The Difference Quotient {#difference-quotient}
+kind: formula
+prereqs: average-rate-of-change, polynomial-multiplication
+
+The average rate of change from $x$ to $x + h$, simplified as far as it will go:
+
+$$\frac{f(x + h) - f(x)}{h}$$
+
+For $f(x) = x^2$ it is $2x + h$. Let $h$ shrink to 0 and it becomes the derivative.
+
 ### The Derivative {#derivative-definition}
 kind: definition
 prereqs: difference-quotient, evaluating-limits

@@ -330,6 +330,12 @@ prereqs: slope-intercept, unit-rates
 
 A constant rate of change in a real situation: a taxi charging \$3 plus \$2 per mile costs $C = 2m + 3$. The slope is the rate; the intercept is the starting amount.
 
+### Average Rate of Change
+kind: definition
+prereqs: slope, function-notation
+
+How much any function's output changes per unit of input between two points, $\frac{f(b) - f(a)}{b - a}$: the slope of the secant line joining them. A linear function's average rate of change is the same everywhere, which is what makes it linear.
+
 ## Systems of Equations {#systems}
 
 Several equations sharing unknowns, solved together.
@@ -598,6 +604,31 @@ Why: $4 - 20 = -16$. It is negative, so the equation has no real solutions.
 prereqs: quadratic-formula
 
 $b^2 - 4ac$, the part under the root in the quadratic formula. Positive: two real solutions. Zero: one. Negative: none that are real, but two complex ones.
+
+## Conic Sections
+
+The curves you get by slicing a double cone with a plane: circles, ellipses, parabolas and hyperbolas, the graphs of second-degree equations in $x$ and $y$.
+
+### Conic Sections {#conics}
+kind: definition
+prereqs: circle-equation
+
+Every second-degree equation in $x$ and $y$ draws a circle, an ellipse, a parabola or a hyperbola, and completing the square shows which.
+
+### Parabolas
+prereqs: conics, distance-formula, vertex-form
+
+The points equally far from a fixed point, the focus, and a fixed line, the directrix. Satellite dishes and headlights are parabolas because of their focus.
+
+### Ellipses
+prereqs: conics, completing-the-square
+
+The points whose distances to two foci add up to a constant: $\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1$. Planets orbit in ellipses with the sun at one focus.
+
+### Hyperbolas
+prereqs: ellipses, asymptotes
+
+The points whose distances to two foci differ by a constant: two branches, $\frac{x^2}{a^2} - \frac{y^2}{b^2} = 1$, closing in on a pair of asymptotes.
 
 ## Complex Numbers {#complex}
 

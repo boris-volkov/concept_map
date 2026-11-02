@@ -176,3 +176,41 @@ kind: formula
 prereqs: area-basic, trig-ratios
 
 $\text{Area} = \frac{1}{2}ab\sin C$: two sides and the angle between them, since $b \sin C$ is the height.
+
+## Polar & Parametric {#polar-and-parametric}
+
+Other ways to describe points and curves than $y$ as a function of $x$: by a distance and an angle, or by a parameter such as time.
+
+### Polar Coordinates
+kind: definition
+prereqs: unit-circle
+
+Locating a point by its distance $r$ from the origin and its angle $\theta$, instead of by $x$ and $y$.
+
+### Converting Polar & Rectangular {#polar-conversion}
+kind: skill
+prereqs: polar-coordinates, trig-functions-any-angle, pythagorean-theorem
+
+$x = r\cos\theta$ and $y = r\sin\theta$; going the other way, $r = \sqrt{x^2 + y^2}$ and $\tan\theta = \frac{y}{x}$.
+
+### Polar Graphs
+prereqs: polar-conversion, sine-cosine-graphs
+
+Curves given as $r = f(\theta)$: circles, cardioids and roses like $r = \cos 3\theta$, which are awkward or impossible as $y = f(x)$.
+
+### Parametric Equations
+kind: definition
+prereqs: function-graphs, sine-cosine-graphs
+
+Both coordinates as functions of a third variable, often time: $x = \cos t$, $y = \sin t$ traces the unit circle. A curve with a direction and a speed.
+
+### Complex Numbers in Polar Form {#polar-complex}
+prereqs: polar-coordinates, complex-arithmetic
+
+$a + bi = r(\cos\theta + i\sin\theta)$. In this form multiplying is easy: multiply the lengths and add the angles.
+
+### De Moivre's Theorem {#de-moivre}
+kind: theorem
+prereqs: polar-complex, sum-difference-formulas
+
+$(\cos\theta + i\sin\theta)^n = \cos n\theta + i\sin n\theta$: powers and roots of complex numbers, by turning.

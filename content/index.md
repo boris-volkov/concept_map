@@ -9,5 +9,5 @@ The map is assembled from the files below, in this order. Each file is one domai
 - [Geometry](geometry.md)
 - [Trigonometry](trigonometry.md)
 - [Probability & Statistics](statistics.md)
-- [Precalculus](precalculus.md)
+- [Linear Algebra](linear-algebra.md)
 - [Calculus](calculus.md)
