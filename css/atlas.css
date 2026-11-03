@@ -308,6 +308,23 @@ math { font-family: var(--math); font-size: 1.04em; }
 }
 #world .node.group.is-open.is-current > .frame-head { background: color-mix(in srgb, var(--c) 16%, transparent); }
 
+/* An open domain's card stays in the spine, outlined in its colour and tied by a line to the
+   head of the frame it floated out into (map.js sets --float, the gap between them). */
+.node.group.stub {
+  outline: 3px solid color-mix(in srgb, var(--c) 75%, transparent);
+  outline-offset: 1px;
+  background: color-mix(in srgb, var(--c) 9%, var(--card));
+}
+.node.group.stub::after {
+  content: "";
+  position: absolute;
+  left: calc(100% + 1px);
+  top: 19px;
+  width: calc(var(--float) - 1px);
+  border-top: 2px solid color-mix(in srgb, var(--c) 70%, transparent);
+  pointer-events: none;
+}
+
 #world .node.group.axioms.is-open {
   background: linear-gradient(160deg, #fdf6e2, #f6e6b8);
   border: 1px solid var(--gold);

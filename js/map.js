@@ -1,16 +1,18 @@
 // The map on screen: one element per card, open topic and open file, and a layer of arrows
 // underneath the cards.
 //
-// Everything opens where it sits, the way a folder opens in a file manager's tree. A domain or a
-// topic opens into a frame around what it holds. A concept opens into its entry: the card grows
-// into the full text, and the map makes room for it. The "i" on a topic's frame opens the
-// topic's README at the top of the frame, and the Index and the Ranking are files too, beside
-// the domains. Nothing opens anywhere else.
+// The domains stand in a column, the spine, with the arrows between them running down its left
+// side. An open domain keeps its card in the spine and floats its frame out to the right, clear
+// of those arrows. Everything else opens where it sits, the way a folder opens in a file
+// manager's tree: a topic into a frame around what it holds, a concept into its entry, the card
+// growing into the full text while the map makes room for it. The "i" on a topic's frame opens
+// the topic's README at the top of the frame, and the Index and the Ranking are files too, at
+// the top left. Nothing opens anywhere else.
 //
 // A new layout is applied at once, without any animation, so the map stays quick however much
 // of it is open.
 
-import { computeLayout, flowOf, FRAME_PAD } from './layout.js'
+import { computeLayout, planSpine, flowOf, FRAME_PAD, SPINE } from './layout.js'
 import {
   ancestors, isAncestor, descendants, visibleRep, visibleEdges, prerequisitesOf, dependentsOf,
   externalPrereqs, externalDependents,
@@ -25,11 +27,12 @@ import * as docs from './docs.js'
 const SVG = 'http://www.w3.org/2000/svg'
 const GRID = 160 // the survey grid's large squares
 const GRID_MARGIN = 4000 // how far the survey grid runs past the edges of the map; a multiple of GRID
-const ROOT_GAP = 72 // between the root files and the domains
+const ROOT_GAP = 44 // between the root files and the lanes of the arrows down the spine
 const READABLE = 0.7 // a file opened from further out than this brings the map in close enough to read it
 const ROOT = new Map(docs.ROOT_FILES.map(f => [f.id, f]))
 const RANKING = ROOT.get('@ranking')
 const readmeKey = n => 'readme:' + n.id
+const stubKey = n => 'spine:' + n.id // an open domain's card, left in the spine
 const r1 = v => Math.round(v * 10) / 10
 
 export class AtlasMap {
@@ -50,16 +53,19 @@ export class AtlasMap {
     this.fileSizes = new Map() // key → the size of an open file or README, which changes with what it shows
     this.heads = new Map()
     this.rankDomain = '' // the Ranking shows only this domain's concepts, when set
+    this.spine = new Map() // domain id → its place in the spine
+    this.arcs = [] // the arrows down the left of the spine, with their lanes (see planSpine)
     this.selected = null
     this.hl = null
     this.camera = new Camera(viewport, world, () => this.cameraMoved())
+    world.style.setProperty('--float', `${SPINE.float}px`) // how far an open domain's frame floats from its card
     // An open file changes size when its quiz moves on, a list in it unfolds, or a font arrives.
     this.resizes = new ResizeObserver(entries => this.resized(entries))
     viewport.addEventListener('click', e => this.click(e))
     viewport.addEventListener('change', e => this.changed(e))
     viewport.addEventListener('pointerover', e => {
       const el = e.target.closest?.('.node.leaf, .node.group:not(.is-open)')
-      this.hover(el ? this.atlas.nodes.get(el.dataset.id) : null)
+      this.hover(el ? this.atlas.nodes.get(el.dataset.node ?? el.dataset.id) : null)
     })
     viewport.addEventListener('pointerleave', () => this.hover(null))
     viewport.addEventListener('keydown', e => {
@@ -192,16 +198,32 @@ export class AtlasMap {
     if (descendants(n).every(d => d.children.length || d.kind === 'axiom')) el.classList.add('axioms')
     el.tabIndex = 0
     el.setAttribute('role', 'button')
-    el.innerHTML = `<div class="face">
-        <div class="eyebrow">${label} · ${n.leafCount} ${n.leafCount === 1 ? 'concept' : 'concepts'}${supers
-          ? ` · <span class="super-mark" title="Super-concepts inside">★ ${supers}</span>` : ''}</div>
-        <div class="title">${renderInline(n.title)}</div>
-        ${n.summary ? `<div class="summary">${renderInline(n.summary)}</div>` : ''}
-        <div class="meter"><span></span></div>
-      </div>${frameHead(n)}`
+    el.innerHTML = groupFace(n) + frameHead(n)
     el.setAttribute('aria-label', `${n.plainTitle}, ${label.toLowerCase()} of ${n.leafCount} concepts` +
       (supers ? `, ${supers} of them ${supers === 1 ? 'a super-concept' : 'super-concepts'}` : ''))
     this.markProgress(n, el)
+  }
+
+  // An open domain's card stays in the spine, outlined and tied to the frame it floated out into;
+  // clicking it closes the domain again.
+  stubElement(n) {
+    const key = stubKey(n)
+    let el = this.els.get(key)
+    if (el) return el
+    el = document.createElement('div')
+    el.dataset.id = key
+    el.dataset.node = n.id
+    el.className = 'node group depth-0 stub'
+    el.style.setProperty('--c', n.color)
+    el.tabIndex = 0
+    el.setAttribute('role', 'button')
+    el.setAttribute('aria-label', `${n.plainTitle}, open beside this card: close it`)
+    el.title = 'Close this domain'
+    el.innerHTML = groupFace(n)
+    this.markProgress(n, el)
+    this.world.append(el)
+    this.els.set(key, el)
+    return el
   }
 
   fillRoot(f, el) {
@@ -309,7 +331,8 @@ export class AtlasMap {
   relayout() {
     const visible = this.visibleNodes()
     const readmes = visible.filter(n => this.hasReadme(n))
-    const keep = new Set([...visible.map(n => n.id), ...readmes.map(readmeKey), ...ROOT.keys()])
+    const stubs = this.atlas.roots.filter(d => this.isOpen(d))
+    const keep = new Set([...visible.map(n => n.id), ...readmes.map(readmeKey), ...stubs.map(stubKey), ...ROOT.keys()])
     for (const [key, el] of this.els) {
       if (keep.has(key)) continue
       this.resizes.unobserve(el)
@@ -318,6 +341,7 @@ export class AtlasMap {
       this.fileSizes.delete(key)
     }
     this.measure(visible, readmes)
+    for (const d of stubs) this.stubElement(d)
     for (const n of visible) {
       const el = this.els.get(n.id)
       el.classList.toggle('is-open', this.isOpen(n) || this.isFileOpen(n))
@@ -327,22 +351,30 @@ export class AtlasMap {
     const layout = computeLayout(this.atlas.root, n => this.isOpen(n), n => this.sizeOf(n), n => this.heads.get(n.id),
       n => (this.hasReadme(n) ? this.fileSizes.get(readmeKey(n)) : null))
     const boxes = layout.boxes
+    this.spine = layout.spine
+    for (const d of stubs) boxes.set(stubKey(d), layout.spine.get(d.id))
     for (const n of readmes) {
       const frame = boxes.get(n.id)
       const size = this.fileSizes.get(readmeKey(n))
       boxes.set(readmeKey(n), { x: frame.x + FRAME_PAD.left, y: frame.y + FRAME_PAD.top, w: size.w, h: size.h })
     }
-    // The root files stand in a row before the domains, level with the top of the map, the way an
-    // old atlas puts its index before the plates. An open one grows away from the map, never into it.
-    let x = -ROOT_GAP
-    for (const f of [...docs.ROOT_FILES].reverse()) {
+    // The arrows between domains, each in its lane down the left of the spine.
+    this.order = layout.order
+    this.arcs = planSpine(layout.order, this.atlas.root.localEdges)
+    const lanes = Math.max(0, ...this.arcs.map(a => a.lane + 1))
+    const gutter = lanes ? SPINE.lane0 + SPINE.lane * (lanes - 1) : 0
+    // The root files stand in a column of their own at the top left, beyond the arrows, the way an
+    // old atlas keeps its index apart from the plates. An open one grows away from the spine.
+    const right = -gutter - ROOT_GAP
+    let left = -gutter
+    let y = 0
+    for (const f of docs.ROOT_FILES) {
       const s = this.sizeOf(f)
-      x -= s.w
-      boxes.set(f.id, { x, y: 0, w: s.w, h: s.h })
-      x -= 18
+      boxes.set(f.id, { x: right - s.w, y, w: s.w, h: s.h })
+      left = Math.min(left, right - s.w)
+      y += s.h + 18
     }
-    const left = x + 18
-    const height = Math.max(layout.height, ...docs.ROOT_FILES.map(f => boxes.get(f.id).h))
+    const height = Math.max(layout.height, y - 18)
     this.bounds = { x: left, y: 0, w: layout.width - left, h: height }
     for (const [key, b] of boxes) {
       const was = this.boxes.get(key)
@@ -369,15 +401,31 @@ export class AtlasMap {
 
   drawEdges() {
     this.edges = visibleEdges(this.atlas, n => this.isOpen(n), this.selected)
+    // A selected concept's links into other domains aren't drawn across the frames: the arrows
+    // between the domains, down the spine, carry them, and light up for it.
+    for (const [key, e] of this.edges) if (e.focus && !e.within) this.edges.delete(key)
+    const arcs = new Map(this.arcs.map(arc => [arc.e.key, arc]))
     const outs = new Map()
     const ins = new Map()
     const live = []
     for (const e of this.edges.values()) {
+      const p = this.paths.get(e.key) ?? this.makePath(e)
+      const arc = arcs.get(e.key)
+      // Between domains: down the left of the spine, in the arrow's lane (see planSpine).
+      if (arc) {
+        p.setAttribute('d', this.bracket(arc))
+        continue
+      }
+      // Intertwined domains next to each other in the spine: a short link straight between their cards.
+      if (!e.within && e.twin) {
+        p.setAttribute('d', link(this.spine.get(e.from.id), this.spine.get(e.to.id), false))
+        continue
+      }
       const a = this.boxes.get(e.from.id)
       const b = this.boxes.get(e.to.id)
       if (!a || !b) continue
       // An arrow follows the flow of the topic it runs within: out of a right side into a left one, or bottom into top.
-      const it = { e, a, b, dir: flowOf(e.within ?? this.atlas.root) }
+      const it = { e, p, a, b, dir: flowOf(e.within ?? this.atlas.root) }
       if (!e.twin) {
         addTo(outs, e.from.id + it.dir, it)
         addTo(ins, e.to.id + it.dir, it)
@@ -388,8 +436,7 @@ export class AtlasMap {
     fan(outs, 'out')
     fan(ins, 'in')
     for (const it of live) {
-      const p = this.paths.get(it.e.key) ?? this.makePath(it.e)
-      p.setAttribute('d', it.e.twin ? link(it.a, it.b, it.dir === 'down') : (it.dir === 'down'
+      it.p.setAttribute('d', it.e.twin ? link(it.a, it.b, it.dir === 'down') : (it.dir === 'down'
         ? curve(it.out, it.a.y + it.a.h, it.in, it.b.y, true)
         : curve(it.a.x + it.a.w, it.out, it.b.x, it.in, false)))
     }
@@ -398,6 +445,18 @@ export class AtlasMap {
       p.remove()
       this.paths.delete(key)
     }
+  }
+
+  // An arrow between domains: out of one card's left side, along its lane, and into the other's
+  // left side. Between intertwined domains it has no head, and a dot at each end instead.
+  bracket(arc) {
+    const upper = this.spine.get(this.order[arc.a].id)
+    const lower = this.spine.get(this.order[arc.b].id)
+    const ya = upper.y + upper.h * arc.out
+    const yb = lower.y + lower.h * arc.in
+    const depth = SPINE.lane0 + SPINE.lane * arc.lane
+    if (arc.e.twin) return lane(upper.x, ya, yb, depth, false) + dot(upper.x, ya) + dot(upper.x, yb)
+    return arc.e.to === this.order[arc.b] ? lane(upper.x, ya, yb, depth, true) : lane(upper.x, yb, ya, depth, true)
   }
 
   makePath(e) {
@@ -511,6 +570,8 @@ export class AtlasMap {
     if (hit('a[href], input, select, label')) return // main.js follows the links; the rest work by themselves
     const readme = hit('.readme')
     if (readme) return this.readmeClick(this.atlas.nodes.get(readme.dataset.topic), hit)
+    const stub = hit('.stub')
+    if (stub) return this.collapse(this.atlas.nodes.get(stub.dataset.node))
     const el = hit('.node')
     if (el && ROOT.has(el.dataset.id)) return this.rootClick(ROOT.get(el.dataset.id), hit)
     const n = el && this.atlas.nodes.get(el.dataset.id)
@@ -565,11 +626,15 @@ export class AtlasMap {
     this.selected = null
     const boxes = this.relayout()
     if (had) this.onSelect?.(null)
-    this.camera.moveTo(this.camera.fit(boxes.get(n.id), { pad: 36, maxK: Math.max(1, this.camera.k) }))
+    // A domain is shown with the card it floated out from.
+    const box = n.depth === 0 ? union([boxes.get(n.id), this.spine.get(n.id)]) : boxes.get(n.id)
+    this.camera.moveTo(this.camera.fit(box, { pad: 36, maxK: Math.max(1, this.camera.k) }))
     this.onView?.()
   }
 
   collapse(n) {
+    // Closed with the keyboard, from its frame or its card in the spine: the focus goes to its card.
+    const focused = [n.id, stubKey(n)].some(key => this.els.get(key)?.contains(document.activeElement))
     for (const d of [n, ...descendants(n)]) {
       this.open.delete(d.id)
       this.readmes.delete(d.id)
@@ -582,6 +647,7 @@ export class AtlasMap {
     const box = this.relayout().get(n.id)
     if (lost) this.onSelect?.(null)
     if (box && !this.camera.shows(box)) this.camera.moveTo(this.camera.centre(box))
+    if (focused) this.els.get(n.id)?.focus({ preventScroll: true })
     this.onView?.()
   }
 
@@ -801,7 +867,7 @@ export class AtlasMap {
 
   refreshProgress() {
     for (const [key, el] of this.els) {
-      const n = this.atlas.nodes.get(key)
+      const n = this.atlas.nodes.get(el.dataset.node ?? key)
       if (n) this.markProgress(n, el)
       else if (el.classList.contains('doc')) docs.refresh(el, this.atlas.nodes.get(el.dataset.topic))
     }
@@ -819,6 +885,19 @@ export class AtlasMap {
     }
     this.onView?.()
   }
+}
+
+// A domain's or topic's card: what it is, its title and summary, and a bar of progress.
+function groupFace(n) {
+  const label = n.depth === 0 ? 'Domain' : 'Topic'
+  const supers = descendants(n).filter(d => d.tier?.key === 's').length
+  return `<div class="face">
+      <div class="eyebrow">${label} · ${n.leafCount} ${n.leafCount === 1 ? 'concept' : 'concepts'}${supers
+        ? ` · <span class="super-mark" title="Super-concepts inside">★ ${supers}</span>` : ''}</div>
+      <div class="title">${renderInline(n.title)}</div>
+      ${n.summary ? `<div class="summary">${renderInline(n.summary)}</div>` : ''}
+      <div class="meter"><span></span></div>
+    </div>`
 }
 
 const frameHead = n => `<div class="frame-head">
@@ -884,8 +963,20 @@ function link(a, b, down) {
   const xy = (uu, vv) => (down ? [vv, uu] : [uu, vv])
   const [x1, y1] = xy(u, V(p) + W(p))
   const [x2, y2] = xy(u, V(q))
-  const dot = (x, y) => `M${r1(x - 2.5)},${r1(y)}a2.5,2.5 0 1,0 5,0a2.5,2.5 0 1,0 -5,0`
   return `M${r1(x1)},${r1(y1)}L${r1(x2)},${r1(y2)}${dot(x1, y1)}${dot(x2, y2)}`
+}
+
+const dot = (x, y) => `M${r1(x - 2.5)},${r1(y)}a2.5,2.5 0 1,0 5,0a2.5,2.5 0 1,0 -5,0`
+
+// An arrow down the left of the spine, from (x, y0) to (x, y1) on the cards' left sides: out to
+// its lane, `depth` to the left, along it with rounded corners, and back in, ending HEAD short of
+// the card for its arrowhead when it has one.
+function lane(x, y0, y1, depth, head) {
+  const lx = x - depth
+  const s = Math.sign(y1 - y0) || 1
+  const r = Math.min(10, Math.abs(y1 - y0) / 2, depth / 2)
+  return `M${r1(x)},${r1(y0)}H${r1(lx + r)}Q${r1(lx)},${r1(y0)} ${r1(lx)},${r1(y0 + s * r)}` +
+    `V${r1(y1 - s * r)}Q${r1(lx)},${r1(y1)} ${r1(lx + r)},${r1(y1)}H${r1(head ? x - HEAD : x)}`
 }
 
 function union(boxes) {
