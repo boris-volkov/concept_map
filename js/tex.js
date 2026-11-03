@@ -97,9 +97,16 @@ function join(atoms) {
   let out = ''
   atoms.forEach((a, i) => {
     const next = atoms[i + 1]
-    const prev = atoms[i - 1]
-    // A sign after "=", a comma or a bracket is a sign, not a subtraction: "c = −2", not "c = − 2".
-    out += a.sign && prev && (prev.kind === 'op' || prev.kind === 'open') ? a.ml.replace('<mo>', '<mo form="prefix">') : a.ml
+    // Whether a value starts here: at the start, after an operator or a bracket (looking past any
+    // space), or after words set apart by a space, as in "\text{that is,}\quad -x".
+    let j = i - 1
+    while (j >= 0 && atoms[j].kind === 'space') j--
+    const before = atoms[j]
+    const starts = !before || before.kind === 'op' || before.kind === 'open' || (before.text && j < i - 1)
+    // A bar opens an absolute value where a value starts, and closes one anywhere else.
+    if (a.bar) a.kind = starts ? 'open' : 'close'
+    // A sign where a value starts is a sign, not a subtraction: "c = −2", not "c = − 2"; "|−5|".
+    out += a.sign && before && starts ? a.ml.replace('<mo>', '<mo form="prefix">') : a.ml
     if (!next) return
     if (a.kind === 'fn' && next.kind !== 'open' && next.kind !== 'op' && next.kind !== 'space') out += THIN
     else if (a.kind === 'ord' && next.kind === 'fn') out += THIN
@@ -281,7 +288,7 @@ class TexParser {
           : name === 'textbf' ? ' style="font-weight:bold"' : ''
         // MathML trims spaces at the ends of text, but "\text{ if }" needs them.
         const t = this.readGroupRaw().replace(/^ +| +$/g, s => ' '.repeat(s.length))
-        return { ml: `<mtext${style}>${esc(t)}</mtext>`, kind: 'ord' }
+        return { ml: `<mtext${style}>${esc(t)}</mtext>`, kind: 'ord', text: true }
       }
       case 'operatorname': {
         const star = this.lookingAt('*') ? (this.pos++, true) : false
@@ -327,7 +334,10 @@ class TexParser {
       case 'biggm': case 'Biggm': {
         const size = DELIMITER_SIZES[name.replace(/[lrm]$/, '')]
         const d = this.readDelimiter()
-        const kind = name.endsWith('l') ? 'open' : name.endsWith('r') ? 'close' : 'ord'
+        // \bigl( opens and \bigr) closes; a plain \big( opens or closes by its bracket, so that
+        // the sign in "-\big(-x\big)" stays a sign, not a subtraction.
+        const kind = name.endsWith('l') ? 'open' : name.endsWith('r') ? 'close' : name.endsWith('m') ? 'ord'
+          : d && '([{⟨⌊⌈'.includes(d) ? 'open' : d && ')]}⟩⌋⌉'.includes(d) ? 'close' : 'ord'
         return { ml: `<mo stretchy="true" symmetric="true" minsize="${size}" maxsize="${size}">${esc(d)}</mo>`, kind }
       }
       case 'begin': return this.parseEnvironment()
@@ -436,7 +446,8 @@ function operator(ch) {
   switch (ch) {
     case '(': case '[': return { ml: `<mo stretchy="false">${ch}</mo>`, kind: 'open' }
     case ')': case ']': return { ml: `<mo stretchy="false">${ch}</mo>`, kind: 'close' }
-    case '|': return { ml: '<mo stretchy="false">|</mo>', kind: 'ord' }
+    // TeX sets a bar as an ordinary symbol, with no space either side: |a + b|, not | a + b |.
+    case '|': return { ml: '<mo stretchy="false" lspace="0" rspace="0">|</mo>', kind: 'ord', bar: true }
     case '-': return { ml: '<mo>−</mo>', kind: 'op', sign: true }
     case '+': return { ml: '<mo>+</mo>', kind: 'op', sign: true }
     case '*': return { ml: '<mo>∗</mo>', kind: 'op' }

@@ -139,11 +139,12 @@ kind: axiom
 prereqs: number-systems, comparing-numbers
 
 For all $a, b, c \in \mathbb{R}$:
-1. exactly one of $a < b$, $a = b$, $a > b$ holds;
-2. if $a < b$ then $a + c < b + c$;
-3. if $a < b$ and $c > 0$ then $ac < bc$.
+1. exactly one of $a < b$, $a = b$, $a > b$ holds (trichotomy);
+2. if $a < b$ and $b < c$ then $a < c$ (transitivity);
+3. if $a < b$ then $a + c < b + c$;
+4. if $a < b$ and $c > 0$ then $ac < bc$.
 
-Consequently, if $a < b$ and $c < 0$ then $ac > bc$: multiplying an inequality by a negative number reverses it.
+Here $a > b$ means $b < a$, and $a \le b$ means $a < b$ or $a = b$. Every other rule for inequalities follows from these four, such as the one that [[multiplying-by-a-negative|multiplying by a negative number]] reverses an inequality.
 
 ### Completeness Axiom
 kind: axiom
@@ -155,47 +156,367 @@ The rationals lack this: $\{q \in \mathbb{Q} : q^2 < 2\}$ has no least upper bou
 
 ## Consequences of the Axioms {#first-theorems}
 
-The first theorems proved from the axioms of the real numbers.
+Theorems proved from the axioms of the real numbers, each with its proof.
 
-### Multiplication by Zero {#times-zero}
+Rules that are usually just stated, such as $(-1)(-1) = 1$, $1 > 0$ and "never divide by zero", follow here from the axioms, one justified step at a time, and the arrows show which earlier results each proof uses. Between them, the proofs practise the main ways of proving things:
+- a direct proof, a chain of steps, each justified by an axiom or by a theorem already proved;
+- a [[uniqueness-proofs|uniqueness proof]]: suppose there are two, and show that they are equal;
+- a [[proof-by-cases|proof by cases]], covering every possibility;
+- a [[proof-by-contradiction|proof by contradiction]]: suppose the opposite, and reach something impossible;
+- an [[iff-proofs|"if and only if" proof]], one direction at a time.
+
+### Sums & Negatives {#addition-theorems}
+
+What the axioms of addition say about $0$, negatives and subtraction.
+
+#### Uniqueness of Zero
 kind: theorem
-prereqs: distributive, add-neutral, add-inverse
+prereqs: add-neutral, add-commutative
+
+There is only one neutral element of addition: if $z \in \mathbb{R}$ satisfies $a + z = a$ for every $a \in \mathbb{R}$, then $z = 0$.
+
+*Proof*, the simplest [[uniqueness-proofs|uniqueness proof]]: suppose $z$ is neutral too, and use each of the two neutral elements once.
+$$\begin{aligned} z &= z + 0 && 0 \text{ is neutral} \\ &= 0 + z && \text{commutativity} \\ &= 0. && z \text{ is neutral} \quad \square \end{aligned}$$
+
+The same argument shows that $1$ is the only neutral element of multiplication.
+
+#### Uniqueness of Negatives
+kind: theorem
+prereqs: add-inverse, add-associative, add-commutative, add-neutral
+
+Each number has only one negative: for all $a, b \in \mathbb{R}$, if $a + b = 0$, then $b = -a$.
+
+*Proof.* Start from $b$, and bring in $a + (-a) = 0$:
+$$\begin{aligned} b &= b + 0 && \text{neutral element} \\ &= b + \big(a + (-a)\big) && \text{inverses} \\ &= (b + a) + (-a) && \text{associativity} \\ &= (a + b) + (-a) && \text{commutativity} \\ &= 0 + (-a) && a + b = 0 \\ &= (-a) + 0 && \text{commutativity} \\ &= -a. && \text{neutral element} \quad \square \end{aligned}$$
+
+So to show that a number is $-a$, it is enough to show that it adds to $a$ to make $0$. Several of the theorems below are proved that way.
+
+#### Cancellation Law for Addition {#addition-cancellation}
+kind: theorem
+prereqs: add-inverse, add-associative, add-neutral, equality-properties
+
+For all $a, b, c \in \mathbb{R}$: if $a + c = b + c$, then $a = b$.
+
+*Proof*, as a [[two-column-proofs|two-column proof]]:
+
+| Statement | Reason |
+| --- | --- |
+| $a + c = b + c$ | given |
+| $(a + c) + (-c) = (b + c) + (-c)$ | equals added to equals |
+| $a + \big(c + (-c)\big) = b + \big(c + (-c)\big)$ | associativity |
+| $a + 0 = b + 0$ | inverses |
+| $a = b$ | neutral element |
+
+This is what "subtracting $c$ from both sides" means. Adding $c$ back undoes it, so it never changes the solutions of an equation.
+
+#### Double Negative
+kind: theorem
+prereqs: uniqueness-of-negatives
+
+For all $a \in \mathbb{R}$:
+$$-(-a) = a.$$
+
+*Proof.* By the [[uniqueness-of-negatives|uniqueness of negatives]], it is enough to show that $a$ adds to $-a$ to make $0$, and it does:
+$$(-a) + a = a + (-a) = 0. \qquad \square$$
+
+#### Negative of a Sum
+kind: theorem
+prereqs: uniqueness-of-negatives, double-negative
+
+For all $a, b \in \mathbb{R}$:
+$$-(a + b) = (-a) + (-b).$$
+In particular,
+$$-(a - b) = b - a.$$
+
+*Proof.* By the [[uniqueness-of-negatives|uniqueness of negatives]], it is enough to show that $(-a) + (-b)$ adds to $a + b$ to make $0$. Regrouping, by associativity and commutativity,
+$$\begin{aligned} &(a + b) + \big((-a) + (-b)\big) \\ &= \big(a + (-a)\big) + \big(b + (-b)\big) \\ &= 0 + 0 = 0. \end{aligned}$$
+For the second part, apply the first to $a + (-b)$, then the [[double-negative|double negative]]:
+$$\begin{aligned} -(a - b) &= (-a) + \big(-(-b)\big) \\ &= (-a) + b = b - a. \qquad \square \end{aligned}$$
+
+It is the rule for a minus sign in front of a bracket, used in [[expanding-brackets|expanding brackets]]:
+$$-(x - 3) = 3 - x.$$
+
+### Products & Zero {#multiplication-theorems}
+
+What the axioms say about multiplying by $0$ and by negatives, and why $0$ has no reciprocal.
+
+#### Multiplication by Zero {#times-zero}
+kind: theorem
+prereqs: distributive, addition-cancellation
 
 For all $a \in \mathbb{R}$:
 $$a \cdot 0 = 0.$$
 
-*Proof.* By the neutral element and distributivity,
-$$a \cdot 0 = a(0 + 0) = a \cdot 0 + a \cdot 0.$$
-Adding $-(a \cdot 0)$ to both sides gives
-$$0 = a \cdot 0. \qquad \square$$
+*Proof.* By distributivity and the neutral element, and then commutativity,
+$$a \cdot 0 + a \cdot 0 = a(0 + 0) = a \cdot 0 = 0 + a \cdot 0.$$
+[[addition-cancellation|Cancelling]] $a \cdot 0$ from both ends leaves
+$$a \cdot 0 = 0. \qquad \square$$
 
-### Product of Negatives {#negative-times-negative}
+#### Negatives in Products
 kind: theorem
-prereqs: times-zero, add-inverse
+prereqs: times-zero, uniqueness-of-negatives
+
+For all $a, b \in \mathbb{R}$:
+$$(-a)b = -(ab) = a(-b).$$
+In particular, multiplying by $-1$ gives the negative:
+$$(-1)a = -a.$$
+
+*Proof.* By the [[uniqueness-of-negatives|uniqueness of negatives]], it is enough to show that $(-a)b$ adds to $ab$ to make $0$. By distributivity (from the right, which commutativity allows), inverses and [[times-zero|multiplication by zero]],
+$$ab + (-a)b = \big(a + (-a)\big)b = 0 \cdot b = 0.$$
+So $(-a)b = -(ab)$, and in the same way $a(-b) = -(ab)$. Taking $a = 1$ gives $(-1)b = -b$. $\square$
+
+#### Product of Negatives {#negative-times-negative}
+kind: theorem
+prereqs: negatives-in-products, double-negative
 
 For all $a, b \in \mathbb{R}$:
 $$(-a)(-b) = ab.$$
 In particular,
 $$(-1)(-1) = 1.$$
 
-*Proof* (for $a = b = 1$). By multiplication by zero, additive inverses and distributivity:
-$$\begin{aligned} 0 &= (-1) \cdot 0 \\ &= (-1)\big((-1) + 1\big) \\ &= (-1)(-1) + (-1)(1). \end{aligned}$$
-So $(-1)(-1)$ is the additive inverse of $(-1)(1) = -1$:
-$$(-1)(-1) = -(-1) = 1. \qquad \square$$
+*Proof.* By [[negatives-in-products|negatives in products]], twice, and the [[double-negative|double negative]]:
+$$\begin{aligned} (-a)(-b) &= -\big(a(-b)\big) \\ &= -\big(-(ab)\big) = ab. \qquad \square \end{aligned}$$
 
-### Zero Product Property
+So "a negative times a negative is a positive" is not a convention: the axioms leave no other choice. For $a = b = 1$ it can be seen directly, from distributivity:
+$$\begin{aligned} 0 &= (-1) \cdot 0 \\ &= (-1)\big((-1) + 1\big) \\ &= (-1)(-1) + (-1)(1), \end{aligned}$$
+so $(-1)(-1)$ is the negative of $(-1)(1) = -1$, which is $1$.
+
+#### Zero Product Property
 kind: theorem
 prereqs: times-zero, mul-inverse
 
 For all $a, b \in \mathbb{R}$:
 $$ab = 0 \implies a = 0 \text{ or } b = 0.$$
 
-*Proof.* If $a \ne 0$, multiply both sides by $a^{-1}$:
-$$b = a^{-1} \cdot 0 = 0. \qquad \square$$
+*Proof.* To show that one of two things holds, assume that the first fails, and prove the second. So suppose $a \ne 0$, and multiply $ab = 0$ by $a^{-1}$:
+$$\begin{aligned} b &= (a^{-1}a)b = a^{-1}(ab) \\ &= a^{-1} \cdot 0 = 0. \qquad \square \end{aligned}$$
 
 It is why a factored equation such as
 $$(x - 2)(x + 5) = 0$$
 has the solutions $x = 2$ and $x = -5$.
+
+It needs the inverses. On a clock with six hours, where $6$ counts as $0$,
+$$2 \cdot 3 = 0,$$
+though neither factor is $0$; on that clock, $2$ has no inverse.
+
+#### No Division by Zero
+kind: theorem
+prereqs: times-zero, mul-neutral
+
+$0$ has no reciprocal: there is no $x \in \mathbb{R}$ with $0 \cdot x = 1$.
+
+*Proof* [[proof-by-contradiction|by contradiction]]. Suppose that $0 \cdot x = 1$. By commutativity and [[times-zero|multiplication by zero]], $0 \cdot x = x \cdot 0 = 0$, so $1 = 0$; but the axiom of the [[mul-neutral|neutral element]] says that $1 \ne 0$. $\square$
+
+So $\frac{a}{0} = a \cdot 0^{-1}$ has no meaning, and the [[mul-inverse|axiom of inverses]] has to leave $0$ out. If $0$ had a reciprocal, then $1 = 0$, and every number would be $0$:
+$$a = a \cdot 1 = a \cdot 0 = 0.$$
+
+#### Cancellation Law for Multiplication {#multiplication-cancellation}
+kind: theorem
+prereqs: mul-inverse, mul-associative, mul-neutral, equality-properties
+
+For all $a, b, c \in \mathbb{R}$ with $c \ne 0$: if $ac = bc$, then $a = b$.
+
+*Proof.* Multiply both sides by $c^{-1}$, which exists because $c \ne 0$:
+$$\begin{aligned} a &= a \cdot 1 && \text{neutral element} \\ &= a(cc^{-1}) && \text{inverses} \\ &= (ac)c^{-1} && \text{associativity} \\ &= (bc)c^{-1} && ac = bc \\ &= b(cc^{-1}) && \text{associativity} \\ &= b \cdot 1 && \text{inverses} \\ &= b. && \text{neutral element} \quad \square \end{aligned}$$
+
+The condition $c \ne 0$ matters:
+$$2 \cdot 0 = 3 \cdot 0,$$
+but $2 \ne 3$. Forgetting it "proves" that $2 = 1$. Let $a = b = 1$; then
+$$\begin{aligned} a^2 &= ab \\ a^2 - b^2 &= ab - b^2 \\ (a + b)(a - b) &= b(a - b) \\ a + b &= b \\ 2 &= 1. \end{aligned}$$
+The fourth line cancels $a - b$, which is $0$.
+
+#### Solving $ax + b = c$ {#unique-solution}
+kind: theorem
+prereqs: addition-cancellation, multiplication-cancellation
+
+For all $a, b, c \in \mathbb{R}$ with $a \ne 0$, the equation $ax + b = c$ has exactly one solution:
+$$x = \frac{c - b}{a}.$$
+
+*Proof*, in two parts, as every proof of existence and [[uniqueness-proofs|uniqueness]] is.
+
+*There is a solution.* Substituting it,
+$$a \cdot \frac{c - b}{a} + b = (c - b) + b = c.$$
+
+*There is only one.* If $ax + b = c$ and $ay + b = c$, then $ax + b = ay + b$. [[addition-cancellation|Cancelling]] $b$ gives $ax = ay$, and [[multiplication-cancellation|cancelling]] $a \ne 0$ gives $x = y$. $\square$
+
+When $a = 0$ there is no such guarantee: $0x + 1 = 2$ has no solution at all, and every $x$ solves $0x + 1 = 1$.
+
+### The Rules of Fractions {#fraction-theorems}
+
+The rules for fractions, proved from the axioms, with $\frac{a}{b}$ meaning $a \cdot b^{-1}$.
+
+#### Cross-Multiplication
+kind: theorem
+prereqs: mul-inverse, equality-properties, equivalent-fractions
+
+For all $a, b, c, d \in \mathbb{R}$ with $b, d \ne 0$:
+$$\frac{a}{b} = \frac{c}{d} \iff ad = bc.$$
+
+*Proof.* An [[iff-proofs|"if and only if"]] takes two proofs, one in each direction. Both use $b^{-1}b = 1$ and $d^{-1}d = 1$.
+
+(⇒) Suppose that $\frac{a}{b} = \frac{c}{d}$. Multiplying both sides by $bd$ gives $ad = bc$, because
+$$\begin{aligned} \frac{a}{b} \cdot bd &= ad, \\ \frac{c}{d} \cdot bd &= bc. \end{aligned}$$
+
+(⇐) Suppose that $ad = bc$. Multiplying both sides by $b^{-1}d^{-1}$ gives $\frac{a}{b} = \frac{c}{d}$, because
+$$\begin{aligned} ad \cdot b^{-1}d^{-1} &= \frac{a}{b}, \\ bc \cdot b^{-1}d^{-1} &= \frac{c}{d}. \qquad \square \end{aligned}$$
+
+It is the test for [[equivalent-fractions|equivalent fractions]], and the first step in [[solving-proportions|solving a proportion]]:
+$$\frac{2}{3} = \frac{4}{6} \quad\text{because}\quad 2 \cdot 6 = 3 \cdot 4.$$
+
+#### Multiplying & Dividing Fractions {#fraction-products}
+kind: theorem
+prereqs: multiplication-cancellation, zero-product-property, multiplying-fractions, dividing-fractions
+
+For all $a, b, c, d \in \mathbb{R}$ with $b, d \ne 0$:
+$$\frac{a}{b} \cdot \frac{c}{d} = \frac{ac}{bd},$$
+and, if also $c \ne 0$,
+$$\frac{a}{b} \div \frac{c}{d} = \frac{a}{b} \cdot \frac{d}{c}.$$
+
+*Proof.* First, $(bd)^{-1} = b^{-1}d^{-1}$. Here $bd \ne 0$, by the [[zero-product-property|zero product property]], and both sides give $1$ when multiplied by $bd$:
+$$\begin{aligned} bd \cdot b^{-1}d^{-1} &= (bb^{-1})(dd^{-1}) = 1, \\ bd \cdot (bd)^{-1} &= 1, \end{aligned}$$
+so they are equal, by [[multiplication-cancellation|cancellation]]. Then, regrouping,
+$$\begin{aligned} \frac{a}{b} \cdot \frac{c}{d} &= ab^{-1}cd^{-1} \\ &= ac \cdot b^{-1}d^{-1} = \frac{ac}{bd}. \end{aligned}$$
+Dividing is multiplying by the reciprocal, so for the second rule it is enough to show that the reciprocal of $\frac{c}{d}$ is $\frac{d}{c}$; by the same cancellation it is, since
+$$\frac{c}{d} \cdot \frac{d}{c} = (cc^{-1})(dd^{-1}) = 1. \qquad \square$$
+
+#### Sums of Fractions {#fraction-sums}
+kind: theorem
+prereqs: fraction-products, adding-fractions
+
+For all $a, b, c, d \in \mathbb{R}$ with $b, d \ne 0$:
+$$\frac{a}{b} + \frac{c}{d} = \frac{ad + bc}{bd}.$$
+
+*Proof.* Multiplying by $\frac{d}{d} = 1$, or by $\frac{b}{b} = 1$, changes nothing, so, by the [[fraction-products|product rule]],
+$$\frac{a}{b} = \frac{ad}{bd} \quad\text{and}\quad \frac{c}{d} = \frac{bc}{bd}.$$
+Both now have the factor $(bd)^{-1}$, and distributivity collects it:
+$$\begin{aligned} &\frac{a}{b} + \frac{c}{d} \\ &= ad \cdot (bd)^{-1} + bc \cdot (bd)^{-1} \\ &= (ad + bc)(bd)^{-1} = \frac{ad + bc}{bd}. \quad \square \end{aligned}$$
+
+It is the [[adding-fractions|common denominator]] at work: any common denominator gives the same answer, and $bd$ is always one.
+
+### Inequalities {#order-theorems}
+
+What the order axioms, and completeness, say about $<$.
+
+#### Multiplying by a Negative
+kind: theorem
+prereqs: order-properties, negatives-in-products
+
+For all $a, b, c \in \mathbb{R}$: if $a < b$ and $c < 0$, then $ac > bc$.
+
+*Proof.* First, $-c > 0$: adding $-c$ to both sides of $c < 0$ gives $0 < -c$. Multiplying $a < b$ by the positive number $-c$, and using [[negatives-in-products|negatives in products]],
+$$a(-c) < b(-c), \quad\text{that is,}\quad -(ac) < -(bc).$$
+Adding $ac + bc$ to both sides leaves
+$$bc < ac. \qquad \square$$
+
+So multiplying or dividing an inequality by a negative number reverses it, the rule behind [[linear-inequalities|solving inequalities]]:
+$$-2x < 6 \implies x > -3.$$
+
+#### Squares Are Non-Negative {#squares-nonnegative}
+kind: theorem
+prereqs: order-properties, negative-times-negative
+
+For all $a \in \mathbb{R}$:
+$$a^2 \ge 0,$$
+and $a^2 = 0$ only when $a = 0$.
+
+*Proof* [[proof-by-cases|by cases]]. By trichotomy, exactly one of these holds:
+- $a > 0$: then multiplying $0 < a$ by $a$ gives $0 < a^2$;
+- $a = 0$: then $a^2 = 0$;
+- $a < 0$: then $-a > 0$, so $0 < (-a)^2$ by the first case, and $(-a)^2 = a^2$ by the [[negative-times-negative|product of negatives]]. $\square$
+
+So no real number has a negative square, such as $-1$ (negative, since [[one-is-positive|one is positive]]): the reason the [[imaginary-unit|imaginary unit]] had to be invented.
+
+#### One Is Positive
+kind: theorem
+prereqs: squares-nonnegative, mul-neutral
+
+The number $1$ is positive:
+$$1 > 0.$$
+
+*Proof.* Since $1 = 1 \cdot 1 = 1^2$, [[squares-nonnegative|squares are non-negative]] gives $1 \ge 0$; and $1 \ne 0$, by the axiom of the [[mul-neutral|neutral element]]. So $1 > 0$. $\square$
+
+Adding $1$ over and over then gives
+$$0 < 1 < 2 < 3 < \cdots,$$
+so the natural numbers are all different; and adding $-1$ to $0 < 1$ gives $-1 < 0$. Even the most obvious facts need proofs, once everything has to come from the axioms.
+
+#### Reciprocals Reverse Order
+kind: theorem
+prereqs: one-is-positive, multiplying-by-a-negative
+
+For all $a, b \in \mathbb{R}$: if $0 < a < b$, then
+$$0 < \frac{1}{b} < \frac{1}{a}.$$
+
+*Proof.* First, the reciprocal of a positive number $a$ is positive. It is not $0$, since $a \cdot 0 = 0 \ne 1$. Nor is it negative, [[proof-by-contradiction|by contradiction]]: if $\frac{1}{a} < 0$, then multiplying $0 < a$ by the negative number $\frac{1}{a}$ would [[multiplying-by-a-negative|reverse]] it, giving
+$$0 \cdot \frac{1}{a} > a \cdot \frac{1}{a},$$
+that is, $0 > 1$, against [[one-is-positive|one is positive]].
+
+So, by trichotomy, $\frac{1}{a}$ and $\frac{1}{b}$ are positive, and so is their product. Multiplying $a < b$ by it,
+$$a \cdot \frac{1}{a} \cdot \frac{1}{b} < b \cdot \frac{1}{a} \cdot \frac{1}{b},$$
+which simplifies to
+$$\frac{1}{b} < \frac{1}{a}. \qquad \square$$
+
+A bigger number has a smaller reciprocal:
+$$2 < 3, \quad\text{but}\quad \frac{1}{3} < \frac{1}{2}.$$
+
+#### Between Any Two Numbers
+kind: theorem
+prereqs: reciprocals-reverse-order
+
+For all $a, b \in \mathbb{R}$: if $a < b$, then
+$$a < \frac{a + b}{2} < b.$$
+So between any two real numbers lies another, and no number has a next one.
+
+*Proof.* Adding $a$ to both sides of $a < b$, and then $b$,
+$$2a < a + b \quad\text{and}\quad a + b < 2b.$$
+Now $2 = 1 + 1 > 1 > 0$, so $\frac{1}{2} > 0$, being the reciprocal of a positive number, and multiplying both inequalities by $\frac{1}{2}$ gives
+$$a < \frac{a + b}{2} < b. \qquad \square$$
+
+In the same way there is no smallest positive number, [[proof-by-contradiction|by contradiction]]: if $\varepsilon$ were the smallest, $\frac{\varepsilon}{2}$ would be positive and smaller.
+
+#### AM–GM Inequality {#am-gm}
+kind: theorem
+prereqs: squares-nonnegative, square-roots
+
+For all $a, b \in \mathbb{R}$:
+$$a^2 + b^2 \ge 2ab,$$
+with equality only when $a = b$. So for all $x, y \ge 0$ the arithmetic mean is at least the geometric mean:
+$$\frac{x + y}{2} \ge \sqrt{xy}.$$
+
+*Proof.* Start from a square, which [[squares-nonnegative|cannot be negative]], and expand it:
+$$0 \le (a - b)^2 = a^2 - 2ab + b^2.$$
+Adding $2ab$ to both sides gives the first inequality, with equality only when $a - b = 0$. For the second, take $a = \sqrt{x}$ and $b = \sqrt{y}$, and divide by $2$. $\square$
+
+Starting from a square is the standard way into an inequality. This one shows, for instance, that of all rectangles with the same perimeter, the square has the largest area: sides $x$ and $y$ enclose
+$$xy \le \left(\frac{x + y}{2}\right)^2,$$
+the area of the square with the same perimeter.
+
+#### Triangle Inequality for Absolute Values {#abs-triangle-inequality}
+kind: theorem
+prereqs: multiplying-by-a-negative, absolute-value
+
+For all $a, b \in \mathbb{R}$:
+$$|a + b| \le |a| + |b|.$$
+
+*Proof* [[proof-by-cases|by cases]], from the definition: $|x| = x$ when $x \ge 0$, and $|x| = -x$ when $x < 0$. Checking each case shows that
+$$-|a| \le a \le |a| \quad\text{and}\quad -|b| \le b \le |b|,$$
+and adding these,
+$$-\big(|a| + |b|\big) \le a + b \le |a| + |b|.$$
+If $a + b \ge 0$, the right-hand half is the theorem. If $a + b < 0$, the left-hand half, multiplied by $-1$, which [[multiplying-by-a-negative|reverses it]], is the theorem too:
+$$|a + b| = -(a + b) \le |a| + |b|. \qquad \square$$
+
+On the number line, $|a + b|$ is how far $a + b$ lies from $0$: never further than going $|a|$ and then $|b|$. For arrows in the plane, the same inequality says that no side of a [[triangle-inequality|triangle]] is longer than the other two together, which is where its name comes from.
+
+#### Archimedean Property
+kind: theorem
+prereqs: completeness-axiom, one-is-positive
+
+For every $x \in \mathbb{R}$ there is a natural number $n$ with $n > x$: the natural numbers have no upper bound.
+
+*Proof* [[proof-by-contradiction|by contradiction]]. Suppose that some $x$ is at least every natural number. Then the natural numbers form a non-empty set that is bounded above, so by the [[completeness-axiom|completeness axiom]] they have a least upper bound $s$. As $1 > 0$, $s - 1 < s$; being less than the least upper bound, $s - 1$ is not an upper bound, so some natural number $n$ has
+$$n > s - 1, \quad\text{that is,}\quad n + 1 > s.$$
+But $n + 1$ is a natural number too, so $s$ is not an upper bound after all. $\square$
+
+So for every $\varepsilon > 0$ some $\frac{1}{n}$ is smaller than $\varepsilon$ (take $n > \frac{1}{\varepsilon}$), which is why $\frac{1}{n}$ [[sequence-limits|tends to zero]]. [[hilbert-continuity|Hilbert]] takes the same property as an axiom of geometry.
 
 ## Expressions
 

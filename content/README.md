@@ -103,6 +103,14 @@ $$\begin{aligned} 3(x - 2) &= x + 4 \\ 3x - 6 &= x + 4 \\ x &= 5 \end{aligned}$$
 
 Anything that is a list is written as one: `1.` for steps and numbered axioms, `-` for the rest.
 
+**Proofs** start with `*Proof.*` and end with `$\square$`. To give the reason for each step beside it, add a column after `&&` in an `aligned` block:
+
+```markdown
+$$\begin{aligned} a &= a \cdot 1 && \text{neutral element} \\ &= a(cc^{-1}) && \text{inverses} \end{aligned}$$
+```
+
+Or set a proof out as a table, with a *Statement* and a *Reason* column. Inside a table, write a link as `[[id]]`, without words of its own, since a `|` there starts a new column. A theorem's prerequisites are the axioms and theorems its proof uses, so that its arrows show how the proofs build on one another, as in Algebra's *Consequences of the Axioms*.
+
 **Links to other concepts**: `[[lcm]]` becomes a link titled "Least Common Multiple", and `[[lcm|the LCM]]` uses your own words.
 
 **Embeds**: raw HTML passes through, so an interactive graph can sit in a concept:

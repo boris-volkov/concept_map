@@ -352,6 +352,32 @@ prereqs: deductive-reasoning
 
 Assume the opposite of what you want and show it leads to something impossible. The classic example proves that $\sqrt{2}$ is not a fraction.
 
+In algebra, it shows that [[no-division-by-zero|zero has no reciprocal]], that [[reciprocals-reverse-order|the reciprocal of a positive number is positive]], and that the [[archimedean-property|natural numbers have no upper bound]].
+
+### Proof by Cases
+kind: technique
+prereqs: deductive-reasoning
+
+Split the situation into cases that between them cover every possibility, and prove the statement in each one. For a number, a common split is the three cases of trichotomy: negative, zero or positive.
+
+Examples: [[squares-nonnegative|squares are non-negative]], and the [[abs-triangle-inequality|triangle inequality for absolute values]].
+
+### Uniqueness Proofs
+kind: technique
+prereqs: deductive-reasoning
+
+To show that only one thing has a property, suppose that two things have it, and prove that they are equal. To show that exactly one thing has it, first show that something does: existence, then uniqueness.
+
+Examples: there is [[uniqueness-of-zero|only one zero]], and [[uniqueness-of-negatives|only one negative]] of each number; and every equation $ax + b = c$ with $a \ne 0$ has [[unique-solution|exactly one solution]].
+
+### Proving "If and Only If" {#iff-proofs}
+kind: technique
+prereqs: conditional-statements
+
+"$p$ if and only if $q$", written $p \iff q$, says two things: if $p$ then $q$, and its converse, if $q$ then $p$. So it takes two proofs, one in each direction, often marked (⇒) and (⇐).
+
+Example: [[cross-multiplication|cross-multiplication]], which says that two fractions are equal exactly when their cross products are.
+
 ## Triangles
 
 The simplest polygons, and the ones every other shape breaks into.
