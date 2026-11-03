@@ -615,7 +615,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 .node.leaf.doc.kind-definition { border-color: var(--green-edge); border-left-color: var(--green); }
 .node.leaf.doc.kind-axiom { border-color: var(--gold); }
 
-/* Like an open topic's frame, the whole head closes the file: click again where it opened. */
+/* The whole head closes the file: click again where it opened. */
 .doc-head {
   display: grid;
   grid-template-columns: 1fr auto auto;

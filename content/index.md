@@ -1,4 +1,4 @@
-# Mathematics: A Concept Atlas
+# Mathematics Concept Atlas
 
 From counting to calculus: every idea, and the ideas it is built on.
 

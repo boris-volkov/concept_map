@@ -16,7 +16,7 @@ Every concept has its own address, like `#adding-fractions`, so a link can take 
 
 ## Using it
 
-Drag to move around and scroll (or pinch) to zoom. Click a domain, topic or concept to open it, and click it again (a domain's card, or the head of what opened) or the × on it to close it; any number can be open at once. **Open all** opens every topic, and **Close all** closes everything.
+Drag to move around and scroll (or pinch) to zoom. Click a domain, topic or concept to open it; any number can be open at once. The × on an open domain or topic closes it, and so does clicking a domain's card again, while clicking the head of its frame selects it, lighting up what it builds on and what builds on it. An open concept closes with its × or a click anywhere on its head. **Open all** opens every topic, and **Close all** closes everything.
 
 | Key | |
 | --- | --- |

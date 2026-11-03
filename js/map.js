@@ -597,7 +597,13 @@ export class AtlasMap {
     const keyboard = e.type === 'keydown'
     if (n.children.length) {
       if (hit('.frame-head .about')) return this.toggleReadme(n)
-      if (hit('.frame-head') || (this.isOpen(n) && keyboard)) return this.collapse(n)
+      if (hit('.frame-head .shut')) return this.collapse(n)
+      // The head of an open frame, or the frame itself from the keyboard, selects what it holds;
+      // only the × closes it.
+      if (hit('.frame-head') || (this.isOpen(n) && keyboard)) {
+        if (this.selected !== n) this.select(n, { pan: false })
+        return
+      }
       if (this.isOpen(n)) return this.background()
       return this.expand(n)
     }
