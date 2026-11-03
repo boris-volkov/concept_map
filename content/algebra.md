@@ -815,6 +815,7 @@ prereqs: ellipses, asymptotes
 The points whose distances to two foci differ by a constant: two branches, $\frac{x^2}{a^2} - \frac{y^2}{b^2} = 1$, closing in on a pair of asymptotes.
 
 ## Complex Numbers {#complex}
+flow: down
 
 Numbers that make every polynomial solvable, built on a square root of $-1$.
 

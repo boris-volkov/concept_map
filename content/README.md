@@ -70,6 +70,7 @@ Right under a heading, before the summary, these lines describe it. All are opti
 | `color: #8f2d2d` | The colour of this domain or topic and everything inside it. Usually only on the `#` heading. |
 | `summary: …` | A summary, when the first paragraph won't do. |
 | `tags: grade-6, exam` | Extra words for the search box to find. |
+| `flow: down` | On a topic: lay its contents out top to bottom (or `flow: across`, left to right), instead of the usual alternation. Good for a topic that is one long chain. |
 | `wrap: 4` | On a topic: lay its contents out at most 4 to a line, in the order written, as the field axioms are (C A N I / C A N I / D). Without it the map arranges a topic by its arrows. |
 | `id: lcm` | The same as `{#lcm}` on the heading. |
 | `parent: algebra` | Only on a file's `#` heading: put this file's contents inside another topic (see *Splitting a big domain*). |

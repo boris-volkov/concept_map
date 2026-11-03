@@ -2,7 +2,7 @@
 // arrows underneath the cards. A new layout is applied at once, without any
 // animation, so the map stays quick however much of it is open.
 
-import { computeLayout, direction } from './layout.js'
+import { computeLayout, flowOf } from './layout.js'
 import {
   ancestors, isAncestor, descendants, visibleRep, visibleEdges, prerequisitesOf, dependentsOf,
   externalPrereqs, externalDependents,
@@ -61,6 +61,7 @@ export class AtlasMap {
     this.edges = new Map()
     this.open = new Set([...this.open].filter(id => atlas.nodes.get(id)?.children.length))
     this.selected = (this.selected && atlas.nodes.get(this.selected.id)) || null
+    this.current = (this.current && atlas.nodes.get(this.current.id)) || null
   }
 
   isOpen(n) {
@@ -151,7 +152,11 @@ export class AtlasMap {
       this.els.delete(id)
     }
     this.measure(visible)
-    for (const n of visible) this.els.get(n.id).classList.toggle('is-open', this.isOpen(n))
+    for (const n of visible) {
+      const el = this.els.get(n.id)
+      el.classList.toggle('is-open', this.isOpen(n))
+      el.classList.toggle('is-current', n === this.current) // the topic opened last, outlined in gold
+    }
     const layout = computeLayout(this.atlas.root, n => this.isOpen(n), n => this.sizes.get(n.id), n => this.heads.get(n.id))
     this.bounds = { x: 0, y: 0, w: layout.width, h: layout.height }
     for (const n of visible) {
@@ -186,7 +191,7 @@ export class AtlasMap {
       const b = this.boxes.get(e.to.id)
       if (!a || !b) continue
       // An arrow follows the flow of the topic it runs within: out of a right side into a left one, or bottom into top.
-      const it = { e, a, b, dir: direction(e.within ? e.within.depth : -1) }
+      const it = { e, a, b, dir: flowOf(e.within ?? this.atlas.root) }
       if (!e.twin) {
         addTo(outs, e.from.id + it.dir, it)
         addTo(ins, e.to.id + it.dir, it)
@@ -328,6 +333,7 @@ export class AtlasMap {
 
   expand(n) {
     this.open.add(n.id)
+    this.current = n
     const boxes = this.relayout()
     this.camera.moveTo(this.camera.fit(boxes.get(n.id), { pad: 36, maxK: Math.max(1, this.camera.k) }))
   }
@@ -335,6 +341,8 @@ export class AtlasMap {
   collapse(n) {
     this.open.delete(n.id)
     for (const d of descendants(n)) this.open.delete(d.id)
+    // Closing the current topic (or one around it) hands "current" to the topic that held it.
+    if (this.current && (this.current === n || isAncestor(n, this.current))) this.current = n.parent
     const box = this.relayout().get(n.id)
     if (box && !this.camera.shows(box)) this.camera.moveTo(this.camera.centre(box))
     this.onView?.()
@@ -348,7 +356,8 @@ export class AtlasMap {
       this.open.add(a.id)
       changed = true
     }
-    const boxes = changed ? this.relayout() : this.boxes
+    if (n.parent) this.current = n.parent
+    const boxes = changed || n.parent ? this.relayout() : this.boxes
     this.select(n, { pan: false })
     const box = boxes.get(n.id)
     if (box) this.camera.moveTo(this.camera.centre(box, Math.min(1.25, Math.max(this.camera.k, 0.9))))
@@ -370,6 +379,7 @@ export class AtlasMap {
   overview() {
     this.closeQuiz()
     this.open.clear()
+    this.current = null
     this.relayout()
     this.fitAll()
   }
@@ -491,16 +501,17 @@ function fan(groups, side) {
   }
 }
 
-// An S-curve from one box to the next, across (right side to left side) or down (bottom to top),
-// ending in an open arrowhead. One that has to double back loops out wide.
+// An S-curve from one box to the next, across (right side to left side) or down (bottom to top).
+// It stops HEAD short of the target, where the arrowhead marker takes over (see index.html).
+// One that has to double back loops out wide.
+const HEAD = 10
 function curve(sx, sy, tx, ty, down) {
+  if (down) ty -= HEAD
+  else tx -= HEAD
   const d = down ? ty - sy : tx - sx
   const c = d > 30 ? Math.min(360, Math.max(30, d * 0.5)) : Math.max(70, 70 - d * 0.5)
   const [p, q] = down ? [[sx, sy + c], [tx, ty - c]] : [[sx + c, sy], [tx - c, ty]]
-  const head = down
-    ? `M${r1(tx - 4)},${r1(ty - 7)}L${r1(tx)},${r1(ty)}L${r1(tx + 4)},${r1(ty - 7)}`
-    : `M${r1(tx - 7)},${r1(ty - 4)}L${r1(tx)},${r1(ty)}L${r1(tx - 7)},${r1(ty + 4)}`
-  return `M${r1(sx)},${r1(sy)}C${r1(p[0])},${r1(p[1])} ${r1(q[0])},${r1(q[1])} ${r1(tx)},${r1(ty)}${head}`
+  return `M${r1(sx)},${r1(sy)}C${r1(p[0])},${r1(p[1])} ${r1(q[0])},${r1(q[1])} ${r1(tx)},${r1(ty)}`
 }
 
 // The link between two intertwined topics, which sit side by side in one layer: a straight line

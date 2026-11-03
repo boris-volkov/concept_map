@@ -21,6 +21,9 @@ const ASPECT = 1.5 // a crowded layer wraps until its topic is about this wide f
 /** Which way a topic's contents flow, by its depth: the map (-1) across, domains (0) down, topics (1) across… */
 export const direction = depth => (depth % 2 === 0 ? 'down' : 'right')
 
+/** The way a topic's contents flow: its own "flow:" if it has one, otherwise by depth. */
+export const flowOf = node => node.flow ?? direction(node.depth)
+
 /**
  * root: the atlas root; isOpen(node); cardSize(node) → {w, h}; headerWidth(node) → minimum frame width.
  * Returns absolute boxes {x, y, w, h} by node id, and the overall size.
@@ -44,7 +47,7 @@ export function computeLayout(root, isOpen, cardSize, headerWidth) {
     const size = kids.map(measure)
     const at = new Map(kids.map((k, i) => [k, i]))
     const edges = container.localEdges.map(e => ({ a: at.get(e.from), b: at.get(e.to), w: e.weight, twin: e.twin }))
-    const pos = placeLayered(size, edges, direction(container.depth), container.wrap)
+    const pos = placeLayered(size, edges, flowOf(container), container.wrap)
     kids.forEach((k, i) => rel.set(k, { x: pos.x[i], y: pos.y[i], w: size[i].w, h: size[i].h }))
     return { w: pos.w, h: pos.h }
   }

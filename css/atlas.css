@@ -196,11 +196,12 @@ math { font-family: var(--math); font-size: 1.04em; }
   stroke-linecap: round;
   stroke-linejoin: round;
   opacity: 0.62;
+  marker-end: url(#head);
 }
 .edge.cross { opacity: 0.26; }
 
 /* Two intertwined topics: each builds on part of the other. */
-.edge.twin { stroke-dasharray: 6 3; opacity: 0.85; stroke-width: calc(var(--w) * 1px + 0.6px); }
+.edge.twin { marker-end: none; stroke-dasharray: 6 3; opacity: 0.85; stroke-width: calc(var(--w) * 1px + 0.6px); }
 .has-selection .edge.dim { opacity: 0.06; }
 .has-selection .edge.dim.lit { opacity: 0.6; }
 /* Lit arrows (hovered, or the selected concept's) are bold gold with a dark edge, so they stand
@@ -210,6 +211,7 @@ math { font-family: var(--math); font-size: 1.04em; }
   opacity: 1;
   stroke-width: calc(var(--w) * 1px + 2.6px);
   filter: drop-shadow(0 0 1px rgba(60, 38, 0, 0.95));
+  marker-end: url(#head-lit);
 }
 
 #loading {
@@ -284,6 +286,15 @@ math { font-family: var(--math); font-size: 1.04em; }
 .node.group.axioms .title::before, .node.group.axioms .frame-title::before { content: "✦ "; }
 .node.group.axioms .eyebrow, .node.group.axioms .frame-title { color: var(--gold-ink); }
 .node.group.axioms .frame-head { border-bottom-color: rgba(176, 128, 32, 0.45); }
+/* The topic opened last: an outline in its own colour (outlines cost nothing to draw), a
+   stronger tint of that colour inside, and a deeper one on its header. Gold stays for axioms. */
+#world .node.group.is-open.is-current {
+  outline: 3px solid var(--c);
+  outline-offset: 1px;
+  background: color-mix(in srgb, var(--c) 13%, #fbf6e8);
+}
+#world .node.group.is-open.is-current > .frame-head { background: color-mix(in srgb, var(--c) 16%, transparent); }
+
 #world .node.group.axioms.is-open {
   background: linear-gradient(160deg, #fdf6e2, #f6e6b8);
   border: 1px solid var(--gold);

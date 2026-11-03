@@ -20,7 +20,7 @@ export const KINDS = {
 const KEYS = {
   id: 'id', kind: 'kind', type: 'kind', prereqs: 'prereqs', prereq: 'prereqs', prerequisites: 'prereqs',
   requires: 'prereqs', needs: 'prereqs', color: 'color', colour: 'color', parent: 'parent',
-  summary: 'summary', tags: 'tags', tag: 'tags', wrap: 'wrap',
+  summary: 'summary', tags: 'tags', tag: 'tags', wrap: 'wrap', flow: 'flow',
 }
 
 const DEFAULT_COLOR = '#6b5a45'
@@ -144,6 +144,9 @@ export function buildAtlas({ index, files }) {
     n.quiz = quizzes.flatMap(lines => parseQuiz(lines, (line, msg) => report('error', n.file, line, `Quiz in “${n.title}”: ${msg}`, n.id)))
     n.summary = n.meta.summary?.value.trim() || firstParagraph(body)
     n.wrap = parseInt(n.meta.wrap?.value, 10) || 0 // for a topic: at most this many children in a line
+    const flow = n.meta.flow?.value.trim().toLowerCase()
+    if (flow && flow !== 'down' && flow !== 'across') report('warning', n.file, n.meta.flow.line, `“flow: ${flow}” should be “down” or “across”.`, n.id)
+    n.flow = flow === 'down' ? 'down' : flow === 'across' ? 'right' : null // for a topic: overrides the alternating flow
     n.tags = (n.meta.tags?.value ?? '').split(/[,\s]+/).filter(Boolean).map(t => t.toLowerCase())
     n.plainTitle = plainText(n.title)
     n.prereqs = []
