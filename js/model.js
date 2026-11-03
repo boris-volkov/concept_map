@@ -145,8 +145,10 @@ function rank(atlas) {
 
 // Concepts never form a loop (findLoops reports one as an error), but topics can: Polynomials
 // builds on Complex Numbers (the Fundamental Theorem of Algebra) and Complex Numbers on
-// Polynomials (multiplying them). Topics that build on each other, directly or around a cycle,
-// are intertwined: their arrows merge into one two-way link, and the layout keeps them together.
+// Polynomials (multiplying them). Topics that build on each other, directly or around a loop,
+// are intertwined, and list each other as twins. Two that each build directly on the other
+// get one two-way arrow instead of two: it counts, for the layout, as running from the one
+// built on more (or, if neither is, the one listed first) to the other.
 function markIntertwined(container) {
   const kids = container.children
   if (kids.length < 2) return
@@ -155,19 +157,14 @@ function markIntertwined(container) {
   for (const e of container.localEdges) out[index.get(e.from)].push(index.get(e.to))
   const comp = components(out)
   for (const k of kids) k.twins = kids.filter(o => o !== k && comp[index.get(o)] === comp[index.get(k)])
-  const merged = new Map()
+  const byKey = new Map(container.localEdges.map(e => [e.key, e]))
   const edges = []
   for (const e of container.localEdges) {
-    if (comp[index.get(e.from)] !== comp[index.get(e.to)]) { edges.push(e); continue }
-    const [a, b] = index.get(e.from) < index.get(e.to) ? [e.from, e.to] : [e.to, e.from]
-    const key = `${a.id}<>${b.id}`
-    let t = merged.get(key)
-    if (!t) {
-      merged.set(key, (t = { key, from: a, to: b, within: e.within, weight: 0, pairs: [], twin: true }))
-      edges.push(t)
-    }
-    t.weight += e.weight
-    t.pairs.push(...e.pairs)
+    const back = byKey.get(`${e.to.id}>${e.from.id}`)
+    if (!back) { edges.push(e); continue }
+    if (e.weight < back.weight || (e.weight === back.weight && index.get(e.from) > index.get(e.to))) continue
+    edges.push({ key: `${e.from.id}<>${e.to.id}`, from: e.from, to: e.to, within: e.within,
+      weight: e.weight + back.weight, pairs: [...e.pairs, ...back.pairs], twin: true })
   }
   container.localEdges = edges
 }
@@ -324,7 +321,8 @@ export function visibleEdges(atlas, isOpen, focus = null) {
       const to = visibleRep(c, isOpen)
       if (from === to || isAncestor(from, to) || isAncestor(to, from)) return
       const key = from.id + '>' + to.id
-      if (edges.has(key)) return // an arrow between neighbours already carries it
+      // An arrow between neighbours already carries it, one way or both.
+      if (edges.has(key) || edges.has(`${from.id}<>${to.id}`) || edges.has(`${to.id}<>${from.id}`)) return
       add({ key: 'focus:' + key, from, to, within: commonContainer(from, to), pairs: [[p, c]], focus: true })
     }
     for (const p of focus.directPrereqs) link(p, focus)

@@ -100,21 +100,22 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
 }
 
 // The domains in an order that keeps every arrow between them pointing down: intertwined
-// domains (each building on part of the other) side by side, and otherwise in the order the
-// content files are listed in (Kahn's algorithm, taking the first listed of those ready).
+// domains (building on each other, directly or around a loop) one after another, in the
+// order the content files are listed in, as are the rest (Kahn's algorithm, taking the first
+// listed of those ready).
 function spineOrder(root) {
   const kids = root.children
   const at = new Map(kids.map((k, i) => [k, i]))
   const group = kids.map((_, i) => i)
   const find = v => (group[v] === v ? v : (group[v] = find(group[v])))
-  for (const e of root.localEdges) if (e.twin) group[find(at.get(e.from))] = find(at.get(e.to))
+  for (const k of kids) for (const t of k.twins ?? []) group[find(at.get(k))] = find(at.get(t))
   const groups = [...new Set(kids.map((_, i) => find(i)))]
   const next = new Map(groups.map(g => [g, new Set()]))
   const waits = new Map(groups.map(g => [g, 0]))
   for (const e of root.localEdges) {
     const a = find(at.get(e.from))
     const b = find(at.get(e.to))
-    if (e.twin || a === b || next.get(a).has(b)) continue
+    if (a === b || next.get(a).has(b)) continue
     next.get(a).add(b)
     waits.set(b, waits.get(b) + 1)
   }
@@ -139,8 +140,8 @@ function spineOrder(root) {
  * they nest like brackets. Along a card's left side, the arrows coming from above enter over
  * the ones leaving for below; arrows from nearer domains enter above those from further off, and
  * arrows to further domains leave above those to nearer ones, so that none crosses another
- * there either. Intertwined domains side by side are joined by a short link between them
- * instead (see map.js).
+ * there either. A two-way arrow, between domains that each build on the other, runs in a lane
+ * like the rest, with a head at each end.
  * Returns { e, a, b, out, in, lane } for each arrow: a and b are the upper and lower places in
  * the spine, and out and in where along those cards it leaves and enters, as fractions of
  * their height.
@@ -150,7 +151,7 @@ export function planSpine(order, edges) {
   const arcs = []
   for (const e of edges) {
     const [p, q] = [row.get(e.from), row.get(e.to)]
-    if (p === undefined || q === undefined || (e.twin && Math.abs(p - q) === 1)) continue
+    if (p === undefined || q === undefined) continue
     arcs.push({ e, a: Math.min(p, q), b: Math.max(p, q), out: 0.5, in: 0.5, lane: 0 })
   }
   const sides = order.map(() => [])
@@ -187,11 +188,9 @@ function placeLayered(size, edges, dir, wrap = 0) {
   const big = k => size[k].frame || size[k].file
   const between = (p, q) => (big(p) || big(q) ? GAP_FRAME : gap.card)
 
-  // Intertwined boxes (a two-way link) go in the same layer, side by side: union them into groups.
-  const group = Array.from({ length: n }, (_, i) => i)
-  const find = v => (group[v] === v ? v : (group[v] = find(group[v])))
-  for (const e of edges) if (e.twin) group[find(e.a)] = find(e.b)
-  const arrows = edges.filter(e => !e.twin)
+  // A two-way arrow counts as one from its first end to its second, like any other (see
+  // markIntertwined in model.js), so two boxes that build on each other follow one another.
+  const arrows = edges
 
   // 1. Turn the few arrows that close a loop around (the lightest ones), so every arrow points one way.
   const rank = linearOrder(n, arrows)
@@ -213,16 +212,6 @@ function placeLayered(size, edges, dir, wrap = 0) {
     if (!succs[v].length || succs[v].length <= preds[v].length) continue
     layer[v] = Math.min(...succs[v].map(s => layer[s.v])) - 1
   }
-  // ...and an intertwined group shares one layer, its latest member's, with what follows pushed on.
-  for (let changed = true; changed;) {
-    changed = false
-    const latest = new Map()
-    for (let v = 0; v < n; v++) latest.set(find(v), Math.max(latest.get(find(v)) ?? 0, layer[v]))
-    for (let v = 0; v < n; v++) {
-      if (layer[v] !== latest.get(find(v))) { layer[v] = latest.get(find(v)); changed = true }
-      for (const { v: u } of preds[v]) if (layer[v] <= layer[u]) { layer[v] = layer[u] + 1; changed = true }
-    }
-  }
   const used = [...new Set(layer)].sort((p, q) => p - q)
   const compact = new Map(used.map((l, i) => [l, i]))
   const layers = used.map(() => [])
@@ -237,16 +226,7 @@ function placeLayered(size, edges, dir, wrap = 0) {
       const total = ns.reduce((s, x) => s + x.w, 0)
       return [v, ns.length ? ns.reduce((s, x) => s + position[x.v] * x.w, 0) / total : position[v]]
     }))
-    // Intertwined boxes share their average key, so they stay next to each other.
-    const mean = new Map()
-    for (const v of list) {
-      const m = mean.get(find(v)) ?? { sum: 0, count: 0 }
-      m.sum += key.get(v)
-      m.count++
-      mean.set(find(v), m)
-    }
-    for (const v of list) key.set(v, mean.get(find(v)).sum / mean.get(find(v)).count)
-    list.sort((p, q) => key.get(p) - key.get(q) || find(p) - find(q) || position[p] - position[q])
+    list.sort((p, q) => key.get(p) - key.get(q) || position[p] - position[q])
     list.forEach((v, i) => { position[v] = (i + 0.5) / list.length })
   }
   for (let sweep = 0; sweep < 4; sweep++) {

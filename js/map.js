@@ -416,19 +416,26 @@ export class AtlasMap {
         p.setAttribute('d', this.bracket(arc))
         continue
       }
-      // Intertwined domains next to each other in the spine: a short link straight between their cards.
-      if (!e.within && e.twin) {
-        p.setAttribute('d', link(this.spine.get(e.from.id), this.spine.get(e.to.id), false))
-        continue
-      }
-      const a = this.boxes.get(e.from.id)
-      const b = this.boxes.get(e.to.id)
+      let [from, to] = [e.from, e.to]
+      let [a, b] = [this.boxes.get(from.id), this.boxes.get(to.id)]
       if (!a || !b) continue
-      // An arrow follows the flow of the topic it runs within: out of a right side into a left one, or bottom into top.
-      const it = { e, p, a, b, dir: flowOf(e.within ?? this.atlas.root) }
-      if (!e.twin) {
-        addTo(outs, e.from.id + it.dir, it)
-        addTo(ins, e.to.id + it.dir, it)
+      // An arrow follows the flow of the topic it runs within: out of a box's bottom (or right)
+      // side into the next one's top (or left).
+      const dir = flowOf(e.within ?? this.atlas.root)
+      const down = dir === 'down'
+      const lo = box => (down ? box.y : box.x)
+      const hi = box => (down ? box.y + box.h : box.x + box.w)
+      // A two-way arrow, with a head at each end, runs from whichever end comes first.
+      if (e.twin && hi(b) <= lo(a)) [from, to, a, b] = [to, from, b, a]
+      // A one-way arrow that closes a loop of topics points back against the flow, from its
+      // source's top (or left) side to its target's bottom (or right), and is drawn lighter.
+      // One between boxes side by side, which only a selected concept's links can be, runs across.
+      const way = hi(a) <= lo(b) ? 'on' : hi(b) <= lo(a) ? 'back' : 'side'
+      p.classList.toggle('back', way === 'back')
+      const it = { e, p, a, b, dir, way }
+      if (way !== 'side') {
+        addTo(outs, from.id + dir + way, it)
+        addTo(ins, to.id + dir + way, it)
       }
       live.push(it)
     }
@@ -436,9 +443,23 @@ export class AtlasMap {
     fan(outs, 'out')
     fan(ins, 'in')
     for (const it of live) {
-      it.p.setAttribute('d', it.e.twin ? link(it.a, it.b, it.dir === 'down') : (it.dir === 'down'
-        ? curve(it.out, it.a.y + it.a.h, it.in, it.b.y, true)
-        : curve(it.a.x + it.a.w, it.out, it.b.x, it.in, false)))
+      const { a, b, way } = it
+      const both = !!it.e.twin
+      const down = it.dir === 'down'
+      let d
+      if (way === 'side') {
+        // Between the middles of the boxes' facing sides, across the flow.
+        const first = down ? a.x + a.w <= b.x : a.y + a.h <= b.y
+        d = down
+          ? curve(first ? a.x + a.w : a.x, a.y + a.h / 2, first ? b.x : b.x + b.w, b.y + b.h / 2, false, both)
+          : curve(a.x + a.w / 2, first ? a.y + a.h : a.y, b.x + b.w / 2, first ? b.y : b.y + b.h, true, both)
+      } else {
+        const back = way === 'back'
+        d = down
+          ? curve(it.out, back ? a.y : a.y + a.h, it.in, back ? b.y + b.h : b.y, true, both)
+          : curve(back ? a.x : a.x + a.w, it.out, back ? b.x + b.w : b.x, it.in, false, both)
+      }
+      it.p.setAttribute('d', d)
     }
     for (const [key, p] of this.paths) {
       if (this.edges.has(key)) continue
@@ -448,14 +469,14 @@ export class AtlasMap {
   }
 
   // An arrow between domains: out of one card's left side, along its lane, and into the other's
-  // left side. Between intertwined domains it has no head, and a dot at each end instead.
+  // left side. Between domains that each build on the other, it has a head at each end.
   bracket(arc) {
     const upper = this.spine.get(this.order[arc.a].id)
     const lower = this.spine.get(this.order[arc.b].id)
     const ya = upper.y + upper.h * arc.out
     const yb = lower.y + lower.h * arc.in
     const depth = SPINE.lane0 + SPINE.lane * arc.lane
-    if (arc.e.twin) return lane(upper.x, ya, yb, depth, false) + dot(upper.x, ya) + dot(upper.x, yb)
+    if (arc.e.twin) return lane(upper.x, ya, yb, depth, true, true)
     return arc.e.to === this.order[arc.b] ? lane(upper.x, ya, yb, depth, true) : lane(upper.x, yb, ya, depth, true)
   }
 
@@ -936,46 +957,33 @@ function fan(groups, side) {
   }
 }
 
-// An S-curve from one box to the next, across (right side to left side) or down (bottom to top).
-// It stops HEAD short of the target, where the arrowhead marker takes over (see index.html).
-// One that has to double back loops out wide.
+// An S-curve from one box to the next, across (right side to left side) or down (bottom to top),
+// or the other way round for an arrow that points back against the flow, from a target that
+// lies earlier along it. It stops HEAD short of the target, where the arrowhead marker takes
+// over (see index.html), and, for a two-way arrow (`both`), starts HEAD clear of the source too,
+// for the head at that end.
 const HEAD = 10
-function curve(sx, sy, tx, ty, down) {
-  if (down) ty -= HEAD
-  else tx -= HEAD
-  const d = down ? ty - sy : tx - sx
-  const c = d > 30 ? Math.min(360, Math.max(30, d * 0.5)) : Math.max(70, 70 - d * 0.5)
-  const [p, q] = down ? [[sx, sy + c], [tx, ty - c]] : [[sx + c, sy], [tx - c, ty]]
+function curve(sx, sy, tx, ty, down, both = false) {
+  const s = Math.sign(down ? ty - sy : tx - sx) || 1 // +1 along the flow, −1 back against it
+  if (down) ty -= s * HEAD
+  else tx -= s * HEAD
+  if (both && down) sy += s * HEAD
+  else if (both) sx += s * HEAD
+  const d = Math.abs(down ? ty - sy : tx - sx)
+  const c = Math.min(360, Math.max(30, d * 0.5))
+  const [p, q] = down ? [[sx, sy + s * c], [tx, ty - s * c]] : [[sx + s * c, sy], [tx - s * c, ty]]
   return `M${r1(sx)},${r1(sy)}C${r1(p[0])},${r1(p[1])} ${r1(q[0])},${r1(q[1])} ${r1(tx)},${r1(ty)}`
 }
 
-// The link between two intertwined topics, which sit side by side in one layer: a straight line
-// between their facing sides, with a dot at each end and no arrowhead, since each needs the other.
-function link(a, b, down) {
-  const V = q => (down ? q.x : q.y)
-  const W = q => (down ? q.w : q.h)
-  const U = q => (down ? q.y : q.x)
-  const L = q => (down ? q.h : q.w)
-  const [p, q] = V(a) <= V(b) ? [a, b] : [b, a]
-  const lo = Math.max(U(p), U(q))
-  const hi = Math.min(U(p) + L(p), U(q) + L(q))
-  const u = hi > lo ? (lo + hi) / 2 : (U(p) + L(p) / 2 + U(q) + L(q) / 2) / 2
-  const xy = (uu, vv) => (down ? [vv, uu] : [uu, vv])
-  const [x1, y1] = xy(u, V(p) + W(p))
-  const [x2, y2] = xy(u, V(q))
-  return `M${r1(x1)},${r1(y1)}L${r1(x2)},${r1(y2)}${dot(x1, y1)}${dot(x2, y2)}`
-}
-
-const dot = (x, y) => `M${r1(x - 2.5)},${r1(y)}a2.5,2.5 0 1,0 5,0a2.5,2.5 0 1,0 -5,0`
-
 // An arrow down the left of the spine, from (x, y0) to (x, y1) on the cards' left sides: out to
 // its lane, `depth` to the left, along it with rounded corners, and back in, ending HEAD short of
-// the card for its arrowhead when it has one.
-function lane(x, y0, y1, depth, head) {
+// the card for its arrowhead when it has one, and starting HEAD clear of the first card when it
+// has a head at that end too.
+function lane(x, y0, y1, depth, head, both = false) {
   const lx = x - depth
   const s = Math.sign(y1 - y0) || 1
   const r = Math.min(10, Math.abs(y1 - y0) / 2, depth / 2)
-  return `M${r1(x)},${r1(y0)}H${r1(lx + r)}Q${r1(lx)},${r1(y0)} ${r1(lx)},${r1(y0 + s * r)}` +
+  return `M${r1(both ? x - HEAD : x)},${r1(y0)}H${r1(lx + r)}Q${r1(lx)},${r1(y0)} ${r1(lx)},${r1(y0 + s * r)}` +
     `V${r1(y1 - s * r)}Q${r1(lx)},${r1(y1)} ${r1(lx + r)},${r1(y1)}H${r1(head ? x - HEAD : x)}`
 }
 
