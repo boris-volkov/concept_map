@@ -27,7 +27,7 @@ async function start() {
   sourceKey = keyOf(sources)
   atlas = buildAtlas(sources)
   map = new AtlasMap({ viewport: $('viewport'), world: $('world'), svg: $('edges'), grid: $('grid'), atlas, onSelect: selected, onView: saveView })
-  panel = new Panel($('panel'), { onClose: () => map.select(null), onReveal: (n, which) => map.revealAround(n, which) })
+  panel = new Panel($('panel'), { onClose: () => map.select(null), onReveal: (n, which) => map.revealAround(n, which), onRanking: showRanking })
   panel.setAtlas(atlas)
   search = new Search($('search'), $('search-results'), { onPick: n => go(n.id) })
   search.setAtlas(atlas)
@@ -83,19 +83,27 @@ function fitAroundPanel() {
   map.camera.inset = inset
 }
 
-function toggleIndex() {
-  if (panel.mode === 'index') panel.hide()
+// Opens the index, on the tab given or the one shown last, or closes it if that is showing.
+function toggleIndex(tab) {
+  if (panel.mode === 'index' && (!tab || tab === panel.tab)) panel.hide()
   else {
     map.select(null)
-    panel.showIndex()
+    panel.showIndex(tab)
   }
+  fitAroundPanel()
+}
+
+// From a concept's panel: the ranking, scrolled to that concept.
+function showRanking(n) {
+  map.select(null)
+  panel.showIndex('ranking', n)
   fitAroundPanel()
 }
 
 function wire() {
   $('btn-overview').onclick = () => { map.select(null); map.overview() }
   $('btn-expand').onclick = () => map.openAll()
-  $('btn-index').onclick = toggleIndex
+  $('btn-index').onclick = () => toggleIndex()
   $('btn-zoom-in').onclick = () => map.zoomBy(1.3)
   $('btn-zoom-out').onclick = () => map.zoomBy(1 / 1.3)
   $('btn-fit').onclick = () => map.fitAll()
@@ -130,7 +138,8 @@ function wire() {
       '-': () => map.zoomBy(1 / 1.3),
       0: () => map.fitAll(),
       h: () => { map.select(null); map.overview() },
-      i: toggleIndex,
+      i: () => toggleIndex(),
+      r: () => toggleIndex('ranking'),
     }
     const action = actions[e.key.toLowerCase()]
     if (!action) return

@@ -92,25 +92,32 @@ export class AtlasMap {
     el.setAttribute('role', 'button')
     if (n.children.length) {
       const label = n.depth === 0 ? 'Domain' : 'Topic'
+      const supers = descendants(n).filter(d => d.tier?.key === 's').length
       el.className = `node group depth-${Math.min(n.depth, 4)}`
       // A topic holding nothing but axioms is gilded like its axioms.
       if (descendants(n).every(d => d.children.length || d.kind === 'axiom')) el.classList.add('axioms')
       el.innerHTML = `<div class="face">
-          <div class="eyebrow">${label} · ${n.leafCount} ${n.leafCount === 1 ? 'concept' : 'concepts'}</div>
+          <div class="eyebrow">${label} · ${n.leafCount} ${n.leafCount === 1 ? 'concept' : 'concepts'}${supers
+            ? ` · <span class="super-mark" title="Super-concepts inside">★ ${supers}</span>` : ''}</div>
           <div class="title">${renderInline(n.title)}</div>
           ${n.summary ? `<div class="summary">${renderInline(n.summary)}</div>` : ''}
           <div class="meter"><span></span></div>
         </div>${frameHead(n)}`
-      el.setAttribute('aria-label', `${n.plainTitle}, ${label.toLowerCase()} of ${n.leafCount} concepts`)
+      el.setAttribute('aria-label', `${n.plainTitle}, ${label.toLowerCase()} of ${n.leafCount} concepts` +
+        (supers ? `, ${supers} of them ${supers === 1 ? 'a super-concept' : 'super-concepts'}` : ''))
     } else {
-      el.className = `node leaf kind-${n.kind}`
+      // A super-concept, at the top of the ranking, carries a red star (see the stylesheet).
+      const sup = n.tier?.key === 's'
+      el.className = `node leaf kind-${n.kind}${sup ? ' is-super' : ''}`
       el.innerHTML = `${n.kind !== 'concept' ? `<div class="kind">${KINDS[n.kind] ?? esc(n.kind)}</div>` : ''}
         <div class="title">${renderInline(n.title)}</div>
         <div class="marks">${n.quiz.length
           ? `<button type="button" class="quiz-badge" title="Quiz: ${n.quiz.length} question${n.quiz.length > 1 ? 's' : ''}" aria-label="Quiz">?</button>`
           : ''}<span class="check" title="Mastered">✓</span></div>`
-      el.setAttribute('aria-label', n.plainTitle + (n.kind !== 'concept' ? ` (${n.kind})` : ''))
-      if (n.summary) el.title = plainText(n.summary)
+      el.setAttribute('aria-label', n.plainTitle + (n.kind !== 'concept' ? ` (${n.kind})` : '') + (sup ? ', a super-concept' : ''))
+      const tip = [n.summary && plainText(n.summary), sup && `★ Super-concept, ranked ${n.rank} of ${this.atlas.ranking.length}`]
+        .filter(Boolean).join('\n\n')
+      if (tip) el.title = tip
     }
     this.world.append(el)
     this.els.set(n.id, el)

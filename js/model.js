@@ -81,6 +81,66 @@ export function prepare(atlas) {
   for (const n of [atlas.root, ...all]) markIntertwined(n)
 
   findLoops(atlas)
+  rank(atlas)
+}
+
+/**
+ * The tiers of the ranking. A concept's score is a multiple of the average concept's, so 1 is
+ * average; the last tier holds the concepts nothing builds on, whatever their score.
+ */
+export const TIERS = [
+  { key: 's', mark: 'S', name: 'Super-concepts', note: 'four times the average or more', min: 4 },
+  { key: 'a', mark: 'A', name: 'Tier A', note: 'twice the average or more', min: 2 },
+  { key: 'b', mark: 'B', name: 'Tier B', note: 'above average', min: 1 },
+  { key: 'c', mark: 'C', name: 'Tier C', note: 'half the average or more', min: 0.5 },
+  { key: 'd', mark: 'D', name: 'Tier D', note: 'below half the average', min: 0 },
+  { key: 'end', mark: '∅', name: 'Endpoints', note: 'nothing builds on these yet' },
+]
+
+// The ranking, found the way a search engine ranks pages (PageRank): each concept hands its
+// score on to the concepts it directly builds on, split evenly between them, so a concept scores
+// high when concepts that score high build on it. A topic named as a prerequisite shares its part
+// among everything inside it. As in PageRank, 15% of every score, and everything that reaches a
+// starting point such as Counting, is spread evenly over all the concepts.
+function rank(atlas) {
+  const concepts = [...atlas.nodes.values()].filter(n => !n.children.length)
+  const N = concepts.length
+  const index = new Map(concepts.map((n, i) => [n, i]))
+  const links = concepts.map(n => {
+    const on = [...n.directPrereqs, ...ancestors(n).flatMap(a => a.prereqs)]
+    return on.flatMap(p => {
+      const inside = leaves(p)
+      return inside.map(l => [index.get(l), 1 / on.length / inside.length])
+    })
+  })
+  const D = 0.85
+  let s = new Float64Array(N).fill(1 / N)
+  for (let step = 0; step < 300; step++) {
+    const next = new Float64Array(N)
+    let loose = 0 // held by concepts that build on nothing
+    for (let i = 0; i < N; i++) {
+      if (!links[i].length) loose += s[i]
+      for (const [j, share] of links[i]) next[j] += D * s[i] * share
+    }
+    const even = (1 - D + D * loose) / N
+    let change = 0
+    for (let i = 0; i < N; i++) {
+      next[i] += even
+      change += Math.abs(next[i] - s[i])
+    }
+    s = next
+    if (change < 1e-13) break
+  }
+  const builtOn = new Set(links.flat().map(([j]) => j))
+  atlas.ranking = concepts.map((n, i) => {
+    n.score = s[i] * N
+    n.tier = builtOn.has(i) ? TIERS.find(t => n.score >= t.min) : TIERS.at(-1)
+    return n
+  }).sort((a, b) => b.score - a.score || a.order - b.order)
+  // Equal scores share a rank.
+  atlas.ranking.forEach((n, k, list) => {
+    n.rank = k && list[k - 1].score - n.score < 1e-9 ? list[k - 1].rank : k + 1
+  })
 }
 
 // Concepts never form a loop (findLoops reports one as an error), but topics can: Polynomials

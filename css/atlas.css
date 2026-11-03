@@ -22,6 +22,7 @@
   --blue-fill: #eef2f9;
   --pre: #a3461a;  /* what the selection builds on */
   --post: #2f6b6a; /* what builds on the selection */
+  --rubric: #8f2d2d; /* the ranking: super-concepts, and the tiers below them */
   --right: #3d6b35;
   --wrong: #9b2d2d;
   --serif: "Palatino Linotype", Palatino, "Book Antiqua", "URW Palladio L", "TeX Gyre Pagella", Georgia, serif;
@@ -333,6 +334,24 @@ math { font-family: var(--math); font-size: 1.04em; }
 .node.leaf.is-mastered { background: linear-gradient(color-mix(in srgb, var(--right) 7%, var(--card)), var(--card)); }
 .node.leaf.is-ready { border-style: solid dashed dashed solid; }
 
+/* A super-concept, at the top of the ranking, carries a red star on its corner, as a capital does
+   on an old map. Unlike the other marks it stays when the map is zoomed far out. */
+.node.leaf.is-super::before {
+  content: "★";
+  position: absolute;
+  left: -13px;
+  top: -10px;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: var(--rubric);
+  color: #fff8e2;
+  font-size: 12px;
+  line-height: 19px;
+  text-align: center;
+  box-shadow: 0 0 0 1.5px var(--card), 0 1px 2px rgba(70, 45, 15, 0.3);
+}
+
 /* A closed topic: a framed plate. */
 .node.group {
   width: 232px;
@@ -607,12 +626,34 @@ math { font-family: var(--math); font-size: 1.04em; }
 .crumbs { flex: 1; min-width: 0; font-size: 13px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 2px 7px; }
 .crumbs a { color: var(--c); text-decoration: none; font-variant-caps: all-small-caps; letter-spacing: 0.05em; font-size: 14px; }
 .crumbs a:hover { text-decoration: underline; }
-.panel-heading { flex: 1; font-variant-caps: small-caps; font-size: 18px; letter-spacing: 0.05em; }
+.tabs { flex: 1; display: flex; gap: 18px; }
+.tabs button {
+  padding: 1px 0 2px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font-size: 18px;
+  font-variant-caps: small-caps;
+  letter-spacing: 0.05em;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+.tabs button:hover { color: var(--ink); }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--rubric); }
 .panel-close { border: 0; background: none; font-size: 24px; line-height: 1; color: var(--ink-3); cursor: pointer; padding: 0 4px; }
 .panel-close:hover { color: var(--ink); }
 
 .panel-body { padding: 14px 22px 8px; }
-.panel-kind { font-size: 13px; color: var(--c); font-variant-caps: all-small-caps; letter-spacing: 0.1em; }
+.panel-kind {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--c);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.1em;
+}
 .panel-title { margin: 2px 0 12px; font-size: 28px; line-height: 1.15; font-weight: normal; }
 .prose { font-size: 16.5px; line-height: 1.6; }
 .prose p { margin: 0 0 0.85em; }
@@ -716,7 +757,7 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
 .contents a { color: var(--ink); text-decoration-color: color-mix(in srgb, var(--c) 40%, transparent); }
 .where { font-size: 12px; color: var(--ink-3); font-style: italic; }
 .path details summary { cursor: pointer; font-size: 15px; color: var(--ink-2); }
-.path .count { font-size: 12px; color: var(--card); background: var(--ink-3); border-radius: 9px; padding: 0 7px; margin-left: 4px; font-style: normal; }
+.path .count, .tier .count { font-size: 12px; color: var(--card); background: var(--ink-3); border-radius: 9px; padding: 0 7px; margin-left: 4px; font-style: normal; }
 .path .note { margin: 6px 0; font-size: 13px; font-style: italic; color: var(--ink-3); }
 .path ol { margin: 0; padding-left: 2em; font-size: 14.5px; line-height: 1.5; }
 .path ol a { color: var(--ink); text-decoration-color: color-mix(in srgb, var(--c) 45%, transparent); }
@@ -756,6 +797,70 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
 .index li > a:hover { text-decoration: underline; }
 .index li:has(> ul) > a { font-variant-caps: small-caps; color: var(--c); letter-spacing: 0.02em; }
 .index-note { font-style: italic; color: var(--ink-3); font-size: 14px; margin: 0 0 12px; }
+.super-mark { color: var(--rubric); font-size: 0.85em; }
+
+/* ---------- the ranking ---------- */
+
+/* Tier colours: rubric red for the super-concepts, fading tier by tier. */
+.tier-s { --t: var(--rubric); --t-ink: #fff8e2; }
+.tier-a { --t: color-mix(in srgb, var(--rubric) 62%, var(--card)); --t-ink: #fff8e2; }
+.tier-b { --t: color-mix(in srgb, var(--rubric) 30%, var(--card)); --t-ink: var(--rubric); }
+.tier-c { --t: color-mix(in srgb, var(--rubric) 14%, var(--card)); --t-ink: color-mix(in srgb, var(--rubric) 75%, var(--ink-2)); }
+.tier-d { --t: color-mix(in srgb, var(--ink-3) 14%, var(--card)); --t-ink: var(--ink-2); }
+.tier-end { --t: var(--card); --t-ink: var(--ink-3); }
+
+.rank-filter { display: flex; align-items: center; gap: 8px; margin: 0 0 18px; font-size: 14px; color: var(--ink-2); }
+.rank-filter select {
+  padding: 3px 6px;
+  font: inherit;
+  color: var(--ink);
+  background: #fffdf6;
+  border: 1px solid var(--card-edge);
+  border-radius: 5px;
+}
+.ranking .tier { display: flex; gap: 12px; margin: 0 0 18px; }
+.tier-mark {
+  flex: none;
+  width: 38px;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: var(--t-ink);
+  background: var(--t);
+  border: 1px solid color-mix(in srgb, var(--rubric) 28%, transparent);
+  border-radius: 5px;
+}
+.tier-end .tier-mark { border-style: dashed; }
+.tier-body { flex: 1; min-width: 0; }
+.tier-s h3 { color: var(--rubric); }
+/* A long tier folds away under its heading. */
+.tier summary { list-style: none; cursor: pointer; }
+.tier summary::-webkit-details-marker { display: none; }
+.tier summary h3::after { content: "show"; float: right; font-variant-caps: normal; letter-spacing: 0; font-style: italic; font-size: 13px; color: var(--ink-2); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+.tier details[open] summary h3::after { content: "hide"; }
+.tier summary:hover h3::after { color: var(--ink); }
+.ranked { margin: 0; padding: 0; list-style: none; }
+.ranked .chip { padding: 3px 9px 4px 7px; }
+.ranked .chip.is-focus { box-shadow: 0 0 0 2px var(--ink); }
+.rank-no { font-size: 11.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+/* A concept's place in the ranking, beside its kind in the panel. */
+.rank-tag {
+  flex: none;
+  padding: 1px 9px 2px;
+  font-size: 12.5px;
+  font-variant-caps: normal;
+  letter-spacing: 0.02em;
+  color: var(--t-ink);
+  background: var(--t);
+  border: 1px solid color-mix(in srgb, var(--rubric) 30%, transparent);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.rank-tag:hover { border-color: var(--rubric); }
+.rank-tag.tier-end { border-style: dashed; }
 
 /* ---------- content problems ---------- */
 
