@@ -27,6 +27,19 @@ A heading with headings under it is a **topic**: it shows as a card that opens u
 
 The first paragraph under a heading is its summary, shown on cards and in search results. Everything after that is the explanation, shown in the side panel.
 
+The atlas is a reference for tutoring, so entries favour formal statements over casual explanation. For an **axiom**, **theorem**, **definition**, **formula** or **property**, the first paragraph is its formal statement, and the panel sets it in a box: blue for axioms and theorems, with the statement in italics. Write the statement as one paragraph, a displayed formula included, with no blank line inside it; proofs, examples and remarks follow after a blank line.
+
+```markdown
+### Mean Value Theorem {#mvt}
+kind: theorem
+prereqs: rolles-theorem
+
+If $f$ is continuous on $[a, b]$ and differentiable on $(a, b)$, then for some $c \in (a, b)$:
+$$f'(c) = rac{f(b) - f(a)}{b - a}$$
+
+Geometrically: some tangent is parallel to the secant.
+```
+
 ## Ids
 
 Every concept has an id, which is how other concepts refer to it. By default it is the title in lowercase with dashes, dropping a leading "The", "A" or "An", with "&" read as "and":
@@ -57,12 +70,13 @@ Right under a heading, before the summary, these lines describe it. All are opti
 | `color: #8f2d2d` | The colour of this domain or topic and everything inside it. Usually only on the `#` heading. |
 | `summary: …` | A summary, when the first paragraph won't do. |
 | `tags: grade-6, exam` | Extra words for the search box to find. |
+| `wrap: 4` | On a topic: lay its contents out at most 4 to a line, in the order written, as the field axioms are (C A N I / C A N I / D). Without it the map arranges a topic by its arrows. |
 | `id: lcm` | The same as `{#lcm}` on the heading. |
 | `parent: algebra` | Only on a file's `#` heading: put this file's contents inside another topic (see *Splitting a big domain*). |
 
 ## Prerequisites
 
-List only what a concept **directly** builds on. "Adding Fractions" needs "Least Common Multiple"; it doesn't need to list "Multiplication" too, because LCM already builds on multiplication, and the panel's *Everything it rests on* list follows the whole chain back to counting. If you do list one that another prerequisite already leads to, the map leaves its arrow out, and so does the panel's *Builds on* list, so an extra prerequisite never adds clutter.
+List only what a concept **directly** builds on. "Adding Fractions" needs "Least Common Multiple"; it doesn't need to list "Multiplication" too, because LCM already builds on multiplication, and the panel's *Full chain of prerequisites* follows the whole chain back to counting. If you do list one that another prerequisite already leads to, the map leaves its arrow out, and so does the panel's *Prerequisites* list, so an extra prerequisite never adds clutter.
 
 A prerequisite can be a whole topic, `prereqs: fractions`, which means everything in it. A prerequisite on a topic applies to everything inside the topic. Use both sparingly: arrows between single concepts say more.
 

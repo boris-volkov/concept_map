@@ -54,12 +54,12 @@ export class Panel {
       <article class="panel-body" style="--c:${n.color}">
         <div class="panel-kind">${KINDS[n.kind] ?? esc(n.kind)}${topic ? ` · ${n.leafCount} concepts` : ''}</div>
         <h2 class="panel-title">${renderInline(n.title)}</h2>
-        ${n.body ? `<div class="prose">${renderMarkdown(n.body, { resolve })}</div>` : '<p class="prose empty">No explanation written yet.</p>'}
+        ${entry(n, resolve)}
         ${topic ? contents(n) : ''}
-        ${links('Builds on', pre, 'pre', topic ? 'from outside this topic' : '', 'Nothing: this is a starting point.')}
-        ${links('Leads to', post, 'post', topic ? 'outside this topic' : '', topic ? '' : 'Nothing yet: the end of the line, for now.')}
+        ${links('Prerequisites', pre, 'pre', topic ? 'from outside this topic' : '', 'None: a starting point.')}
+        ${links('Required for', post, 'post', topic ? 'outside this topic' : '', '')}
         ${path.length ? pathSection(n, path) : ''}
-        ${n.quiz.length ? '<section class="practice"><h3>Practice</h3><div class="quiz-mount"></div></section>' : ''}
+        ${n.quiz.length ? '<section class="practice"><h3>Exercises</h3><div class="quiz-mount"></div></section>' : ''}
       </article>
       <footer class="panel-foot">
         ${topic ? '<span class="topic-progress"></span>' : '<button type="button" class="mastery"></button>'}
@@ -122,6 +122,22 @@ export class Panel {
   }
 }
 
+const STATED = { axiom: 'Axiom', theorem: 'Theorem', definition: 'Definition', formula: 'Formula', property: 'Property' }
+
+// The entry text. For an axiom, theorem, definition or formula the first paragraph is its formal
+// statement, set apart in a box the way a textbook would; any remarks follow underneath.
+function entry(n, resolve) {
+  if (!n.body) return '<p class="prose empty">No entry written yet.</p>'
+  const label = STATED[n.kind]
+  if (!label) return `<div class="prose">${renderMarkdown(n.body, { resolve })}</div>`
+  const cut = n.body.search(/\n[ \t]*\n/)
+  const statement = cut === -1 ? n.body : n.body.slice(0, cut)
+  const remarks = cut === -1 ? '' : n.body.slice(cut).trim()
+  return `<div class="statement statement-${n.kind}"><div class="statement-label">${label}.</div>` +
+    `<div class="prose">${renderMarkdown(statement, { resolve })}</div></div>` +
+    (remarks ? `<div class="prose">${renderMarkdown(remarks, { resolve })}</div>` : '')
+}
+
 function chip(c) {
   const where = c.parent ? `<span class="chip-where">${renderInline(c.parent.title)}</span>` : ''
   return `<a class="chip" href="#${esc(c.id)}" data-id="${esc(c.id)}" style="--c:${c.color}">` +
@@ -152,13 +168,13 @@ function pathSection(n, path) {
   const started = path.some(p => progress.isMastered(p.id))
   const next = [...path, n].find(p => !p.children.length && !progress.isMastered(p.id) && p.prereqs.every(known))
   const suggestion = started && next
-    ? `<p class="next-up">Next to learn: <a href="#${esc(next.id)}" style="--c:${next.color}">${renderInline(next.title)}</a></p>`
+    ? `<p class="next-up">Suggested next: <a href="#${esc(next.id)}" style="--c:${next.color}">${renderInline(next.title)}</a></p>`
     : ''
   return `<section class="path">
     ${suggestion}
     <details>
-      <summary>Everything it rests on <span class="count">${path.length}</span></summary>
-      <p class="note">In an order you could learn them, foundations first.</p>
+      <summary>Full chain of prerequisites <span class="count">${path.length}</span></summary>
+      <p class="note">In an order they can be learned, foundations first.</p>
       <ol>${path.map(p => `<li><a href="#${esc(p.id)}" data-id="${esc(p.id)}" style="--c:${p.color}">${renderInline(p.title)}</a>` +
         `${p.parent ? ` <span class="where">${renderInline(p.parent.title)}</span>` : ''}</li>`).join('')}</ol>
     </details>

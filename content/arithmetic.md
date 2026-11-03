@@ -74,10 +74,10 @@ prereqs: addition, multiplication
 Order doesn't matter when adding or multiplying ($3 + 5 = 5 + 3$), grouping doesn't either, and multiplication spreads over addition: $3 \times 14 = 3 \times 10 + 3 \times 4$. These are the tricks behind mental arithmetic; algebra makes them its [[axioms]].
 
 ### Order of Operations
-kind: skill
+kind: definition
 prereqs: exponents, division, subtraction
 
-The agreed order for working out an expression: brackets, then exponents, then multiplication and division from left to right, then addition and subtraction from left to right. So $2 + 3 \times 4 = 14$, not $20$.
+The convention for evaluating expressions: (1) brackets, (2) exponents, (3) multiplication and division, left to right, (4) addition and subtraction, left to right. Thus $2 + 3 \times 4 = 14$.
 
 ## Factors & Multiples
 
@@ -103,7 +103,7 @@ Shortcuts for spotting factors: a number is divisible by 3 when its digits add u
 kind: definition
 prereqs: factors
 
-A prime has exactly two factors, 1 and itself: 2, 3, 5, 7, 11, 13, … The number 1 is not prime, and 2 is the only even prime.
+An integer $p > 1$ is prime if its only positive divisors are $1$ and $p$: 2, 3, 5, 7, 11, 13, … An integer greater than 1 that is not prime is composite; 1 is neither.
 
 ### Prime Factorization
 kind: skill
@@ -115,30 +115,25 @@ Writing a number as a product of primes, for instance with a factor tree: $60 = 
 kind: theorem
 prereqs: prime-factorization
 
-Every whole number above 1 is a product of primes in exactly one way, apart from the order of the factors. Primes are the atoms of multiplication.
+Every integer $n > 1$ can be written as a product of primes, $n = p_1 p_2 \cdots p_k$, and this factorisation is unique up to the order of the factors.
 
 ### Greatest Common Factor {#gcf}
+kind: definition
 prereqs: factors
 
-The largest number that divides both of two numbers: $\gcd(12, 18) = 6$. It is what you divide by to simplify a fraction in one step.
+The greatest common factor $\gcd(a, b)$ of positive integers $a$ and $b$ is the largest positive integer dividing both. Example: $\gcd(12, 18) = 6$.
 
 ### Least Common Multiple {#lcm}
+kind: definition
 prereqs: multiples
 
-The smallest positive number that is a multiple of each of two (or more) numbers. It is the *least common denominator* you need for adding fractions.
+The least common multiple $\operatorname{lcm}(a, b)$ of positive integers $a$ and $b$ is the smallest positive integer that is a multiple of both.
 
-**By listing multiples.** Write out the multiples of each number until one turns up in both lists:
+**By listing multiples.** Multiples of 4: 4, 8, **12**, 16, …; multiples of 6: 6, **12**, 18, …; so $\operatorname{lcm}(4, 6) = 12$.
 
-- Multiples of 4: 4, 8, **12**, 16, 20, **24**, …
-- Multiples of 6: 6, **12**, 18, **24**, …
+**By prime factorisation** (see [[prime-factorization]]): take each prime to the highest power in which it occurs. $4 = 2^2$ and $6 = 2 \cdot 3$ give $\operatorname{lcm}(4, 6) = 2^2 \cdot 3 = 12$.
 
-The common multiples are 12, 24, 36, …, and the least of them is 12, so $\operatorname{lcm}(4, 6) = 12$.
-
-**By prime factors** (see [[prime-factorization]]). Take each prime the *greatest* number of times it appears in either number:
-
-$$4 = 2^2, \qquad 6 = 2 \times 3 \qquad\Longrightarrow\qquad \operatorname{lcm}(4, 6) = 2^2 \times 3 = 12$$
-
-> **A useful check.** For two numbers, $\operatorname{lcm}(a, b) \times \gcd(a, b) = a \times b$. Here $12 \times 2 = 24 = 4 \times 6$.
+**Identity.** $\operatorname{lcm}(a, b) \cdot \gcd(a, b) = ab$.
 
 ```quiz
 Q: What is $\operatorname{lcm}(4, 6)$?
@@ -146,18 +141,16 @@ Q: What is $\operatorname{lcm}(4, 6)$?
 - 10
 + 12
 - 24
-Hint: List the multiples of 6 and stop at the first one that 4 divides.
-Why: 6, **12**, and 4 divides 12. 24 is a common multiple too, but not the least.
+Hint: List the multiples of 6.
+Why: 12 is the first multiple of 6 that 4 divides; 24 is common but not least.
 
 Q: What is $\operatorname{lcm}(3, 5)$?
 A: 15
-Hint: 3 and 5 share no factors.
-Why: When two numbers share no factors, their LCM is simply their product.
+Why: Coprime numbers have $\operatorname{lcm}(a, b) = ab$.
 
 Q: What is $\operatorname{lcm}(8, 12)$?
 A: 24
-Hint: Try the multiples of 12.
-Why: $8 = 2^3$ and $12 = 2^2 \times 3$, so take $2^3 \times 3 = 24$.
+Why: $8 = 2^3$ and $12 = 2^2 \cdot 3$, so $2^3 \cdot 3 = 24$.
 ```
 
 ## Fractions
@@ -171,9 +164,10 @@ prereqs: division, number-line
 $\frac{a}{b}$ means $a$ pieces of size $\frac{1}{b}$, when the whole is cut into $b$ equal pieces. It is also a division, $a \div b$, and a point on the number line.
 
 ### Equivalent Fractions
+kind: theorem
 prereqs: fraction-concept, multiplication
 
-Multiplying the top and bottom by the same number names the same amount in smaller pieces: $\frac{1}{2} = \frac{2}{4} = \frac{3}{6}$.
+For $b \ne 0$ and $k \ne 0$: $\dfrac{a}{b} = \dfrac{ka}{kb}$. Two fractions are equal, $\frac{a}{b} = \frac{c}{d}$, if and only if $ad = bc$.
 
 ### Simplifying Fractions
 kind: skill
@@ -193,46 +187,40 @@ prereqs: fraction-concept, division
 A whole number and a fraction together, like $2\frac{1}{3}$, which is the improper fraction $\frac{7}{3}$. Converting between the two forms is a division with remainder.
 
 ### Adding Fractions
-kind: skill
+kind: formula
 prereqs: equivalent-fractions, lcm
 
-Fractions can only be added when they count pieces of the same size, so first rewrite them over a **common denominator**. The least common multiple of the denominators is the smallest one that works.
+For $b, d \ne 0$:
+$$\frac{a}{b} + \frac{c}{d} = \frac{ad + bc}{bd}$$
+In practice, rewrite both over the least common denominator $\operatorname{lcm}(b, d)$, then add the numerators.
 
-$$\frac{1}{4} + \frac{1}{6} = \frac{3}{12} + \frac{2}{12} = \frac{5}{12}$$
+**Example.** $\frac{1}{4} + \frac{1}{6} = \frac{3}{12} + \frac{2}{12} = \frac{5}{12}$, using $\operatorname{lcm}(4, 6) = 12$. Subtraction is the same: $\frac{5}{6} - \frac{1}{4} = \frac{10}{12} - \frac{3}{12} = \frac{7}{12}$.
 
-1. Find the least common multiple of the denominators: $\operatorname{lcm}(4, 6) = 12$.
-2. Rewrite each fraction over 12: multiply $\frac14$ top and bottom by 3, and $\frac16$ by 2.
-3. Add the numerators and keep the denominator.
-4. Simplify if you can.
-
-Subtraction works the same way: $\frac{5}{6} - \frac{1}{4} = \frac{10}{12} - \frac{3}{12} = \frac{7}{12}$.
-
-> **The classic mistake.** $\frac{1}{4} + \frac{1}{6}$ is not $\frac{2}{10}$. Adding the bottoms would mean the pieces changed size, and $\frac{2}{10}$ is *smaller* than $\frac14$ on its own.
+Common error: $\frac{a}{b} + \frac{c}{d} \ne \frac{a + c}{b + d}$.
 
 ```quiz
-Q: $\frac{1}{4} + \frac{1}{6} = \;?$
+Q: $\frac{1}{4} + \frac{1}{6} =$
 A: 5/12
-Hint: Use 12 as the common denominator.
-Why: $\frac{3}{12} + \frac{2}{12} = \frac{5}{12}$.
+Hint: Use the denominator 12.
+Why: $\frac{3}{12} + \frac{2}{12}$.
 
-Q: What is the least common denominator for $\frac{2}{9} + \frac{5}{6}$?
+Q: What is the least common denominator of $\frac{2}{9} + \frac{5}{6}$?
 - 3
 - 15
 + 18
 - 54
-Why: $\operatorname{lcm}(9, 6) = 18$. 54 works as well, but it isn't the least.
+Why: $\operatorname{lcm}(9, 6) = 18$.
 
-Q: $\frac{2}{3} - \frac{1}{2} = \;?$
+Q: $\frac{2}{3} - \frac{1}{2} =$
 A: 1/6
-Hint: Rewrite both in sixths.
-Why: $\frac{4}{6} - \frac{3}{6} = \frac{1}{6}$.
+Why: $\frac{4}{6} - \frac{3}{6}$.
 ```
 
 ### Multiplying Fractions
-kind: skill
+kind: formula
 prereqs: fraction-concept, multiplication
 
-Multiply the tops together and the bottoms together: $\frac{2}{3} \times \frac{3}{5} = \frac{6}{15} = \frac{2}{5}$. "Of" means times: half of a third is $\frac12 \times \frac13 = \frac16$.
+For $b, d \ne 0$: $\dfrac{a}{b} \cdot \dfrac{c}{d} = \dfrac{ac}{bd}$.
 
 ### Reciprocals
 kind: definition
@@ -241,10 +229,10 @@ prereqs: multiplying-fractions
 The reciprocal of $\frac{a}{b}$ is $\frac{b}{a}$, and a number times its reciprocal is 1. Zero is the one number with no reciprocal.
 
 ### Dividing Fractions
-kind: skill
+kind: formula
 prereqs: reciprocals
 
-Dividing by a fraction is multiplying by its reciprocal: $\frac{3}{4} \div \frac{1}{2} = \frac{3}{4} \times \frac{2}{1} = \frac{3}{2}$, because a half fits into three quarters one and a half times.
+For $b, c, d \ne 0$: $\dfrac{a}{b} \div \dfrac{c}{d} = \dfrac{a}{b} \cdot \dfrac{d}{c} = \dfrac{ad}{bc}$.
 
 ## Decimals & Percents
 

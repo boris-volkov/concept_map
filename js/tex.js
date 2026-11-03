@@ -455,11 +455,15 @@ function table(name, rows, spec) {
   const aligned = ALIGNED.has(name)
   const cls = aligned ? 'tex-aligned' : name === 'cases' || name === 'rcases' ? 'tex-cases'
     : name === 'array' ? 'tex-array' : 'tex-matrix'
+  const alignOf = j => (spec ? { l: 'left', r: 'right' }[spec[j]]
+    : aligned ? (j % 2 ? 'left' : 'right')
+    : name === 'cases' || name === 'rcases' ? 'left' : null)
   const body = rows.map(r => '<mtr>' + Array.from({ length: cols }, (_, j) => {
     // In "a &= b" the second cell starts with "=", which needs something in front of it to keep its spacing.
     const cell = (aligned && j % 2 ? '<mi></mi>' : '') + (r[j] ?? '')
-    const align = spec ? ` style="text-align:${{ l: 'left', r: 'right' }[spec[j]] ?? 'center'}"` : ''
-    return `<mtd${align}>${cell}</mtd>`
+    // Firefox and Safari read columnalign; Chrome ignores it and plain text-align, but honours -webkit-left/right.
+    const al = alignOf(j)
+    return `<mtd${al ? ` columnalign="${al}" style="text-align:-webkit-${al}"` : ''}>${cell}</mtd>`
   }).join('') + '</mtr>').join('')
   const display = aligned || name === 'gathered' || name === 'gather' ? ' displaystyle="true"' : ''
   const small = name === 'smallmatrix' ? ' scriptlevel="1"' : ''

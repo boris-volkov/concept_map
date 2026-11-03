@@ -7,11 +7,13 @@ The mathematics of change and accumulation: the slopes of curves, the areas unde
 
 What a function approaches, as opposed to what it equals: the idea underneath all of calculus.
 
-### The Idea of a Limit {#limit-concept}
+### Limits {#limit-concept}
 kind: definition
 prereqs: function-notation, function-graphs
 
-$\lim_{x \to a} f(x) = L$ means $f(x)$ gets as close as you like to $L$ when $x$ is close enough to $a$, whatever happens at $a$ itself. $\frac{x^2 - 1}{x - 1}$ is undefined at 1, yet its limit there is 2.
+$\lim_{x \to a} f(x) = L$ means that $f(x)$ can be made as close to $L$ as desired by taking $x$ close enough to $a$, with $x \ne a$. The value $f(a)$, if it exists at all, plays no part.
+
+For instance $\frac{x^2 - 1}{x - 1}$ is undefined at $x = 1$, but its limit there is 2.
 
 ### One-Sided Limits
 prereqs: limit-concept, piecewise-functions
@@ -22,7 +24,7 @@ Approaching from the left only ($x \to a^-$) or the right only ($x \to a^+$). Th
 kind: theorem
 prereqs: limit-concept
 
-The limit of a sum, difference, product or quotient is the sum, difference, product or quotient of the limits, as long as no denominator heads to 0. So polynomials can be evaluated by substitution.
+If $\lim_{x \to a} f(x) = L$ and $\lim_{x \to a} g(x) = M$, then $\lim (f \pm g) = L \pm M$, $\lim (cf) = cL$, $\lim (fg) = LM$, and $\lim \frac{f}{g} = \frac{L}{M}$ provided $M \ne 0$.
 
 ### Evaluating Limits Algebraically {#evaluating-limits}
 kind: skill
@@ -39,33 +41,34 @@ What $f(x)$ approaches as $x$ grows without bound: $\lim_{x \to \infty} \frac{3x
 kind: theorem
 prereqs: limit-laws
 
-If $g(x) \le f(x) \le h(x)$ near $a$, and $g$ and $h$ have the same limit there, then $f$ is squeezed into having it too.
+If $g(x) \le f(x) \le h(x)$ for all $x$ near $a$ and $\lim_{x \to a} g(x) = \lim_{x \to a} h(x) = L$, then $\lim_{x \to a} f(x) = L$.
 
 ### The Limit of sin x over x {#sinx-over-x}
 kind: theorem
 prereqs: squeeze-theorem, radians, unit-circle
 
-$$\lim_{x \to 0} \frac{\sin x}{x} = 1$$
+With $x$ in radians:
+$$\lim_{x \to 0} \frac{\sin x}{x} = 1, \qquad \lim_{x \to 0} \frac{1 - \cos x}{x} = 0$$
 
-Proved by squeezing areas on the unit circle, with $x$ in radians. It is the key to differentiating every trig function.
+Proved by the [[squeeze-theorem]], comparing areas in the unit circle.
 
 ### Continuity
 kind: definition
 prereqs: one-sided-limits, limit-laws
 
-$f$ is continuous at $a$ when $\lim_{x \to a} f(x) = f(a)$: the graph has no hole, jump or blow-up there, and could be drawn without lifting the pencil.
+$f$ is continuous at $a$ if $f(a)$ is defined, $\lim_{x \to a} f(x)$ exists, and $\lim_{x \to a} f(x) = f(a)$. It is continuous on an interval if it is continuous at every point of it.
 
 ### Intermediate Value Theorem {#ivt}
 kind: theorem
 prereqs: continuity
 
-A function continuous on $[a, b]$ takes every value between $f(a)$ and $f(b)$. If it is negative at one end and positive at the other, it has a zero in between.
+If $f$ is continuous on $[a, b]$ and $N$ lies between $f(a)$ and $f(b)$, then $f(c) = N$ for some $c \in [a, b]$.
 
-### The Formal Definition of a Limit {#epsilon-delta}
+### The ε–δ Definition of a Limit {#epsilon-delta}
 kind: definition
 prereqs: limit-concept, absolute-value-inequalities
 
-$\lim_{x \to a} f(x) = L$ means: for every $\varepsilon > 0$ there is a $\delta > 0$ such that $0 < |x - a| < \delta$ guarantees $|f(x) - L| < \varepsilon$. A challenge and a response, made exact.
+$\lim_{x \to a} f(x) = L$ if for every $\varepsilon > 0$ there is a $\delta > 0$ such that $0 < |x - a| < \delta$ implies $|f(x) - L| < \varepsilon$.
 
 ## Derivatives
 
@@ -75,47 +78,45 @@ The instantaneous rate of change: the slope of a curve at a point.
 kind: formula
 prereqs: average-rate-of-change, polynomial-multiplication
 
-The average rate of change from $x$ to $x + h$, simplified as far as it will go:
-
+The average rate of change of $f$ on $[x, x + h]$, for $h \ne 0$:
 $$\frac{f(x + h) - f(x)}{h}$$
 
-For $f(x) = x^2$ it is $2x + h$. Let $h$ shrink to 0 and it becomes the derivative.
+For $f(x) = x^2$ it simplifies to $2x + h$.
 
 ### The Derivative {#derivative-definition}
 kind: definition
 prereqs: difference-quotient, evaluating-limits
 
-The slope of a curve at a single point. A secant line through $(x, f(x))$ and a nearby point $(x + h, f(x + h))$ has slope given by the [[difference-quotient]]. Let the second point slide in toward the first and the secant turns into the tangent:
-
+The derivative of $f$ at $x$ is
 $$f'(x) = \lim_{h \to 0} \frac{f(x + h) - f(x)}{h}$$
+when this limit exists. It is the slope of the tangent line to the graph of $f$ at $(x, f(x))$.
 
-**Example.** For $f(x) = x^2$,
+**Example.** For $f(x) = x^2$: $\frac{(x + h)^2 - x^2}{h} = 2x + h \to 2x$, so $f'(x) = 2x$.
 
-$$\frac{(x + h)^2 - x^2}{h} = \frac{2xh + h^2}{h} = 2x + h \;\longrightarrow\; 2x \quad\text{as } h \to 0.$$
-
-So $f'(x) = 2x$, and at $x = 3$ the parabola is climbing with slope 6. The derivative is itself a function, the rate of change of $f$ everywhere: velocity from position, marginal cost from cost.
+Notation: $f'(x) = \frac{df}{dx} = \frac{d}{dx} f(x) = Df(x)$.
 
 ```quiz
 Q: If $f(x) = x^2$, what is $f'(3)$?
 A: 6
-Why: $f'(x) = 2x$, so $f'(3) = 6$.
+Why: $f'(x) = 2x$.
 
-Q: The derivative $f'(a)$ is the slope of
+Q: $f'(a)$ is the slope of
 - the secant line from $x = 0$ to $x = a$
 + the tangent line at $x = a$
 - the line through the origin and $(a, f(a))$
 - the normal line at $x = a$
-Why: It is the limit of secant slopes as the second point closes in: the tangent's slope.
+Why: It is the limit of secant slopes.
 
 Q: Using the definition, what is the derivative of $f(x) = 5x + 2$?
 A: 5
-Why: $\frac{5(x + h) + 2 - (5x + 2)}{h} = \frac{5h}{h} = 5$. A line's derivative is its slope.
+Why: $\frac{5(x + h) + 2 - (5x + 2)}{h} = 5$.
 ```
 
 ### Differentiability
+kind: theorem
 prereqs: derivative-definition, continuity
 
-A function is differentiable where that limit exists. Differentiable implies continuous, but not the other way: $|x|$ is continuous at 0 and has a corner there.
+If $f$ is differentiable at $a$, then $f$ is continuous at $a$. The converse is false: $|x|$ is continuous but not differentiable at $0$.
 
 ### Tangent Lines
 kind: skill
@@ -127,66 +128,69 @@ The tangent to $y = f(x)$ at $x = a$ is $y - f(a) = f'(a)(x - a)$: a point from 
 kind: theorem
 prereqs: derivative-definition, exponent-laws
 
+For every real $n$ (and $x > 0$ when $n$ is not an integer):
 $$\frac{d}{dx} x^n = n x^{n-1}$$
 
-Bring the power down in front and lower it by one: $\frac{d}{dx}x^5 = 5x^4$. It holds for any real power, so roots and reciprocals are covered too: $\frac{d}{dx}\sqrt{x} = \frac{d}{dx}x^{1/2} = \frac{1}{2}x^{-1/2}$.
-
 ```quiz
-Q: $\frac{d}{dx} x^7 = \;?$
+Q: $\frac{d}{dx} x^7 =$
 - $x^6$
 - $7x^7$
 + $7x^6$
 - $6x^7$
-Why: Down comes the 7, and the power drops to 6.
+Why: $n x^{n-1}$ with $n = 7$.
 
 Q: What is the derivative of $x^3$ at $x = 2$?
 A: 12
-Why: $3x^2 = 3 \cdot 4 = 12$.
+Why: $3x^2 = 12$.
 
-Q: $\frac{d}{dx}\, \frac{1}{x} = \;?$
+Q: $\frac{d}{dx} \frac{1}{x} =$
 + $-\frac{1}{x^2}$
 - $\frac{1}{x^2}$
 - $\ln x$
 - $-\frac{1}{x}$
-Hint: Write $\frac{1}{x}$ as $x^{-1}$.
-Why: $\frac{d}{dx}x^{-1} = -1 \cdot x^{-2} = -\frac{1}{x^2}$.
+Hint: $\frac{1}{x} = x^{-1}$.
+Why: $-1 \cdot x^{-2}$.
 ```
 
-### Sum & Constant Multiple Rules {#derivative-linearity}
+### Linearity of the Derivative {#derivative-linearity}
 kind: theorem
 prereqs: derivative-definition, limit-laws
 
-Differentiate term by term, and constants ride along: $\frac{d}{dx}\left(3x^2 + 5x\right) = 6x + 5$.
+If $f$ and $g$ are differentiable and $c$ is a constant: $(f + g)' = f' + g'$ and $(cf)' = cf'$.
 
 ### Product Rule
 kind: theorem
 prereqs: derivative-linearity
 
-$(fg)' = f'g + fg'$. Not $f'g'$: think of a rectangle whose sides both grow.
+If $f$ and $g$ are differentiable: $(fg)' = f'g + fg'$.
 
 ### Quotient Rule
 kind: theorem
 prereqs: product-rule
 
-$\left(\frac{f}{g}\right)' = \frac{f'g - fg'}{g^2}$: the product rule applied to $f \cdot \frac{1}{g}$.
+If $f$ and $g$ are differentiable and $g \ne 0$:
+$$\left(\frac{f}{g}\right)' = \frac{f'g - fg'}{g^2}$$
 
 ### Chain Rule
 kind: theorem
 prereqs: composition, derivative-linearity
 
-The derivative of a composition multiplies the rates: $\frac{d}{dx} f(g(x)) = f'(g(x))\,g'(x)$. If $y$ changes 3 times as fast as $u$, and $u$ twice as fast as $x$, then $y$ changes 6 times as fast as $x$.
+If $g$ is differentiable at $x$ and $f$ is differentiable at $g(x)$:
+$$(f \circ g)'(x) = f'(g(x))\,g'(x), \qquad \text{or} \qquad \frac{dy}{dx} = \frac{dy}{du}\,\frac{du}{dx}$$
 
 ### Derivatives of Trig Functions {#trig-derivatives}
 kind: formula
 prereqs: sinx-over-x, sum-difference-formulas, derivative-definition
 
-$\frac{d}{dx}\sin x = \cos x$ and $\frac{d}{dx}\cos x = -\sin x$, with $x$ in radians. The others follow from the quotient rule: $\frac{d}{dx}\tan x = \sec^2 x$.
+With $x$ in radians:
+$$\begin{aligned} \frac{d}{dx}\sin x &= \cos x & \frac{d}{dx}\cos x &= -\sin x & \frac{d}{dx}\tan x &= \sec^2 x \\ \frac{d}{dx}\sec x &= \sec x \tan x & \frac{d}{dx}\csc x &= -\csc x \cot x & \frac{d}{dx}\cot x &= -\csc^2 x \end{aligned}$$
 
 ### Derivatives of Exponentials & Logarithms {#exp-log-derivatives}
 kind: formula
 prereqs: number-e, natural-log, chain-rule
 
-$e^x$ is its own derivative, which is what makes $e$ special, and $\frac{d}{dx}\ln x = \frac{1}{x}$. Other bases pick up a constant: $\frac{d}{dx}2^x = 2^x \ln 2$.
+For $a > 0$, $a \ne 1$:
+$$\begin{aligned} \frac{d}{dx} e^x &= e^x & \frac{d}{dx} a^x &= a^x \ln a \\ \frac{d}{dx} \ln x &= \frac{1}{x} \ (x > 0) & \frac{d}{dx} \log_a x &= \frac{1}{x \ln a} \end{aligned}$$
 
 ### Implicit Differentiation
 kind: technique
@@ -195,9 +199,29 @@ prereqs: chain-rule
 Differentiating an equation like $x^2 + y^2 = 25$ without solving for $y$: treat $y$ as a function of $x$ and use the chain rule, so $2x + 2y\,y' = 0$ and $y' = -\frac{x}{y}$.
 
 ### Derivatives of Inverse Functions {#inverse-derivatives}
+kind: formula
 prereqs: implicit-differentiation, inverse-functions, inverse-trig-functions
 
-Flip the slope of the original at the matching point. So $\frac{d}{dx}\arctan x = \frac{1}{1 + x^2}$ and $\frac{d}{dx}\arcsin x = \frac{1}{\sqrt{1 - x^2}}$.
+If $f$ is invertible and differentiable with $f'(f^{-1}(x)) \ne 0$, then $(f^{-1})'(x) = \dfrac{1}{f'(f^{-1}(x))}$. In particular:
+$$\frac{d}{dx}\arcsin x = \frac{1}{\sqrt{1 - x^2}}, \qquad \frac{d}{dx}\arccos x = -\frac{1}{\sqrt{1 - x^2}}, \qquad \frac{d}{dx}\arctan x = \frac{1}{1 + x^2}$$
+
+### Table of Derivatives {#derivative-table}
+kind: formula
+prereqs: inverse-derivatives, trig-derivatives, exp-log-derivatives, product-rule, quotient-rule
+
+The rules, for differentiable $f$, $g$ and a constant $c$:
+$$\begin{aligned} (cf)' &= cf' & (f + g)' &= f' + g' \\ (fg)' &= f'g + fg' & \left(\tfrac{f}{g}\right)' &= \tfrac{f'g - fg'}{g^2} \\ (f \circ g)' &= (f' \circ g)\, g' & (f^{-1})' &= \tfrac{1}{f' \circ f^{-1}} \end{aligned}$$
+
+| $f(x)$ | $f'(x)$ | | $f(x)$ | $f'(x)$ |
+| --- | --- | --- | --- | --- |
+| $c$ | $0$ | | $\sin x$ | $\cos x$ |
+| $x^n$ | $n x^{n-1}$ | | $\cos x$ | $-\sin x$ |
+| $\sqrt{x}$ | $\frac{1}{2\sqrt{x}}$ | | $\tan x$ | $\sec^2 x$ |
+| $\frac{1}{x}$ | $-\frac{1}{x^2}$ | | $\sec x$ | $\sec x \tan x$ |
+| $e^x$ | $e^x$ | | $\csc x$ | $-\csc x \cot x$ |
+| $a^x$ | $a^x \ln a$ | | $\cot x$ | $-\csc^2 x$ |
+| $\ln x$ | $\frac{1}{x}$ | | $\arcsin x$ | $\frac{1}{\sqrt{1 - x^2}}$ |
+| $\log_a x$ | $\frac{1}{x \ln a}$ | | $\arctan x$ | $\frac{1}{1 + x^2}$ |
 
 ### Higher Derivatives
 prereqs: power-rule
@@ -229,31 +253,32 @@ Points where $f' = 0$ or $f'$ doesn't exist: the only places a smooth function c
 kind: theorem
 prereqs: continuity
 
-A function continuous on a closed interval $[a, b]$ reaches a maximum and a minimum there, at a critical point or an endpoint.
+If $f$ is continuous on the closed interval $[a, b]$, then $f$ attains a maximum and a minimum value on $[a, b]$.
 
 ### Rolle's Theorem
 kind: theorem
 prereqs: critical-points, evt
 
-If a smooth function starts and ends at the same height, somewhere in between its slope is 0.
+If $f$ is continuous on $[a, b]$, differentiable on $(a, b)$, and $f(a) = f(b)$, then $f'(c) = 0$ for some $c \in (a, b)$.
 
 ### Mean Value Theorem {#mvt}
 kind: theorem
 prereqs: rolles-theorem
 
-Somewhere on $[a, b]$ the instantaneous rate equals the average rate: $f'(c) = \frac{f(b) - f(a)}{b - a}$. Average 60 mph on a trip, and at some moment the speedometer read exactly 60.
+If $f$ is continuous on $[a, b]$ and differentiable on $(a, b)$, then for some $c \in (a, b)$:
+$$f'(c) = \frac{f(b) - f(a)}{b - a}$$
 
 ### First Derivative Test
 kind: theorem
 prereqs: critical-points, mvt
 
-Where $f' > 0$ the function rises, and where $f' < 0$ it falls. A critical point where $f'$ switches from $+$ to $-$ is a local maximum; from $-$ to $+$, a local minimum.
+Let $c$ be a critical point of a continuous $f$. If $f'$ changes from positive to negative at $c$, then $f(c)$ is a local maximum; if from negative to positive, a local minimum; if $f'$ keeps its sign, neither.
 
 ### Concavity & the Second Derivative {#concavity}
 kind: theorem
 prereqs: higher-derivatives, first-derivative-test
 
-$f'' > 0$ means the graph bends upward like a cup, $f'' < 0$ downward like a cap. Inflection points are where the bending changes direction.
+If $f'' > 0$ on an interval, $f$ is concave up there; if $f'' < 0$, concave down. If $f'(c) = 0$ and $f''(c) > 0$, $f(c)$ is a local minimum; if $f''(c) < 0$, a local maximum.
 
 ### Curve Sketching
 kind: skill
@@ -271,7 +296,7 @@ Finding the best: write the quantity to maximise or minimise as a function of on
 kind: theorem
 prereqs: mvt, limits-at-infinity
 
-For limits of the form $\frac{0}{0}$ or $\frac{\infty}{\infty}$, $\lim \frac{f}{g} = \lim \frac{f'}{g'}$ when the latter exists. Differentiate the top and the bottom separately, not as a quotient.
+If $\lim f(x)$ and $\lim g(x)$ are both $0$ or both $\pm\infty$, and $\lim \frac{f'(x)}{g'(x)}$ exists, then $\lim \frac{f(x)}{g(x)} = \lim \frac{f'(x)}{g'(x)}$.
 
 ### Position, Velocity & Acceleration {#motion}
 prereqs: higher-derivatives
@@ -286,7 +311,22 @@ Accumulation: adding up infinitely many infinitely thin pieces.
 kind: definition
 prereqs: power-rule, trig-derivatives, exp-log-derivatives
 
-Running a derivative backwards: $\int x^2\,dx = \frac{x^3}{3} + C$. The $+C$ is there because every constant has derivative 0.
+$F$ is an antiderivative of $f$ on an interval if $F'(x) = f(x)$ there. Any two differ by a constant, so the indefinite integral is written $\int f(x)\,dx = F(x) + C$.
+
+### Table of Integrals {#integral-table}
+kind: formula
+prereqs: antiderivatives, inverse-derivatives
+
+Each holds up to an added constant $C$:
+
+| $f(x)$ | $\int f(x)\,dx$ | | $f(x)$ | $\int f(x)\,dx$ |
+| --- | --- | --- | --- | --- |
+| $x^n$, $n \ne -1$ | $\frac{x^{n+1}}{n + 1}$ | | $\sin x$ | $-\cos x$ |
+| $\frac{1}{x}$ | $\ln\lvert x \rvert$ | | $\cos x$ | $\sin x$ |
+| $e^x$ | $e^x$ | | $\sec^2 x$ | $\tan x$ |
+| $a^x$ | $\frac{a^x}{\ln a}$ | | $\sec x \tan x$ | $\sec x$ |
+| $\ln x$ | $x \ln x - x$ | | $\tan x$ | $-\ln\lvert \cos x \rvert$ |
+| $\frac{1}{1 + x^2}$ | $\arctan x$ | | $\frac{1}{\sqrt{1 - x^2}}$ | $\arcsin x$ |
 
 ### Riemann Sums
 kind: definition
@@ -298,7 +338,9 @@ Approximating the area under a curve with rectangles: $\sum f(x_i)\,\Delta x$. T
 kind: definition
 prereqs: riemann-sums, limit-concept
 
-The limit of the Riemann sums as the rectangles get thinner: $\int_a^b f(x)\,dx$, the signed area between the curve and the axis, counting area below the axis as negative.
+For $f$ on $[a, b]$, with $\Delta x = \frac{b - a}{n}$ and sample points $x_i^*$ in the $i$-th subinterval:
+$$\int_a^b f(x)\,dx = \lim_{n \to \infty} \sum_{i=1}^{n} f(x_i^*)\,\Delta x$$
+when the limit exists. It is the signed area between the graph and the $x$-axis.
 
 ### Properties of Integrals {#integral-properties}
 kind: theorem
@@ -310,32 +352,28 @@ Integrals split over intervals, $\int_a^b + \int_b^c = \int_a^c$, run backwards 
 kind: theorem
 prereqs: definite-integral, antiderivatives, mvt
 
-Differentiation and integration undo each other. If $F$ is any antiderivative of a continuous $f$, so that $F' = f$, then
+Let $f$ be continuous on $[a, b]$.
+(1) If $F(x) = \int_a^x f(t)\,dt$, then $F'(x) = f(x)$.
+(2) If $F$ is any antiderivative of $f$, then $\int_a^b f(x)\,dx = F(b) - F(a)$.
 
-$$\int_a^b f(x)\,dx = F(b) - F(a)$$
-
-and, the other way round, the area accumulated up to $x$ grows at exactly the rate $f(x)$:
-
-$$\frac{d}{dx}\int_a^x f(t)\,dt = f(x)$$
-
-Before this theorem, finding an area meant adding up infinitely many slivers. After it, an antiderivative is enough: $\int_0^2 x^2\,dx = \frac{2^3}{3} - \frac{0^3}{3} = \frac{8}{3}$.
+Differentiation and integration are inverse operations. **Example.** $\int_0^2 x^2\,dx = \frac{2^3}{3} - 0 = \frac{8}{3}$.
 
 ```quiz
-Q: $\int_0^2 x^2\,dx = \;?$
+Q: $\int_0^2 x^2\,dx =$
 A: 8/3
 Hint: An antiderivative of $x^2$ is $\frac{x^3}{3}$.
-Why: $\frac{8}{3} - 0 = \frac{8}{3}$.
+Why: $\frac{8}{3} - 0$.
 
-Q: $\frac{d}{dx}\int_0^x \cos t\,dt = \;?$
+Q: $\frac{d}{dx}\int_0^x \cos t\,dt =$
 - $\sin x$
 + $\cos x$
 - $-\sin x$
 - $0$
-Why: The second part of the theorem: differentiating the accumulated area gives back the integrand.
+Why: Part (1) of the theorem.
 
-Q: $\int_1^3 2x\,dx = \;?$
+Q: $\int_1^3 2x\,dx =$
 A: 8
-Why: An antiderivative is $x^2$, and $9 - 1 = 8$.
+Why: $x^2$ from 1 to 3: $9 - 1$.
 ```
 
 ### u-Substitution {#u-substitution}
@@ -496,6 +534,5 @@ Polynomials of infinite degree, $\sum c_n (x - a)^n$, which converge on an inter
 kind: definition
 prereqs: power-series, higher-derivatives, factorials
 
-Writing a function as a power series built from its derivatives at one point:
-
-$$f(x) = \sum_{n=0}^{\infty} \frac{f^{(n)}(a)}{n!}(x - a)^n, \qquad e^x = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots$$
+The Taylor series of $f$ about $a$ is $\displaystyle\sum_{n=0}^{\infty} \frac{f^{(n)}(a)}{n!}(x - a)^n$; with $a = 0$ it is the Maclaurin series. Common ones:
+$$\begin{aligned} e^x &= \sum_{n=0}^{\infty} \frac{x^n}{n!} & \sin x &= \sum_{n=0}^{\infty} \frac{(-1)^n x^{2n+1}}{(2n + 1)!} \\ \cos x &= \sum_{n=0}^{\infty} \frac{(-1)^n x^{2n}}{(2n)!} & \frac{1}{1 - x} &= \sum_{n=0}^{\infty} x^n \ (|x| < 1) \end{aligned}$$

@@ -20,7 +20,7 @@ export const KINDS = {
 const KEYS = {
   id: 'id', kind: 'kind', type: 'kind', prereqs: 'prereqs', prereq: 'prereqs', prerequisites: 'prereqs',
   requires: 'prereqs', needs: 'prereqs', color: 'color', colour: 'color', parent: 'parent',
-  summary: 'summary', tags: 'tags', tag: 'tags',
+  summary: 'summary', tags: 'tags', tag: 'tags', wrap: 'wrap',
 }
 
 const DEFAULT_COLOR = '#6b5a45'
@@ -143,6 +143,7 @@ export function buildAtlas({ index, files }) {
     n.body = body
     n.quiz = quizzes.flatMap(lines => parseQuiz(lines, (line, msg) => report('error', n.file, line, `Quiz in “${n.title}”: ${msg}`, n.id)))
     n.summary = n.meta.summary?.value.trim() || firstParagraph(body)
+    n.wrap = parseInt(n.meta.wrap?.value, 10) || 0 // for a topic: at most this many children in a line
     n.tags = (n.meta.tags?.value ?? '').split(/[,\s]+/).filter(Boolean).map(t => t.toLowerCase())
     n.plainTitle = plainText(n.title)
     n.prereqs = []

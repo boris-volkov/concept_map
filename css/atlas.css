@@ -10,6 +10,9 @@
   --ink-2: #5a4936;
   --ink-3: #8a775f;
   --rule: #cbb68e;
+  --blue: #2b4c84;
+  --blue-edge: #a9b9d6;
+  --blue-fill: #eef2f9;
   --pre: #a3461a;  /* what the selection builds on */
   --post: #2f6b6a; /* what builds on the selection */
   --right: #3d6b35;
@@ -239,8 +242,14 @@ math { font-family: var(--math); font-size: 1.04em; }
   margin-bottom: 1px;
 }
 .node.leaf .title { font-size: 15px; line-height: 1.25; }
-.node.kind-axiom, .node.kind-theorem { background: linear-gradient(var(--card), color-mix(in srgb, var(--c) 6%, var(--card))); }
-.node.kind-axiom .title, .node.kind-theorem .title { font-style: italic; }
+/* Axioms and theorems are the load-bearing statements: blue boxes, whatever domain they are in. */
+.node.kind-axiom, .node.kind-theorem {
+  background: var(--blue-fill);
+  border: 1px solid var(--blue-edge);
+  border-left: 4px solid var(--blue);
+}
+.node.kind-axiom .kind, .node.kind-theorem .kind { color: var(--blue); font-weight: bold; }
+.node.kind-axiom .quiz-badge, .node.kind-theorem .quiz-badge { --c: var(--blue); }
 
 .marks { position: absolute; top: 6px; right: 5px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .quiz-badge {
@@ -548,6 +557,19 @@ math { font-family: var(--math); font-size: 1.04em; }
 .prose.empty { color: var(--ink-3); font-style: italic; }
 .prose ul, .prose ol { padding-left: 1.4em; margin: 0 0 0.85em; }
 .prose li { margin: 0.2em 0; }
+/* A formal statement, set apart as in a textbook. Axioms and theorems blue, with the statement in italics. */
+.statement {
+  margin: 0 0 1em;
+  padding: 10px 14px 4px;
+  background: #fdfaf2;
+  border: 1px solid var(--card-edge);
+  border-left: 3px solid var(--ink-3);
+}
+.statement-axiom, .statement-theorem { background: var(--blue-fill); border-color: var(--blue-edge); border-left-color: var(--blue); }
+.statement-axiom .prose, .statement-theorem .prose { font-style: italic; }
+.statement-label { font-weight: bold; font-size: 15px; letter-spacing: 0.02em; margin-bottom: 2px; }
+.statement-axiom .statement-label, .statement-theorem .statement-label { color: var(--blue); }
+.statement .prose p { margin-bottom: 0.6em; }
 .prose blockquote {
   margin: 0 0 1em;
   padding: 0.55em 0.95em;
@@ -715,10 +737,9 @@ math .tex-cancel, math .tex-bcancel, math .tex-xcancel {
 math .tex-bcancel { background: linear-gradient(to bottom right, transparent calc(50% - 0.7px), currentColor calc(50% - 0.7px), currentColor calc(50% + 0.7px), transparent calc(50% + 0.7px)); }
 math mtd { padding: 0.15em 0.45em; }
 math .tex-aligned > mtr > mtd { padding: 0.2em 0; }
-math .tex-aligned > mtr > mtd:nth-child(odd) { text-align: right; padding-left: 1.2em; }
-math .tex-aligned > mtr > mtd:nth-child(even) { text-align: left; }
+math .tex-aligned > mtr > mtd:nth-child(odd) { padding-left: 1.2em; }
 math .tex-aligned > mtr > mtd:first-child { padding-left: 0; }
-math .tex-cases > mtr > mtd { text-align: left; padding: 0.12em 0; }
+math .tex-cases > mtr > mtd { padding: 0.12em 0; }
 math .tex-cases > mtr > mtd + mtd { padding-left: 1em; }
 merror { color: #b22; background: #fbe3e0; }
 .tex-error { color: #b22; }

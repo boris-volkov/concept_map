@@ -81,19 +81,21 @@ By sides: scalene, isosceles (two equal sides) or equilateral. By angles: acute,
 kind: theorem
 prereqs: parallel-lines, triangle-types
 
-The three angles of any triangle add up to $180^\circ$. Draw the line through one vertex parallel to the opposite side: the alternate angles copy the other two angles of the triangle, and with the third they make a straight line.
+The interior angles of every triangle sum to $180^\circ$.
+
+*Proof.* Through one vertex draw the parallel to the opposite side; the alternate angles it forms equal the other two angles of the triangle, and the three angles at the vertex form a straight angle. $\square$
 
 ### Exterior Angle Theorem
 kind: theorem
 prereqs: triangle-angle-sum
 
-An exterior angle of a triangle equals the sum of the two interior angles not next to it.
+An exterior angle of a triangle equals the sum of the two remote interior angles.
 
 ### Triangle Inequality
 kind: theorem
 prereqs: triangle-types, comparing-numbers
 
-Any two sides of a triangle add up to more than the third. Sticks of length 2, 3 and 6 cannot make a triangle.
+In every triangle with sides $a, b, c$: $a + b > c$, $b + c > a$ and $a + c > b$.
 
 ### Medians, Altitudes & Bisectors {#triangle-segments}
 prereqs: triangle-types, perpendicular-lines
@@ -104,30 +106,28 @@ Three special lines through each corner. Each family meets at a single point: th
 kind: theorem
 prereqs: triangle-types, square-roots, area-basic
 
-In a right triangle with legs $a$ and $b$ and hypotenuse $c$, the side opposite the right angle:
-
+In a right triangle with legs $a, b$ and hypotenuse $c$:
 $$a^2 + b^2 = c^2$$
+Conversely, if the sides of a triangle satisfy $a^2 + b^2 = c^2$, the angle opposite $c$ is a right angle.
 
-**Why it's true.** Fit four copies of the triangle inside a square of side $a + b$, leaving a tilted square of side $c$ in the middle. The big square's area is $(a + b)^2$, and it is also four triangles plus the middle square, $4 \cdot \frac{1}{2}ab + c^2$. Setting these equal gives $a^2 + 2ab + b^2 = 2ab + c^2$, so $a^2 + b^2 = c^2$.
-
-The converse holds as well: if $a^2 + b^2 = c^2$, the angle opposite $c$ is a right angle. Builders use a 3-4-5 triangle to square a corner.
+*Proof sketch.* Four copies of the triangle placed inside a square of side $a + b$ leave a square of side $c$: $(a + b)^2 = 4 \cdot \frac{1}{2}ab + c^2$, which simplifies to $a^2 + b^2 = c^2$. $\square$
 
 ```quiz
 Q: A right triangle has legs 6 and 8. How long is the hypotenuse?
 A: 10
-Why: $6^2 + 8^2 = 36 + 64 = 100$, and $\sqrt{100} = 10$.
+Why: $\sqrt{36 + 64} = 10$.
 
 Q: The hypotenuse is 13 and one leg is 5. How long is the other leg?
 A: 12
-Hint: Subtract this time: $b^2 = c^2 - a^2$.
-Why: $169 - 25 = 144$, so the leg is $\sqrt{144} = 12$.
+Hint: $b^2 = c^2 - a^2$.
+Why: $\sqrt{169 - 25} = 12$.
 
-Q: Which three lengths could be the sides of a right triangle?
+Q: Which lengths form a right triangle?
 - 2, 3, 4
 - 4, 5, 6
 + 7, 24, 25
 - 5, 5, 5
-Why: $7^2 + 24^2 = 49 + 576 = 625 = 25^2$.
+Why: $49 + 576 = 625 = 25^2$.
 ```
 
 ### Special Right Triangles
@@ -149,13 +149,13 @@ Figures with the same shape and size: one can be moved onto the other by slides,
 kind: theorem
 prereqs: congruence, triangle-types
 
-Three well-chosen measurements pin a triangle down: SSS, SAS, ASA, AAS, and HL for right triangles. SSA does not; two different triangles can share it.
+Two triangles are congruent if they agree in SSS (three sides), SAS (two sides and the included angle), ASA or AAS (two angles and a side), or, for right triangles, HL (hypotenuse and a leg). SSA does not suffice.
 
 ### Isosceles Triangle Theorem
 kind: theorem
 prereqs: triangle-congruence
 
-The angles opposite the equal sides of an isosceles triangle are equal, and conversely. Proved by folding the triangle onto itself.
+In a triangle, two sides are equal if and only if the angles opposite them are equal.
 
 ### Corresponding Parts (CPCTC) {#cpctc}
 kind: theorem
@@ -173,7 +173,7 @@ Figures with the same shape but possibly different sizes: equal angles, and ever
 kind: theorem
 prereqs: similarity, triangle-angle-sum
 
-Two equal angles are enough to make triangles similar (AA), since the third angle must match too. SAS and SSS similarity use ratios of sides instead.
+Two triangles are similar if two pairs of angles are equal (AA), if two pairs of sides are proportional with equal included angles (SAS), or if all three pairs of sides are proportional (SSS).
 
 ### Using Similar Triangles
 kind: skill
@@ -234,7 +234,7 @@ Closed shapes made of segments, named by their number of sides: triangle, quadri
 kind: formula
 prereqs: triangle-angle-sum, polygon-basics
 
-The interior angles of an $n$-sided polygon add up to $(n - 2) \cdot 180^\circ$, because diagonals from one corner cut it into $n - 2$ triangles.
+The interior angles of a convex $n$-gon sum to $(n - 2) \cdot 180^\circ$; its exterior angles sum to $360^\circ$. Each interior angle of a regular $n$-gon is $\frac{(n - 2) \cdot 180^\circ}{n}$.
 
 ### Quadrilaterals
 kind: definition
@@ -262,13 +262,13 @@ Centre, radius, diameter (twice the radius), chord, arc, and tangent: a line tou
 kind: formula
 prereqs: circle-parts, decimal-arithmetic
 
-Every circle's circumference is the same multiple of its diameter, and that multiple is $\pi \approx 3.14159$. So $C = \pi d = 2\pi r$.
+A circle of radius $r$ and diameter $d$ has circumference $C = 2\pi r = \pi d$, where $\pi \approx 3.14159$ is the ratio of circumference to diameter, the same for every circle.
 
 ### Area of a Circle {#circle-area}
 kind: formula
 prereqs: circumference, area-basic
 
-$A = \pi r^2$. Cut a circle into thin wedges and lay them head to tail: they make a near-rectangle $\pi r$ long and $r$ tall.
+A circle of radius $r$ encloses area $A = \pi r^2$.
 
 ### Arcs & Central Angles {#arcs-and-central-angles}
 prereqs: circle-parts, angles
@@ -279,13 +279,13 @@ An angle at the centre cuts off an arc, and the arc is measured by that angle: a
 kind: theorem
 prereqs: arcs-and-central-angles, isosceles-triangle-theorem, exterior-angle-theorem
 
-An angle with its vertex on the circle is half the central angle on the same arc. So every angle inscribed in a semicircle is a right angle.
+An inscribed angle measures half the central angle subtending the same arc. In particular, an angle inscribed in a semicircle is a right angle (Thales' theorem).
 
 ### Arc Length & Sector Area {#arc-length-sector}
 kind: formula
 prereqs: circumference, circle-area, arcs-and-central-angles, proportions
 
-A sector with central angle $\theta$ is the fraction $\frac{\theta}{360^\circ}$ of the whole circle, so its arc is that fraction of $2\pi r$ and its area that fraction of $\pi r^2$.
+A sector of radius $r$ and central angle $\theta$ has arc length $s = r\theta$ and area $A = \frac{1}{2}r^2\theta$ ($\theta$ in radians); in degrees, $s = \frac{\theta}{360^\circ} \cdot 2\pi r$ and $A = \frac{\theta}{360^\circ} \cdot \pi r^2$.
 
 ### Tangents to a Circle {#circle-tangents}
 kind: theorem
@@ -306,13 +306,13 @@ The distance all the way around a shape: add up the lengths of its sides.
 kind: formula
 prereqs: multiplication, multiplying-fractions
 
-A rectangle's area is length times width, counting unit squares. A triangle is half of a rectangle on the same base and height: $A = \frac{1}{2}bh$.
+A rectangle of length $l$ and width $w$ has area $A = lw$; a triangle of base $b$ and height $h$ has area $A = \frac{1}{2}bh$.
 
 ### Area of Parallelograms & Trapezoids {#area-polygons}
 kind: formula
 prereqs: area-basic, quadrilaterals
 
-A parallelogram rearranges into a rectangle, $A = bh$; a trapezoid is the average of its parallel sides times the height, $A = \frac{1}{2}(a + b)h$.
+A parallelogram has area $A = bh$; a trapezoid with parallel sides $a, b$ and height $h$ has area $A = \frac{1}{2}(a + b)h$.
 
 ### Surface Area
 prereqs: area-polygons, circle-area
@@ -323,13 +323,13 @@ The total area of a solid's faces, found by unfolding it into a flat net: a cyli
 kind: formula
 prereqs: area-polygons, circle-area
 
-Base area times height, $V = Bh$: stack copies of the base, one layer at a time. A cylinder holds $\pi r^2 h$.
+A prism or cylinder with base area $B$ and height $h$ has volume $V = Bh$; for a cylinder, $V = \pi r^2 h$.
 
 ### Volume of Pyramids, Cones & Spheres {#volume-pyramids-cones-spheres}
 kind: formula
 prereqs: volume-prisms
 
-A pointed solid holds a third of the prism around it, $V = \frac{1}{3}Bh$; a sphere holds $\frac{4}{3}\pi r^3$.
+A pyramid or cone with base area $B$ and height $h$ has $V = \frac{1}{3}Bh$ (a cone: $\frac{1}{3}\pi r^2 h$). A sphere of radius $r$ has $V = \frac{4}{3}\pi r^3$ and surface area $S = 4\pi r^2$.
 
 ### How Area & Volume Scale {#scaling}
 kind: theorem
@@ -345,21 +345,20 @@ Geometry done with algebra, by giving every point coordinates.
 kind: formula
 prereqs: pythagorean-theorem, coordinate-plane
 
-The distance between $(x_1, y_1)$ and $(x_2, y_2)$ is the hypotenuse of a right triangle:
-
+The distance between $(x_1, y_1)$ and $(x_2, y_2)$ is
 $$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$$
 
 ### Midpoint Formula
 kind: formula
 prereqs: coordinate-plane, fraction-concept
 
-The point halfway between two points averages their coordinates: $\left(\frac{x_1 + x_2}{2}, \frac{y_1 + y_2}{2}\right)$.
+The midpoint of the segment from $(x_1, y_1)$ to $(x_2, y_2)$ is $\left(\frac{x_1 + x_2}{2}, \frac{y_1 + y_2}{2}\right)$.
 
 ### Equation of a Circle {#circle-equation}
 kind: formula
 prereqs: distance-formula, circle-parts, completing-the-square
 
-The points at distance $r$ from the centre $(h, k)$: $(x - h)^2 + (y - k)^2 = r^2$. Completing the square turns a messier equation into this form.
+The circle with centre $(h, k)$ and radius $r$ is $(x - h)^2 + (y - k)^2 = r^2$.
 
 ### Coordinate Proofs
 kind: technique

@@ -44,7 +44,7 @@ export function computeLayout(root, isOpen, cardSize, headerWidth) {
     const size = kids.map(measure)
     const at = new Map(kids.map((k, i) => [k, i]))
     const edges = container.localEdges.map(e => ({ a: at.get(e.from), b: at.get(e.to), w: e.weight }))
-    const pos = placeLayered(size, edges, direction(container.depth))
+    const pos = placeLayered(size, edges, direction(container.depth), container.wrap)
     kids.forEach((k, i) => rel.set(k, { x: pos.x[i], y: pos.y[i], w: size[i].w, h: size[i].h }))
     return { w: pos.w, h: pos.h }
   }
@@ -65,7 +65,7 @@ export function computeLayout(root, isOpen, cardSize, headerWidth) {
 
 // Lays out boxes of the given sizes, with weighted arrows a → b between them, flowing `dir`.
 // Positions are worked out as u (along the flow) and v (across it), then turned into x and y.
-function placeLayered(size, edges, dir) {
+function placeLayered(size, edges, dir, wrap = 0) {
   const n = size.length
   if (!n) return { x: [], y: [], w: 0, h: 0 }
   const across = dir === 'right'
@@ -122,12 +122,14 @@ function placeLayered(size, edges, dir) {
   const limit = Math.max(across ? Math.sqrt(area / ASPECT) : Math.sqrt(area * ASPECT), ...size.map((_, k) => breadth(k)))
   const lanes = [] // a layer's boxes, split into one or more lanes side by side
   layers.forEach((list, l) => {
-    const parts = Math.max(1, Math.round(stack(list) / limit))
+    // A topic's "wrap: n" fixes the length of a line, keeping its authors' order (CANI / CANI / D).
+    const parts = wrap ? Math.ceil(list.length / wrap) : Math.max(1, Math.round(stack(list) / limit))
     const share = stack(list) / parts
     let lane = []
     let made = 0
     for (const v of list) {
-      if (lane.length && made < parts - 1 && stack([...lane, v]) > share * 1.08) {
+      const full = wrap ? lane.length >= wrap : stack([...lane, v]) > share * 1.08
+      if (lane.length && made < parts - 1 && full) {
         lanes.push({ layer: l, nodes: lane })
         lane = []
         made++

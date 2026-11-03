@@ -11,29 +11,28 @@ Angles and sides of right triangles, tied together by three ratios.
 kind: definition
 prereqs: triangle-similarity, ratio, pythagorean-theorem
 
-In a right triangle, pick one of the acute angles, $\theta$. The sides are named from its point of view: the **hypotenuse** opposite the right angle, the side **opposite** $\theta$, and the side **adjacent** to it.
+For an acute angle $\theta$ of a right triangle, with hypotenuse $h$, side $o$ opposite $\theta$ and side $a$ adjacent to it:
+$$\sin\theta = \frac{o}{h}, \qquad \cos\theta = \frac{a}{h}, \qquad \tan\theta = \frac{o}{a}$$
 
-$$\sin\theta = \frac{\text{opposite}}{\text{hypotenuse}}, \qquad \cos\theta = \frac{\text{adjacent}}{\text{hypotenuse}}, \qquad \tan\theta = \frac{\text{opposite}}{\text{adjacent}}$$
-
-Remembered as **SOH CAH TOA**. The ratios depend only on the angle, not on the size of the triangle: all right triangles with the same $\theta$ are [[triangle-similarity|similar]], so their sides come in the same proportions.
+Mnemonic: SOH CAH TOA. The ratios depend only on $\theta$, since all right triangles with angle $\theta$ are [[triangle-similarity|similar]].
 
 ```quiz
-Q: In a right triangle, the side opposite $\theta$ is 3, the side adjacent to it is 4 and the hypotenuse is 5. What is $\sin\theta$?
+Q: In a right triangle, the side opposite $\theta$ is 3, the adjacent side 4 and the hypotenuse 5. What is $\sin\theta$?
 A: 3/5
-Why: Opposite over hypotenuse: $\frac{3}{5}$.
+Why: $\sin\theta = \frac{o}{h} = \frac{3}{5}$.
 
-Q: In the same triangle, what is $\tan\theta$?
+Q: In the same triangle, $\tan\theta =$
 - $\frac{3}{5}$
 - $\frac{4}{5}$
 + $\frac{3}{4}$
 - $\frac{4}{3}$
-Why: Opposite over adjacent: $\frac{3}{4}$.
+Why: $\tan\theta = \frac{o}{a} = \frac{3}{4}$.
 
-Q: Which ratio uses the adjacent side and the hypotenuse?
+Q: Which ratio is adjacent over hypotenuse?
 - sine
 + cosine
 - tangent
-Why: CAH: cosine is adjacent over hypotenuse.
+Why: CAH.
 ```
 
 ### Solving Right Triangles
@@ -84,7 +83,7 @@ Measuring an angle by the arc it cuts off, in radiuses: a full turn is $2\pi$ ra
 kind: definition
 prereqs: radians, trig-ratios, special-angle-values
 
-The circle of radius 1 about the origin. The point at angle $\theta$ is $(\cos\theta, \sin\theta)$: that is now the *definition* of cosine and sine, for every angle.
+For any real $\theta$, let $(x, y)$ be the point of the unit circle $x^2 + y^2 = 1$ at angle $\theta$ from the positive $x$-axis. Then $\cos\theta := x$, $\sin\theta := y$ and $\tan\theta := \frac{y}{x}$ for $x \ne 0$.
 
 ### Trig Functions of Any Angle {#trig-functions-any-angle}
 prereqs: unit-circle, standard-position
@@ -129,25 +128,44 @@ Equations true for every angle, and how to solve those that aren't.
 kind: theorem
 prereqs: unit-circle, pythagorean-theorem
 
-$\sin^2\theta + \cos^2\theta = 1$ for every angle: the point $(\cos\theta, \sin\theta)$ is on the unit circle, $x^2 + y^2 = 1$.
+For all real $\theta$:
+$$\sin^2\theta + \cos^2\theta = 1, \qquad 1 + \tan^2\theta = \sec^2\theta, \qquad 1 + \cot^2\theta = \csc^2\theta$$
+
+*Proof.* $(\cos\theta, \sin\theta)$ lies on $x^2 + y^2 = 1$; divide by $\cos^2\theta$ or $\sin^2\theta$ for the other two. $\square$
 
 ### The Fundamental Identities {#fundamental-identities}
 kind: theorem
 prereqs: pythagorean-identity, reciprocal-trig, even-odd-functions
 
-The quotient, reciprocal and Pythagorean identities, plus symmetry: $\cos(-\theta) = \cos\theta$ and $\sin(-\theta) = -\sin\theta$. Used to rewrite one expression as another.
+For all $\theta$ where defined:
+$$\begin{aligned} \tan\theta &= \frac{\sin\theta}{\cos\theta} & \cot\theta &= \frac{\cos\theta}{\sin\theta} \\ \sin(-\theta) &= -\sin\theta & \cos(-\theta) &= \cos\theta \\ \sin\left(\tfrac{\pi}{2} - \theta\right) &= \cos\theta & \cos\left(\tfrac{\pi}{2} - \theta\right) &= \sin\theta \end{aligned}$$
 
 ### Sum & Difference Formulas {#sum-difference-formulas}
 kind: formula
 prereqs: fundamental-identities
 
-$\sin(a \pm b) = \sin a\cos b \pm \cos a\sin b$ and $\cos(a \pm b) = \cos a\cos b \mp \sin a\sin b$. They give exact values like $\sin 75^\circ$ and the derivatives of sine and cosine.
+For all real $a, b$:
+$$\begin{aligned} \sin(a \pm b) &= \sin a \cos b \pm \cos a \sin b \\ \cos(a \pm b) &= \cos a \cos b \mp \sin a \sin b \\ \tan(a \pm b) &= \frac{\tan a \pm \tan b}{1 \mp \tan a \tan b} \end{aligned}$$
 
 ### Double- & Half-Angle Formulas {#double-angle-formulas}
 kind: formula
 prereqs: sum-difference-formulas
 
-Setting $a = b$: $\sin 2\theta = 2\sin\theta\cos\theta$ and $\cos 2\theta = \cos^2\theta - \sin^2\theta$. Solving these for $\theta$ gives the half-angle formulas.
+For all real $\theta$:
+$$\begin{aligned} \sin 2\theta &= 2\sin\theta\cos\theta \\ \cos 2\theta &= \cos^2\theta - \sin^2\theta = 2\cos^2\theta - 1 = 1 - 2\sin^2\theta \\ \tan 2\theta &= \frac{2\tan\theta}{1 - \tan^2\theta} \\ \sin^2\theta &= \frac{1 - \cos 2\theta}{2}, \qquad \cos^2\theta = \frac{1 + \cos 2\theta}{2} \end{aligned}$$
+
+### Table of Identities {#trig-identity-table}
+kind: formula
+prereqs: double-angle-formulas
+
+The identities worth knowing by heart:
+$$\begin{aligned} &\sin^2\theta + \cos^2\theta = 1 && 1 + \tan^2\theta = \sec^2\theta \\ &\tan\theta = \frac{\sin\theta}{\cos\theta} && \sec\theta = \frac{1}{\cos\theta}, \ \csc\theta = \frac{1}{\sin\theta} \\ &\sin(-\theta) = -\sin\theta && \cos(-\theta) = \cos\theta \\ &\sin\left(\tfrac{\pi}{2} - \theta\right) = \cos\theta && \cos\left(\tfrac{\pi}{2} - \theta\right) = \sin\theta \\ &\sin(a \pm b) = \sin a \cos b \pm \cos a \sin b && \cos(a \pm b) = \cos a \cos b \mp \sin a \sin b \\ &\sin 2\theta = 2 \sin\theta \cos\theta && \cos 2\theta = \cos^2\theta - \sin^2\theta \\ &\sin^2\theta = \tfrac{1}{2}(1 - \cos 2\theta) && \cos^2\theta = \tfrac{1}{2}(1 + \cos 2\theta) \end{aligned}$$
+
+| $\theta$ | $0$ | $\frac{\pi}{6}$ | $\frac{\pi}{4}$ | $\frac{\pi}{3}$ | $\frac{\pi}{2}$ |
+| --- | --- | --- | --- | --- | --- |
+| $\sin\theta$ | $0$ | $\frac{1}{2}$ | $\frac{\sqrt{2}}{2}$ | $\frac{\sqrt{3}}{2}$ | $1$ |
+| $\cos\theta$ | $1$ | $\frac{\sqrt{3}}{2}$ | $\frac{\sqrt{2}}{2}$ | $\frac{1}{2}$ | $0$ |
+| $\tan\theta$ | $0$ | $\frac{\sqrt{3}}{3}$ | $1$ | $\sqrt{3}$ | undefined |
 
 ### Solving Trig Equations
 kind: skill
@@ -163,13 +181,17 @@ Triangles without a right angle.
 kind: theorem
 prereqs: trig-functions-any-angle, solving-right-triangles
 
-$\frac{a}{\sin A} = \frac{b}{\sin B} = \frac{c}{\sin C}$: each side is proportional to the sine of the angle opposite it.
+In any triangle with sides $a, b, c$ opposite angles $A, B, C$:
+$$\frac{a}{\sin A} = \frac{b}{\sin B} = \frac{c}{\sin C}$$
 
 ### Law of Cosines
 kind: theorem
 prereqs: trig-functions-any-angle, pythagorean-theorem
 
-$c^2 = a^2 + b^2 - 2ab\cos C$: the Pythagorean theorem with a correction for angles that aren't right.
+In any triangle with sides $a, b, c$ opposite angles $A, B, C$:
+$$c^2 = a^2 + b^2 - 2ab\cos C$$
+
+When $C = 90^\circ$ this is the Pythagorean theorem.
 
 ### Area with Sine {#triangle-area-sine}
 kind: formula
@@ -213,4 +235,5 @@ $a + bi = r(\cos\theta + i\sin\theta)$. In this form multiplying is easy: multip
 kind: theorem
 prereqs: polar-complex, sum-difference-formulas
 
-$(\cos\theta + i\sin\theta)^n = \cos n\theta + i\sin n\theta$: powers and roots of complex numbers, by turning.
+For all real $\theta$ and integers $n$:
+$$(\cos\theta + i\sin\theta)^n = \cos n\theta + i \sin n\theta$$

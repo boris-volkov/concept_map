@@ -2,9 +2,9 @@
 
 **[▶ Run it](https://boris-volkov.github.io/concept_map/)**
 
-A map of school mathematics, from counting to calculus, that shows what every idea is built on.
+A map of school mathematics, from counting to calculus, that shows what every idea is built on. It is a reference for tutoring: formal definitions, axioms and theorems, and tables of the formulas worth looking up.
 
-Seven domains sit side by side, joined by arrows: Arithmetic, Algebra, Geometry, Trigonometry, Probability & Statistics, Linear Algebra and Calculus. Click one and it opens into its topics; click a topic and it opens into its concepts. Axioms, definitions, theorems, formulas and skills each carry their name, and every arrow is a prerequisite. Click a concept and the map lights up everything it rests on, in one colour, and everything that rests on it, in another. The panel beside it explains the concept, lists its prerequisites, and gives the whole chain behind it in an order it could be learned in. For *Adding Fractions* that chain runs back through the least common multiple to counting.
+Seven domains sit side by side, joined by arrows: Arithmetic, Algebra, Geometry, Trigonometry, Probability & Statistics, Linear Algebra and Calculus. Click one and it opens into its topics; click a topic and it opens into its concepts. Axioms, definitions, theorems, formulas and skills each carry their name, with axioms and theorems in blue, and every arrow is a prerequisite. Click a concept and the map lights up everything it rests on, in one colour, and everything that rests on it, in another. The panel beside it gives the formal statement, lists its prerequisites, and gives the whole chain behind it in an order it could be learned in. For *Adding Fractions* that chain runs back through the least common multiple to counting.
 
 Some concepts carry a small quiz. It opens on the map, attached to the concept's card, and also in the panel. Getting every question right on the first try marks the concept as mastered. Progress is kept in the student's own browser: topics fill a thin bar as their concepts are mastered, and the panel suggests what to learn next.
 

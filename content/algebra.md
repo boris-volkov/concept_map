@@ -5,47 +5,94 @@ The language of unknown quantities: the rules for working with symbols that stan
 
 ## Axioms & Properties {#axioms}
 
-The handful of rules every real number obeys. They are taken as given, not proved, and everything else in algebra is proved from them: even why a negative times a negative is positive.
+The axioms of the real numbers, taken without proof, and the first theorems derived from them.
 
 ### Number Systems
 kind: definition
 prereqs: negative-numbers, fractions-to-decimals, square-roots
 
-The nested families of numbers: natural numbers $\mathbb{N}$, integers $\mathbb{Z}$, rationals $\mathbb{Q}$ (fractions), and the reals $\mathbb{R}$, which add irrationals like $\sqrt{2}$ and $\pi$ to fill every point of the number line.
-
+The natural numbers $\mathbb{N} = \{1, 2, 3, \ldots\}$, the integers $\mathbb{Z}$, the rationals $\mathbb{Q} = \left\{ \frac{p}{q} : p, q \in \mathbb{Z},\ q \ne 0 \right\}$ and the reals $\mathbb{R}$, which also contain the irrationals such as $\sqrt{2}$ and $\pi$:
 $$\mathbb{N} \subset \mathbb{Z} \subset \mathbb{Q} \subset \mathbb{R}$$
 
 ### Closure
 kind: axiom
 prereqs: number-systems
 
-Adding or multiplying two real numbers always gives a real number: you never fall out of the system.
+For all $a, b \in \mathbb{R}$: $a + b \in \mathbb{R}$ and $ab \in \mathbb{R}$.
 
-### Commutative Properties {#commutative}
+### The Field Axioms: CANI CANI D {#field-axioms}
+wrap: 4
+
+The axioms of addition and multiplication on $\mathbb{R}$, remembered, as Frederic Schuller teaches them, as **CANI CANI D**: **C**ommutativity, **A**ssociativity, a **N**eutral element and **I**nverses, first for addition and then for multiplication, and finally **D**istributivity, which links the two.
+
+| | Addition | Multiplication |
+| --- | --- | --- |
+| **C** | $a + b = b + a$ | $ab = ba$ |
+| **A** | $(a + b) + c = a + (b + c)$ | $(ab)c = a(bc)$ |
+| **N** | $a + 0 = a$ | $a \cdot 1 = a$ |
+| **I** | $a + (-a) = 0$ | $a \cdot a^{-1} = 1$ for $a \ne 0$ |
+| **D** | $a(b + c) = ab + ac$ | |
+
+#### Commutativity of Addition {#add-commutative}
 kind: axiom
 prereqs: number-systems, properties-of-operations
 
-Order doesn't matter: $a + b = b + a$ and $ab = ba$. Subtraction and division are not commutative.
+For all $a, b \in \mathbb{R}$: $a + b = b + a$.
 
-### Associative Properties {#associative}
+#### Associativity of Addition {#add-associative}
 kind: axiom
 prereqs: number-systems, properties-of-operations
 
-Grouping doesn't matter: $(a + b) + c = a + (b + c)$ and $(ab)c = a(bc)$. That is why $a + b + c$ needs no brackets.
+For all $a, b, c \in \mathbb{R}$: $(a + b) + c = a + (b + c)$.
 
-### Distributive Property {#distributive}
+#### Neutral Element of Addition {#add-neutral}
+kind: axiom
+prereqs: number-systems
+
+There is an element $0 \in \mathbb{R}$ such that $a + 0 = a$ for all $a \in \mathbb{R}$.
+
+#### Additive Inverses {#add-inverse}
+kind: axiom
+prereqs: integer-addition
+
+For every $a \in \mathbb{R}$ there is an element $-a \in \mathbb{R}$ such that $a + (-a) = 0$.
+
+Subtraction is defined from it: $a - b := a + (-b)$.
+
+#### Commutativity of Multiplication {#mul-commutative}
 kind: axiom
 prereqs: number-systems, properties-of-operations
 
-Multiplication spreads over addition:
+For all $a, b \in \mathbb{R}$: $ab = ba$.
 
+#### Associativity of Multiplication {#mul-associative}
+kind: axiom
+prereqs: number-systems, properties-of-operations
+
+For all $a, b, c \in \mathbb{R}$: $(ab)c = a(bc)$.
+
+#### Neutral Element of Multiplication {#mul-neutral}
+kind: axiom
+prereqs: number-systems
+
+There is an element $1 \in \mathbb{R}$, with $1 \ne 0$, such that $a \cdot 1 = a$ for all $a \in \mathbb{R}$.
+
+#### Multiplicative Inverses {#mul-inverse}
+kind: axiom
+prereqs: reciprocals
+
+For every $a \in \mathbb{R}$ with $a \ne 0$ there is an element $a^{-1} = \frac{1}{a} \in \mathbb{R}$ such that $a \cdot a^{-1} = 1$.
+
+Division is defined from it: $\frac{a}{b} := a \cdot b^{-1}$ for $b \ne 0$.
+
+#### Distributivity {#distributive}
+kind: axiom
+prereqs: number-systems, properties-of-operations
+
+For all $a, b, c \in \mathbb{R}$:
 $$a(b + c) = ab + ac$$
 
-for all real numbers $a$, $b$ and $c$. Read left to right, it **expands** brackets; read right to left, it **factors** out what the terms share. It is the only axiom that ties addition and multiplication together, so nearly every algebraic step leans on it.
-
-> **Picture it as area.** A rectangle $a$ tall and $b + c$ wide splits into an $a \times b$ rectangle and an $a \times c$ rectangle.
-
-Mental arithmetic uses it all the time: $7 \times 23 = 7 \times 20 + 7 \times 3 = 140 + 21 = 161$.
+The only axiom relating addition and multiplication. Read left to right it expands a product; read right to left it factors out a common factor.
 
 ```quiz
 Q: Expand $3(x + 4)$.
@@ -53,67 +100,59 @@ Q: Expand $3(x + 4)$.
 + $3x + 12$
 - $3x + 7$
 - $7x$
-Hint: The 3 multiplies *both* terms inside the bracket.
-Why: $3 \cdot x + 3 \cdot 4 = 3x + 12$. Forgetting to multiply the second term is the most common slip.
+Hint: The 3 multiplies both terms in the bracket.
+Why: $3 \cdot x + 3 \cdot 4 = 3x + 12$.
 
-Q: Which of these is the distributive property at work?
+Q: Which equation is an instance of distributivity?
 - $x + y = y + x$
 + $5(2 + y) = 10 + 5y$
 - $(xy)z = x(yz)$
 - $x + 0 = x$
-Why: The others are commutativity, associativity and the additive identity.
+Why: The others are commutativity of addition, associativity of multiplication and the neutral element of addition.
 
-Q: Use the distributive property to work out $6 \times 98$ in your head.
+Q: Compute $6 \times 98$ using distributivity.
 A: 588
 Hint: $98 = 100 - 2$.
 Why: $6(100 - 2) = 600 - 12 = 588$.
 ```
 
-### Identity Elements {#identity}
-kind: axiom
-prereqs: number-systems
-
-Adding 0 or multiplying by 1 changes nothing: $a + 0 = a$ and $a \cdot 1 = a$.
-
-### Inverse Elements {#inverses}
-kind: axiom
-prereqs: identity, integer-addition, reciprocals
-
-Every number has an opposite that adds to 0, $a + (-a) = 0$, and every number except 0 has a reciprocal that multiplies to 1, $a \cdot \frac{1}{a} = 1$. Solving an equation is applying inverses.
-
 ### Properties of Equality {#equality-properties}
 kind: axiom
 prereqs: number-systems
 
-Equals can replace equals, and doing the same thing to both sides of an equation keeps it true: if $a = b$ then $a + c = b + c$ and $ac = bc$.
+Equality is reflexive ($a = a$), symmetric (if $a = b$ then $b = a$) and transitive (if $a = b$ and $b = c$ then $a = c$), and equals may be substituted for equals: if $a = b$ then $a + c = b + c$ and $ac = bc$.
 
-### Order Properties
+### Order Axioms {#order-properties}
 kind: axiom
 prereqs: number-systems, comparing-numbers
 
-Any two numbers compare one way: $a < b$, $a = b$ or $a > b$. Adding the same number keeps an inequality, and so does multiplying by a positive; multiplying by a negative reverses it.
+For all $a, b, c \in \mathbb{R}$: exactly one of $a < b$, $a = b$, $a > b$ holds; if $a < b$ then $a + c < b + c$; and if $a < b$ and $c > 0$ then $ac < bc$.
 
-### Anything Times Zero Is Zero {#times-zero}
+Consequently, if $a < b$ and $c < 0$ then $ac > bc$: multiplying an inequality by a negative number reverses it.
+
+### Multiplication by Zero {#times-zero}
 kind: theorem
-prereqs: distributive, identity, inverses
+prereqs: distributive, add-neutral, add-inverse
 
-Not an axiom but a consequence of them: $a \cdot 0 = a(0 + 0) = a \cdot 0 + a \cdot 0$, and subtracting $a \cdot 0$ from both sides leaves $0 = a \cdot 0$.
+For all $a \in \mathbb{R}$: $a \cdot 0 = 0$.
 
-### A Negative Times a Negative {#negative-times-negative}
+*Proof.* $a \cdot 0 = a(0 + 0) = a \cdot 0 + a \cdot 0$; adding $-(a \cdot 0)$ to both sides gives $0 = a \cdot 0$. $\square$
+
+### Product of Negatives {#negative-times-negative}
 kind: theorem
-prereqs: times-zero, inverses
+prereqs: times-zero, add-inverse
 
-That $(-1)(-1) = 1$ is not a rule anyone chose: the axioms force it. Multiply both sides of $(-1) + 1 = 0$ by $-1$:
+For all $a, b \in \mathbb{R}$: $(-a)(-b) = ab$. In particular $(-1)(-1) = 1$.
 
-$$(-1)\big((-1) + 1\big) = (-1) \cdot 0 = 0$$
-
-Distributing the left side gives $(-1)(-1) + (-1)(1) = 0$, that is $(-1)(-1) - 1 = 0$. So $(-1)(-1) = 1$, and any other answer would break the distributive property.
+*Proof* (for $a = b = 1$). $0 = (-1) \cdot 0 = (-1)\big((-1) + 1\big) = (-1)(-1) + (-1)(1)$, so $(-1)(-1) = -(-1) = 1$. $\square$
 
 ### Zero Product Property
 kind: theorem
-prereqs: times-zero, inverses
+prereqs: times-zero, mul-inverse
 
-If $ab = 0$ then $a = 0$ or $b = 0$. (If $a \ne 0$, multiply both sides by $\frac{1}{a}$ to get $b = 0$.) This is why factoring solves equations: $(x - 2)(x + 5) = 0$ means $x = 2$ or $x = -5$.
+For all $a, b \in \mathbb{R}$: if $ab = 0$ then $a = 0$ or $b = 0$.
+
+*Proof.* If $a \ne 0$, multiply both sides by $a^{-1}$: $b = a^{-1} \cdot 0 = 0$. $\square$ It is why a factored equation such as $(x - 2)(x + 5) = 0$ has solutions $x = 2$ and $x = -5$.
 
 ## Expressions
 
@@ -161,7 +200,7 @@ An equation says two expressions are equal. A solution is a value of the variabl
 
 ### One-Step Equations
 kind: skill
-prereqs: equations-and-solutions, inverses
+prereqs: equations-and-solutions, add-inverse, mul-inverse
 
 Undo the one operation on the variable by doing its inverse to both sides: $x + 7 = 12$ gives $x = 5$; $3x = 12$ gives $x = 4$.
 
@@ -213,11 +252,11 @@ prereqs: number-line, negative-numbers
 
 Two number lines crossing at right angles, so that every point has an address $(x, y)$: how far across, then how far up.
 
-### What a Function Is {#function-concept}
+### Function {#function-concept}
 kind: definition
 prereqs: variables, coordinate-plane
 
-A function assigns to every input exactly one output. "Each student's height" is a function; "each height's student" is not, since two students can share a height.
+A function $f : A \to B$ assigns to each element $x$ of the set $A$, its domain, exactly one element $f(x)$ of the set $B$.
 
 ### Function Notation
 prereqs: function-concept, evaluating-expressions
@@ -275,43 +314,40 @@ Functions whose graphs are straight lines: the simplest relationships, changing 
 kind: definition
 prereqs: coordinate-plane, ratio, integer-addition
 
-How steep a line is: how far it rises for each step to the right.
+The slope of the line through $(x_1, y_1)$ and $(x_2, y_2)$, with $x_1 \ne x_2$, is
+$$m = \frac{y_2 - y_1}{x_2 - x_1} = \frac{\Delta y}{\Delta x}$$
 
-$$m = \frac{\text{rise}}{\text{run}} = \frac{y_2 - y_1}{x_2 - x_1}$$
-
-Through $(1, 2)$ and $(4, 8)$ the slope is $\frac{8 - 2}{4 - 1} = \frac{6}{3} = 2$: every step right climbs 2. A positive slope rises, a negative slope falls, a slope of 0 is flat, and a vertical line has no slope at all, since its run is 0.
-
-Slope is a [[unit-rates|rate]]: dollars per hour, metres per second. Calculus extends it from lines to curves with the [[derivative-definition|derivative]].
+Positive slope rises, negative falls, zero is horizontal; a vertical line has undefined slope. The [[derivative-definition|derivative]] generalises slope to curves.
 
 ```quiz
 Q: What is the slope of the line through $(1, 2)$ and $(3, 8)$?
 A: 3
-Why: $\frac{8 - 2}{3 - 1} = \frac{6}{2} = 3$.
+Why: $\frac{8 - 2}{3 - 1} = 3$.
 
 Q: What is the slope of the line through $(-2, 5)$ and $(2, 3)$?
 A: -1/2
-Hint: Subtract in the same order on the top and the bottom, and watch the signs.
-Why: $\frac{3 - 5}{2 - (-2)} = \frac{-2}{4} = -\frac{1}{2}$.
+Hint: Subtract in the same order on top and bottom.
+Why: $\frac{3 - 5}{2 - (-2)} = -\frac{1}{2}$.
 
 Q: A horizontal line has slope
 + 0
 - 1
 - undefined
 - infinity
-Why: Its rise is 0 whatever the run, and $\frac{0}{\text{run}} = 0$. It's *vertical* lines whose slope is undefined.
+Why: $\Delta y = 0$. Vertical lines have undefined slope.
 ```
 
 ### Slope-Intercept Form {#slope-intercept}
 kind: formula
 prereqs: slope, function-notation, linear-equations
 
-$y = mx + b$: the slope $m$ and the $y$-intercept $b$, where the line crosses the $y$-axis. $y = 2x - 3$ starts at $-3$ and climbs 2 per step.
+The line with slope $m$ and $y$-intercept $b$ is $y = mx + b$.
 
 ### Point-Slope Form {#point-slope}
 kind: formula
 prereqs: slope-intercept
 
-$y - y_1 = m(x - x_1)$: the line with slope $m$ through the point $(x_1, y_1)$. The quickest way to write a line from one point and a slope.
+The line with slope $m$ through $(x_1, y_1)$ is $y - y_1 = m(x - x_1)$.
 
 ### Graphing Lines
 kind: skill
@@ -323,7 +359,7 @@ Plot the intercept, then step by the slope (for $m = \frac{2}{3}$, three right a
 kind: theorem
 prereqs: slope, reciprocals
 
-Parallel lines have equal slopes. Perpendicular lines have slopes that are negative reciprocals, like $2$ and $-\frac{1}{2}$, whose product is $-1$.
+Two non-vertical lines with slopes $m_1$ and $m_2$ are parallel if and only if $m_1 = m_2$, and perpendicular if and only if $m_1 m_2 = -1$.
 
 ### Linear Models
 prereqs: slope-intercept, unit-rates
@@ -378,7 +414,8 @@ Powers beyond whole numbers, and the roots that undo them.
 kind: theorem
 prereqs: exponents, variables
 
-$a^m a^n = a^{m+n}$, $\frac{a^m}{a^n} = a^{m-n}$, $(a^m)^n = a^{mn}$ and $(ab)^n = a^n b^n$. Each follows from counting how many factors of $a$ there are.
+For $a, b > 0$ and real $m, n$:
+$$\begin{aligned} a^m a^n &= a^{m+n} & \frac{a^m}{a^n} &= a^{m-n} \\ (a^m)^n &= a^{mn} & (ab)^n &= a^n b^n \\ a^0 &= 1 & a^{-n} &= \frac{1}{a^n} \end{aligned}$$
 
 ### Zero & Negative Exponents {#negative-exponents}
 kind: definition
@@ -435,7 +472,8 @@ Multiply every term of one by every term of the other, then collect: $(x + 2)(x 
 kind: formula
 prereqs: polynomial-multiplication
 
-Patterns worth knowing on sight: $(a + b)^2 = a^2 + 2ab + b^2$, $(a - b)^2 = a^2 - 2ab + b^2$ and $(a + b)(a - b) = a^2 - b^2$.
+For all $a, b$:
+$$\begin{aligned} (a + b)^2 &= a^2 + 2ab + b^2 \\ (a - b)^2 &= a^2 - 2ab + b^2 \\ (a + b)(a - b) &= a^2 - b^2 \\ (a + b)^3 &= a^3 + 3a^2 b + 3ab^2 + b^3 \\ (a - b)^3 &= a^3 - 3a^2 b + 3ab^2 - b^3 \end{aligned}$$
 
 ### Factoring Out the GCF {#factoring-gcf}
 kind: skill
@@ -449,11 +487,16 @@ prereqs: factoring-gcf, polynomial-multiplication
 
 Reverse multiplication: for $x^2 + 5x + 6$, find two numbers that multiply to 6 and add to 5, so $(x + 2)(x + 3)$.
 
-### Factoring Special Forms
-kind: skill
+### Factoring Patterns {#factoring-special-forms}
+kind: formula
 prereqs: special-products, factoring-gcf
 
-Spot the patterns: differences of squares $x^2 - 9 = (x - 3)(x + 3)$, perfect squares, and sums and differences of cubes, $a^3 - b^3 = (a - b)(a^2 + ab + b^2)$.
+For all $a, b, x, p, q$:
+$$\begin{aligned} a^2 - b^2 &= (a - b)(a + b) \\ a^2 + 2ab + b^2 &= (a + b)^2 \\ a^2 - 2ab + b^2 &= (a - b)^2 \\ a^3 - b^3 &= (a - b)(a^2 + ab + b^2) \\ a^3 + b^3 &= (a + b)(a^2 - ab + b^2) \\ x^2 + (p + q)x + pq &= (x + p)(x + q) \\ ax + ay + bx + by &= (a + b)(x + y) \end{aligned}$$
+
+More generally $a^n - b^n = (a - b)(a^{n-1} + a^{n-2}b + \cdots + b^{n-1})$. The sum of squares $a^2 + b^2$ has no factorisation over $\mathbb{R}$.
+
+Order of attack: common factor first, then a pattern above, then grouping, then the quadratic formula or the [[rational-root-theorem]].
 
 ### Polynomial Long Division {#polynomial-division}
 kind: skill
@@ -471,51 +514,48 @@ A shortcut for dividing by $(x - a)$ using only the coefficients. The last numbe
 kind: theorem
 prereqs: polynomial-division, function-notation
 
-Dividing $p(x)$ by $(x - a)$ leaves the remainder $p(a)$. So $p(a)$ can be found by division, and division checked by evaluation.
+Let $p(x)$ be a polynomial and $a$ a number. The remainder on dividing $p(x)$ by $x - a$ is $p(a)$: there is a polynomial $q(x)$ with $p(x) = (x - a)\,q(x) + p(a)$.
 
 ### Factor Theorem
 kind: theorem
 prereqs: remainder-theorem, zero-product-property
 
-For a polynomial $p(x)$:
+For a polynomial $p(x)$ and a number $a$:
+$$(x - a) \text{ divides } p(x) \iff p(a) = 0$$
 
-$$(x - a) \text{ is a factor of } p(x) \iff p(a) = 0$$
+*Proof.* By the [[remainder-theorem]], $p(x) = (x - a)q(x) + p(a)$, so the remainder vanishes exactly when $p(a) = 0$. $\square$
 
-So finding a **zero** and finding a **factor** are the same job. It follows straight from the [[remainder-theorem]]: dividing $p(x)$ by $(x - a)$ leaves the remainder $p(a)$, and a factor is exactly a divisor that leaves nothing over.
-
-**Example.** For $p(x) = x^3 - 6x^2 + 11x - 6$, try $x = 1$: $p(1) = 1 - 6 + 11 - 6 = 0$. So $(x - 1)$ is a factor, and dividing it out gives
-
-$$x^3 - 6x^2 + 11x - 6 = (x - 1)(x^2 - 5x + 6) = (x - 1)(x - 2)(x - 3).$$
+**Example.** $p(x) = x^3 - 6x^2 + 11x - 6$ has $p(1) = 0$, so $(x - 1) \mid p(x)$, and $p(x) = (x - 1)(x - 2)(x - 3)$.
 
 ```quiz
-Q: If $p(3) = 0$, which of these must be a factor of $p(x)$?
+Q: If $p(3) = 0$, which must divide $p(x)$?
 - $x + 3$
 + $x - 3$
 - $3x$
 - $x - \frac{1}{3}$
-Why: A zero at $x = a$ means a factor $(x - a)$, so $p(3) = 0$ gives $(x - 3)$.
+Why: A zero at $x = a$ gives the factor $x - a$.
 
-Q: Is $(x + 2)$ a factor of $x^2 + 5x + 6$? Answer yes or no.
+Q: Is $x + 2$ a factor of $x^2 + 5x + 6$? Answer yes or no.
 A: yes
-Hint: $x + 2 = x - (-2)$, so check $p(-2)$.
-Why: $p(-2) = 4 - 10 + 6 = 0$, so yes: $x^2 + 5x + 6 = (x + 2)(x + 3)$.
+Hint: Evaluate at $x = -2$.
+Why: $p(-2) = 4 - 10 + 6 = 0$, and $x^2 + 5x + 6 = (x + 2)(x + 3)$.
 
 Q: For $p(x) = x^3 - 6x^2 + 11x - 6$, what is $p(2)$?
 A: 0
-Why: $8 - 24 + 22 - 6 = 0$, so $(x - 2)$ is a factor too.
+Why: $8 - 24 + 22 - 6 = 0$, so $x - 2$ is a factor.
 ```
 
 ### Rational Root Theorem
 kind: theorem
 prereqs: factor-theorem, factors
 
-Any rational zero $\frac{p}{q}$ of a polynomial with integer coefficients has $p$ dividing the constant term and $q$ dividing the leading coefficient. It turns guessing zeros into a short list of candidates.
+Let $p(x) = a_n x^n + \cdots + a_1 x + a_0$ have integer coefficients, $a_n \ne 0$. If $\frac{r}{s}$ is a zero of $p$ in lowest terms, then $r \mid a_0$ and $s \mid a_n$.
 
 ### Fundamental Theorem of Algebra
 kind: theorem
 prereqs: factor-theorem, complex-numbers
 
-Every polynomial of degree $n \ge 1$ has exactly $n$ complex zeros, counted with multiplicity, so it factors completely into $n$ linear factors over the complex numbers.
+Every polynomial of degree $n \ge 1$ with complex coefficients has exactly $n$ complex zeros, counted with multiplicity: $p(x) = a_n(x - z_1)(x - z_2)\cdots(x - z_n)$.
 
 ### Polynomial Functions & End Behavior {#polynomial-functions}
 prereqs: polynomial-basics, function-graphs
@@ -531,9 +571,8 @@ Each factor $(x - a)^k$ gives a zero at $a$ of multiplicity $k$. The graph cross
 kind: theorem
 prereqs: special-products, combinations
 
-Expanding $(a + b)^n$ without multiplying it out: the coefficients are the entries of Pascal's triangle.
-
-$$(a + b)^n = \sum_{k=0}^{n} \binom{n}{k} a^{n-k} b^k$$
+For all $a, b$ and every integer $n \ge 0$:
+$$(a + b)^n = \sum_{k=0}^{n} \binom{n}{k} a^{n-k} b^k, \qquad \binom{n}{k} = \frac{n!}{k!\,(n - k)!}$$
 
 ## Quadratics
 
@@ -573,15 +612,12 @@ Add the number that makes a perfect square: $x^2 + 6x + 2 = 0$ becomes $(x + 3)^
 kind: formula
 prereqs: completing-the-square, simplifying-radicals
 
-The solutions of $ax^2 + bx + c = 0$ (with $a \ne 0$) are
-
+For $a \ne 0$, the solutions of $ax^2 + bx + c = 0$ are
 $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
 
-It is what you get by [[completing-the-square]] on the general equation once and for all, so it always works, even when factoring is hopeless. The $\pm$ gives the two solutions, and the part under the root, the [[discriminant]], says whether they are real.
+It follows from [[completing-the-square]] on the general equation. The [[discriminant]] $b^2 - 4ac$ decides whether the solutions are real.
 
-**Example.** $2x^2 + 3x - 2 = 0$ has $a = 2$, $b = 3$ and $c = -2$:
-
-$$x = \frac{-3 \pm \sqrt{9 + 16}}{4} = \frac{-3 \pm 5}{4}, \quad\text{so } x = \frac{1}{2} \text{ or } x = -2.$$
+**Example.** $2x^2 + 3x - 2 = 0$: $x = \frac{-3 \pm \sqrt{9 + 16}}{4} = \frac{-3 \pm 5}{4}$, so $x = \frac{1}{2}$ or $x = -2$.
 
 ```quiz
 Q: In $3x^2 - 7x + 2 = 0$, what is $b$?
@@ -593,17 +629,18 @@ Why: $b$ is the coefficient of $x$, sign included.
 
 Q: Solve $x^2 - 5x + 6 = 0$. What is the larger solution?
 A: 3
-Why: $x = \frac{5 \pm \sqrt{25 - 24}}{2} = \frac{5 \pm 1}{2}$, which is 3 or 2.
+Why: $x = \frac{5 \pm \sqrt{25 - 24}}{2}$, which is 3 or 2.
 
 Q: What is $b^2 - 4ac$ for $x^2 + 2x + 5 = 0$?
 A: -16
-Why: $4 - 20 = -16$. It is negative, so the equation has no real solutions.
+Why: $4 - 20 = -16$; the equation has no real solutions.
 ```
 
 ### The Discriminant {#discriminant}
+kind: definition
 prereqs: quadratic-formula
 
-$b^2 - 4ac$, the part under the root in the quadratic formula. Positive: two real solutions. Zero: one. Negative: none that are real, but two complex ones.
+The discriminant of $ax^2 + bx + c$ is $\Delta = b^2 - 4ac$. The equation $ax^2 + bx + c = 0$ has two real solutions if $\Delta > 0$, one repeated solution if $\Delta = 0$, and two complex conjugate solutions if $\Delta < 0$.
 
 ## Conic Sections
 
@@ -766,13 +803,14 @@ $e \approx 2.71828$, the limit of $\left(1 + \frac{1}{n}\right)^n$: what \$1 gro
 kind: definition
 prereqs: exponential-functions, inverse-functions
 
-$\log_b x$ is the exponent you need: $\log_b x = y$ means $b^y = x$. So $\log_2 8 = 3$. Logarithms are the inverses of exponentials.
+For $b > 0$, $b \ne 1$ and $x > 0$, $\log_b x$ is the unique real number $y$ with $b^y = x$. Thus $\log_b$ is the inverse of $x \mapsto b^x$; for example $\log_2 8 = 3$.
 
 ### Laws of Logarithms {#log-laws}
 kind: theorem
 prereqs: logarithms, exponent-laws
 
-The laws of exponents, read backwards: $\log(xy) = \log x + \log y$, $\log\frac{x}{y} = \log x - \log y$ and $\log x^n = n \log x$. Logs turn multiplication into addition.
+For $b > 0$, $b \ne 1$, and $x, y > 0$:
+$$\begin{aligned} \log_b(xy) &= \log_b x + \log_b y & \log_b \frac{x}{y} &= \log_b x - \log_b y \\ \log_b x^r &= r \log_b x & \log_b 1 &= 0 \\ b^{\log_b x} &= x & \log_b b^x &= x \end{aligned}$$
 
 ### The Natural Logarithm {#natural-log}
 kind: definition
@@ -784,7 +822,8 @@ $\ln x = \log_e x$, the logarithm to base $e$, and the one calculus prefers.
 kind: formula
 prereqs: log-laws
 
-$\log_b x = \frac{\ln x}{\ln b}$: any logarithm from any other. So $\log_2 10 = \frac{\ln 10}{\ln 2} \approx 3.32$.
+For $a, b > 0$ with $a, b \ne 1$, and $x > 0$:
+$$\log_b x = \frac{\log_a x}{\log_a b} = \frac{\ln x}{\ln b}$$
 
 ### Solving Exponential Equations
 kind: skill
@@ -827,18 +866,21 @@ A capital sigma means "add up": $\sum_{k=1}^{4} k^2 = 1 + 4 + 9 + 16 = 30$.
 kind: formula
 prereqs: arithmetic-sequences, sigma-notation
 
-The sum of an arithmetic sequence is the number of terms times the average of the first and last: $1 + 2 + \cdots + 100 = 100 \cdot \frac{1 + 100}{2} = 5050$.
+For an arithmetic sequence with first term $a_1$ and $n$-th term $a_n$:
+$$\sum_{k=1}^{n} a_k = \frac{n(a_1 + a_n)}{2}, \qquad \text{in particular} \quad \sum_{k=1}^{n} k = \frac{n(n + 1)}{2}$$
 
 ### Geometric Series
 kind: formula
 prereqs: geometric-sequences, sigma-notation
 
-$a + ar + \cdots + ar^{n-1} = a \frac{1 - r^n}{1 - r}$, found by subtracting the sum from $r$ times itself.
+For $r \ne 1$:
+$$\sum_{k=0}^{n-1} a r^k = a\,\frac{1 - r^n}{1 - r}$$
 
 ### Infinite Geometric Series
+kind: theorem
 prereqs: geometric-series
 
-When $|r| < 1$ the terms shrink fast enough that the sum settles: $a + ar + ar^2 + \cdots = \frac{a}{1 - r}$. So $\frac12 + \frac14 + \frac18 + \cdots = 1$.
+If $|r| < 1$ then $\displaystyle\sum_{k=0}^{\infty} a r^k = \frac{a}{1 - r}$; if $|r| \ge 1$ and $a \ne 0$ the series diverges.
 
 ### Proof by Induction {#induction}
 kind: technique
