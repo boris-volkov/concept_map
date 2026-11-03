@@ -77,7 +77,7 @@ Right under a heading, before the summary, these lines describe it. All are opti
 
 ## Prerequisites
 
-List only what a concept **directly** builds on. "Adding Fractions" needs "Least Common Multiple"; it doesn't need to list "Multiplication" too, because LCM already builds on multiplication, and the entry's *Full chain of prerequisites* follows the whole chain back to counting. If you do list one that another prerequisite already leads to, the map leaves its arrow out, and so does the entry's *Prerequisites* list, so an extra prerequisite never adds clutter.
+List only what a concept **directly** builds on. "Adding Fractions" needs "Least Common Multiple"; it doesn't need to list "Multiplication" too, because LCM already builds on multiplication, and the *Full chain of prerequisites*, under the *i* on an open concept, follows the whole chain back to counting. If you do list one that another prerequisite already leads to, the map leaves its arrow out, and so does the *Prerequisites* list under the *i*, so an extra prerequisite never adds clutter.
 
 A prerequisite can be a whole topic, `prereqs: fractions`, which means everything in it. A prerequisite on a topic applies to everything inside the topic. Use both sparingly: arrows between single concepts say more.
 

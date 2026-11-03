@@ -594,9 +594,11 @@ math { font-family: var(--math); font-size: 1.04em; }
 .kind-axiom > .doc-head .doc-kind::before { content: "✦ "; }
 .doc-title { grid-column: 1 / -1; margin: 0; font-size: 24px; line-height: 1.18; font-weight: normal; overflow-wrap: anywhere; }
 .kind-axiom > .doc-head .doc-title { color: #3d2a06; font-weight: 600; }
-.doc-head .rank-tag { grid-column: 2; grid-row: 1; }
-.doc-head .shut {
-  grid-column: 3;
+/* A mastered concept keeps the check its card had. */
+.doc-check { display: none; color: var(--right); font-weight: normal; }
+.is-mastered > .doc-head .doc-check { display: inline; }
+/* The "i" and the ×, as on a topic's frame. */
+.doc-head button {
   grid-row: 1;
   width: 24px;
   height: 24px;
@@ -609,10 +611,19 @@ math { font-family: var(--math); font-size: 1.04em; }
   line-height: 22px;
   cursor: pointer;
 }
-.doc-head .shut:hover { background: var(--c); color: var(--card); }
+.doc-head .about { grid-column: 2; font-style: italic; font-weight: bold; font-size: 13px; }
+.doc-head .shut { grid-column: 3; }
+.doc-head button:hover, .doc-head .about.is-on { background: var(--c); color: var(--card); }
 
 .doc-body { padding: 14px 18px 2px; }
 .doc-body > :first-child { margin-top: 0; }
+/* What the "i" on an open concept shows, in a band under its head: how it joins the map. */
+.doc-info {
+  padding-bottom: 14px;
+  background: color-mix(in srgb, var(--c) 5%, var(--card));
+  border-bottom: 1px solid color-mix(in srgb, var(--c) 18%, var(--card-edge));
+}
+.info-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 10px; margin-top: 16px; }
 
 /* A topic's README sits at the top of its open frame, above what the topic holds. */
 .readme {
@@ -847,24 +858,7 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
 .tier summary:hover h3::after { color: var(--ink); }
 .ranked { margin: 0; padding: 0; list-style: none; }
 .ranked .chip { padding: 3px 9px 4px 7px; }
-.ranked .chip.is-focus { box-shadow: 0 0 0 2px var(--ink); }
 .rank-no { font-size: 11.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
-
-/* A concept's place in the ranking, in the head of its entry. */
-.rank-tag {
-  flex: none;
-  padding: 1px 9px 2px;
-  font-size: 12.5px;
-  font-variant-caps: normal;
-  letter-spacing: 0.02em;
-  color: var(--t-ink);
-  background: var(--t);
-  border: 1px solid color-mix(in srgb, var(--rubric) 30%, transparent);
-  border-radius: 10px;
-  cursor: pointer;
-}
-.rank-tag:hover { border-color: var(--rubric); }
-.rank-tag.tier-end { border-style: dashed; }
 
 /* ---------- content problems ---------- */
 

@@ -13,7 +13,7 @@
 import { computeLayout, flowOf, FRAME_PAD } from './layout.js'
 import {
   ancestors, isAncestor, descendants, visibleRep, visibleEdges, prerequisitesOf, dependentsOf,
-  externalPrereqs, externalDependents, domainOf,
+  externalPrereqs, externalDependents,
 } from './model.js'
 import { renderInline, plainText, esc } from './markdown.js'
 import { KINDS } from './content.js'
@@ -41,7 +41,7 @@ export class AtlasMap {
     this.onSelect = onSelect
     this.onView = onView
     this.open = new Set() // ids of what is open: domains and topics, concepts, and the root files
-    this.readmes = new Set() // ids of the topics whose README is open
+    this.readmes = new Set() // ids of the topics whose README is open, and of the open concepts whose "i" is
     this.els = new Map() // key → element, for everything on screen; a README's key is "readme:" and its topic's id
     this.boxes = new Map() // key → its box on the map
     this.paths = new Map() // edge key → <path>
@@ -50,7 +50,6 @@ export class AtlasMap {
     this.fileSizes = new Map() // key → the size of an open file or README, which changes with what it shows
     this.heads = new Map()
     this.rankDomain = '' // the Ranking shows only this domain's concepts, when set
-    this.rankFocus = null // the concept the Ranking was last opened at
     this.selected = null
     this.hl = null
     this.camera = new Camera(viewport, world, () => this.cameraMoved())
@@ -81,17 +80,16 @@ export class AtlasMap {
     for (const m of [this.els, this.boxes, this.paths, this.sizes, this.fileSizes, this.heads]) m.clear()
     this.edges = new Map()
     this.open = new Set([...this.open].filter(id => atlas.nodes.has(id) || ROOT.has(id)))
-    this.readmes = new Set([...this.readmes].filter(id => atlas.nodes.get(id)?.children.length))
+    this.readmes = new Set([...this.readmes].filter(id => atlas.nodes.has(id)))
     this.selected = (this.selected && atlas.nodes.get(this.selected.id)) || null
     this.current = (this.current && atlas.nodes.get(this.current.id)) || null
-    this.rankFocus = null
     if (!atlas.roots.some(d => d.id === this.rankDomain)) this.rankDomain = ''
   }
 
   /** Opens what was open when the map was last left. */
   restore({ open = [], readmes = [] }) {
     this.open = new Set(open.filter(id => this.atlas.nodes.has(id) || ROOT.has(id)))
-    this.readmes = new Set(readmes.filter(id => this.atlas.nodes.get(id)?.children.length))
+    this.readmes = new Set(readmes.filter(id => this.atlas.nodes.has(id)))
   }
 
   // ---- what is open ----
@@ -158,7 +156,7 @@ export class AtlasMap {
     const sup = n.tier?.key === 's'
     el.className = `node leaf kind-${n.kind}${sup ? ' is-super' : ''}${open ? ' is-open doc' : ''}`
     if (open) {
-      el.innerHTML = docs.conceptDoc(n, this.atlas)
+      el.innerHTML = docs.conceptDoc(n, this.atlas, { info: this.readmes.has(n.id) })
       el.removeAttribute('tabindex')
       el.setAttribute('role', 'article')
       el.setAttribute('aria-label', n.plainTitle)
@@ -214,7 +212,6 @@ export class AtlasMap {
       el.removeAttribute('tabindex')
       el.setAttribute('role', 'article')
       el.setAttribute('aria-label', f.title)
-      if (f === RANKING && this.rankFocus) docs.focusRanked(el, this.rankFocus)
       docs.refresh(el)
       this.resizes.observe(el)
     } else {
@@ -526,7 +523,7 @@ export class AtlasMap {
       return this.expand(n)
     }
     if (!this.isFileOpen(n)) return this.openFile(n, { at: hit('.quiz-badge') ? '.practice' : null, keyboard })
-    if (hit('.rank-tag')) return this.openRoot(RANKING, { focus: n })
+    if (hit('.doc-head .about')) return this.toggleInfo(n)
     if (hit('.doc-head')) return this.closeFile(n)
     if (hit('.mastery')) return progress.setMastered(n.id, !progress.isMastered(n.id))
     const reveal = hit('[data-reveal]')
@@ -609,12 +606,34 @@ export class AtlasMap {
     const focused = !!el?.contains(document.activeElement)
     const before = this.boxes.get(n.id)
     this.open.delete(n.id)
+    this.readmes.delete(n.id) // it opens again without its "i" band, as a topic does without its README
     const was = this.selected === n
     if (was) this.selected = null
     this.relayout()
     if (was) this.onSelect?.(null)
     this.settle(n.id, before)
     if (focused) this.els.get(n.id)?.focus({ preventScroll: true })
+    this.onView?.()
+  }
+
+  /**
+   * The "i" on an open concept: shows, in a band under its head, what it builds on and what
+   * builds on it, which otherwise only the arrows say; or puts the band away again. The rest of
+   * the entry is left as it is, a quiz half done included, and stays still on the screen.
+   */
+  toggleInfo(n) {
+    const el = this.els.get(n.id)
+    const before = this.boxes.get(n.id)
+    const on = !this.readmes.has(n.id)
+    if (on) this.readmes.add(n.id)
+    else this.readmes.delete(n.id)
+    docs.showInfo(el, n, on)
+    widen(el)
+    this.fileSizes.set(n.id, { w: el.offsetWidth, h: el.offsetHeight })
+    this.selected = n
+    this.relayout()
+    this.onSelect?.(n)
+    this.settle(n.id, before, { at: on ? '.doc-info' : '.doc-head' })
     this.onView?.()
   }
 
@@ -647,27 +666,14 @@ export class AtlasMap {
     this.onView?.()
   }
 
-  /**
-   * Opens the Index or the Ranking. `focus`, a concept, is found and marked in the Ranking; `here`
-   * opens it in place (its card was clicked), where otherwise the map goes to it.
-   */
-  openRoot(f, { focus = null, here = false } = {}) {
+  /** Opens the Index or the Ranking: `here`, in place (its card was clicked), or else the map goes to it. */
+  openRoot(f, { here = false } = {}) {
     const before = this.boxes.get(f.id)
-    const wasOpen = this.isFileOpen(f)
-    if (focus && this.rankDomain && domainOf(focus).id !== this.rankDomain) this.rankDomain = ''
-    if (f === RANKING) this.rankFocus = focus
     this.open.add(f.id)
-    if (wasOpen && focus) this.fill(f, this.els.get(f.id)) // drawn again, unfolding the focus's tier
-    const boxes = this.relayout()
+    const box = this.relayout().get(f.id)
     const c = this.camera
-    const box = boxes.get(f.id)
-    const el = this.els.get(f.id)
-    const mark = focus && el.querySelector('.is-focus')
     if (here) this.settle(f.id, before, { read: true })
-    else if (mark) {
-      const top = (mark.getBoundingClientRect().top - el.getBoundingClientRect().top) / c.k
-      c.moveTo(c.frame({ x: box.x, y: box.y + top - 120, w: box.w, h: 240 }, { k: Math.min(1.1, Math.max(c.k, 0.9)) }))
-    } else c.moveTo(c.frame(box, { k: Math.min(1.1, Math.max(c.k, 0.9)) }))
+    else c.moveTo(c.frame(box, { k: Math.min(1.1, Math.max(c.k, 0.9)) }))
     this.onView?.()
   }
 
@@ -687,11 +693,15 @@ export class AtlasMap {
     this.openRoot(f)
   }
 
-  /** Esc: closes the selected concept, or the selected topic's README, or else lets go of the selection. */
+  /**
+   * Esc: puts away what was opened last on the selection: an open concept's "i" band, then the
+   * concept itself, or a topic's README; or else lets go of the selection.
+   */
   escape() {
     const n = this.selected
     if (!n) return
-    if (this.isFileOpen(n)) this.closeFile(n)
+    if (this.isFileOpen(n) && this.readmes.has(n.id)) this.toggleInfo(n)
+    else if (this.isFileOpen(n)) this.closeFile(n)
     else if (this.hasReadme(n)) this.closeReadme(n)
     else this.select(null)
   }

@@ -4,6 +4,9 @@
 // around what it holds; a concept is a file, which opens right where it sits into its entry;
 // and the "i" on a topic's frame opens the topic's README, at the top of the frame. Beside the
 // domains are two more files, the Index and the Ranking. This module writes what each shows.
+//
+// An open concept shows its content and nothing else: the arrows on the map already say what
+// it builds on. The "i" on it opens a band under its head with those connections spelled out.
 
 import { renderMarkdown, renderInline, esc } from './markdown.js'
 import { ancestors, learningPath, externalPrereqs, externalDependents, leaves, domainOf, TIERS } from './model.js'
@@ -16,23 +19,41 @@ export const ROOT_FILES = [
   { id: '@ranking', title: 'Ranking', root: true },
 ]
 
-/** A concept, open: its entry, what it builds on and what builds on it, and its exercises. */
-export function conceptDoc(n, atlas) {
+/** A concept, open: its content and its exercises. `info`: with the band its "i" opens. */
+export function conceptDoc(n, atlas, { info = false } = {}) {
   const resolve = id => atlas.nodes.get(id)
-  const path = learningPath(n)
-  return `${head(KINDS[n.kind] ?? esc(n.kind), renderInline(n.title), n.plainTitle, rankTag(n, atlas))}
+  const kind = `${KINDS[n.kind] ?? esc(n.kind)}<span class="doc-check" title="Mastered"> ✓</span>`
+  const about = `<button type="button" class="about${info ? ' is-on' : ''}" title="What it builds on, and what builds on it" ` +
+    `aria-label="About ${esc(n.plainTitle)}" aria-expanded="${info}">i</button>`
+  return `${head(kind, renderInline(n.title), n.plainTitle, about)}
+    ${info ? conceptInfo(n) : ''}
     <div class="doc-body">
       ${entry(n, resolve)}
+      ${n.quiz.length ? '<section class="practice"><h3>Exercises</h3><div class="quiz-mount"></div></section>' : ''}
+    </div>`
+}
+
+/** Opens or closes the band that the "i" on an open concept shows, under the concept's head. */
+export function showInfo(el, n, on) {
+  el.querySelector('.doc-info')?.remove()
+  if (on) el.querySelector('.doc-head').insertAdjacentHTML('afterend', conceptInfo(n))
+  const button = el.querySelector('.doc-head .about')
+  button.classList.toggle('is-on', on)
+  button.setAttribute('aria-expanded', on)
+  refresh(el, n)
+}
+
+// The band under an open concept's "i": how it joins the rest of the map, which the arrows
+// otherwise say on their own, the chain behind it, and where it is written.
+function conceptInfo(n) {
+  const path = learningPath(n)
+  return `<div class="doc-body doc-info">
       ${twins(n)}
       ${links('Prerequisites', n.directPrereqs, 'pre', '', 'None: a starting point.')}
       ${links('Required for', n.directDependents, 'post', '', '')}
       ${path.length ? pathSection(n, path) : ''}
-      ${n.quiz.length ? '<section class="practice"><h3>Exercises</h3><div class="quiz-mount"></div></section>' : ''}
-    </div>
-    <footer class="doc-foot">
-      <button type="button" class="mastery"></button>
-      ${source(n)}
-    </footer>`
+      <div class="info-foot"><button type="button" class="mastery"></button>${source(n)}</div>
+    </div>`
 }
 
 /** A topic's README, at the top of its open frame: what it is, and how it joins the rest of the map. */
@@ -76,15 +97,6 @@ export function rootDoc(f, atlas, domain) {
   return head('The atlas', esc(f.title), f.title, '') + body
 }
 
-/** Marks a concept in the open Ranking and unfolds its tier. Returns its entry, if it is shown. */
-export function focusRanked(el, n) {
-  const found = el.querySelector(`.ranked [data-id="${CSS.escape(n.id)}"]`)
-  if (!found) return null
-  found.classList.add('is-focus')
-  found.closest('details')?.setAttribute('open', '')
-  return found
-}
-
 /** Brings the marks of mastery inside an open file up to date. `n`: the file's concept or topic, if any. */
 export function refresh(el, n = null) {
   el.querySelectorAll('[data-id]').forEach(a => a.classList.toggle('is-mastered', progress.isMastered(a.dataset.id)))
@@ -102,8 +114,9 @@ export function refresh(el, n = null) {
   }
 }
 
-// A file's head: what it is, its title, and the × that closes it. Like a topic's frame, the
-// whole head closes the file when clicked, so a second click where it opened puts it away.
+// A file's head: what it is, its title, and the × that closes it (and on a concept, its "i").
+// Like a topic's frame, the whole head closes the file when clicked, so a second click where it
+// opened puts it away.
 const head = (label, title, name, extra) => `<header class="doc-head">
     <span class="doc-kind">${label}</span>${extra}
     <button type="button" class="shut" title="Close (Esc)" aria-label="Close ${esc(name)}">×</button>
@@ -188,15 +201,6 @@ export function tiers(atlas, domain) {
         : heading + (list.length ? items : '<p class="none">None.</p>')}</div>
     </section>`
   }).join('')
-}
-
-// A concept's place in the ranking, as a button that opens the Ranking there.
-function rankTag(n, atlas) {
-  const t = n.tier
-  if (!t) return ''
-  const label = t.key === 's' ? '★ Super-concept' : t.key === 'end' ? 'Endpoint' : `Tier ${t.mark}`
-  const place = t.key === 'end' ? 'nothing builds on it yet' : `${ordinal(n.rank)} of ${atlas.ranking.length}`
-  return `<button type="button" class="rank-tag tier-${t.key}" title="Find it in the Ranking">${label} · ${place}</button>`
 }
 
 const placeOf = (n, atlas) => (n.tier.key === 'end' ? 'Nothing builds on it yet'
