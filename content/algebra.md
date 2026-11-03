@@ -835,8 +835,62 @@ $$6x^3 - 9x^2 = 3x^2(2x - 3).$$
 kind: skill
 prereqs: factoring-gcf, polynomial-multiplication
 
-Reverse multiplication. For $x^2 + 5x + 6$, find two numbers that multiply to 6 and add to 5, here 2 and 3:
+To factor $ax^2 + bx + c$ by splitting the middle term (the $ac$ method), find integers $m$ and $n$ with
+$$mn = ac \quad\text{and}\quad m + n = b,$$
+rewrite $bx$ as $mx + nx$, and factor the four terms by grouping.
+
+In order:
+1. Take out any common factor, and $-1$ if $a$ is negative.
+2. Find the pair: list the factor pairs of $ac$ until one adds to $b$.
+3. Split the middle term: $bx = mx + nx$.
+4. Group the terms in pairs, and take out each pair's common factor, with the sign of the pair's first term.
+5. Take out the bracket the two pairs now share.
+
+The signs narrow the search for the pair:
+- if $ac > 0$, $m$ and $n$ both have the sign of $b$;
+- if $ac < 0$, they have opposite signs, and the one further from $0$ has the sign of $b$.
+
+**Example.** For $6x^2 + 7x - 3$, $ac = -18$, and $9$ and $-2$ multiply to $-18$ and add to $7$:
+$$\begin{aligned} 6x^2 + 7x - 3 &= 6x^2 + 9x - 2x - 3 \\ &= 3x(2x + 3) - 1(2x + 3) \\ &= (3x - 1)(2x + 3) \end{aligned}$$
+Splitting it the other way round, as $-2x + 9x$, gives the same factors.
+
+When $a = 1$ the pair gives the factors directly, with no grouping:
+$$x^2 + bx + c = (x + m)(x + n).$$
+For instance 2 and 3 multiply to 6 and add to 5, so
 $$x^2 + 5x + 6 = (x + 2)(x + 3).$$
+
+*Why it works.* If $ax^2 + bx + c = (px + q)(rx + s)$, multiplying out gives
+$$ax^2 + bx + c = prx^2 + psx + qrx + qs,$$
+a middle term in two parts whose coefficients add to $b$ and multiply to
+$$ps \cdot qr = pr \cdot qs = ac.$$
+Splitting the middle term puts these two parts back, and grouping undoes the multiplication. So if no factor pair of $ac$ adds to $b$, there is no such factorisation with integer coefficients.
+
+```quiz
+Q: Which pair splits the middle term of $4x^2 - 4x - 15$?
+- $3$ and $-5$
+- $-6$ and $10$
++ $6$ and $-10$
+- $5$ and $-12$
+Hint: The pair multiplies to $ac$, not to $c$, and adds to $b$.
+Why: $ac = -60$, and $6 \cdot (-10) = -60$ while $6 + (-10) = -4$, so
+$$\begin{aligned} 4x^2 - 4x - 15 &= 4x^2 + 6x - 10x - 15 \\ &= 2x(2x + 3) - 5(2x + 3) \\ &= (2x - 5)(2x + 3) \end{aligned}$$
+
+Q: Factor $2x^2 + 5x - 3$.
++ $(2x - 1)(x + 3)$
+- $(2x + 1)(x - 3)$
+- $(2x + 3)(x - 1)$
+- $(2x - 3)(x + 1)$
+Hint: Find two numbers that multiply to $-6$ and add to $5$.
+Why: $6$ and $-1$ multiply to $-6$ and add to $5$, so
+$$\begin{aligned} 2x^2 + 5x - 3 &= 2x^2 + 6x - x - 3 \\ &= 2x(x + 3) - 1(x + 3) \\ &= (2x - 1)(x + 3) \end{aligned}$$
+
+Q: Which trinomial does not factor over the integers?
+- $2x^2 + 5x + 2$
+- $6x^2 - x - 2$
+- $4x^2 - 4x + 1$
++ $2x^2 + 7x + 4$
+Why: For $2x^2 + 7x + 4$, $ac = 8$, and the factor pairs of $8$ add to $\pm 6$ or $\pm 9$, never to $7$.
+```
 
 #### Factoring Patterns {#factoring-special-forms}
 kind: formula
