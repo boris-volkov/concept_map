@@ -341,7 +341,11 @@ export class AtlasMap {
   expand(n) {
     this.open.add(n.id)
     this.current = n
+    // Opening a topic takes the focus: whatever was selected before lets go.
+    const had = this.selected
+    this.selected = null
     const boxes = this.relayout()
+    if (had) this.onSelect?.(null)
     this.camera.moveTo(this.camera.fit(boxes.get(n.id), { pad: 36, maxK: Math.max(1, this.camera.k) }))
   }
 
