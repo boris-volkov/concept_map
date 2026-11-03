@@ -330,16 +330,16 @@ function placeLayered(size, edges, dir, wrap = 0) {
     }
   })
 
-  // 5. Coordinates: lanes one after another along the flow, the boxes of each lined up at its
-  // start, so that a card beside an open frame stays level with the frame's head and the arrows
-  // into a lane all arrive at one line; each box then nudged toward the boxes it connects to.
+  // 5. Coordinates: lanes one after another along the flow, each box centred in its lane, so that
+  // a small card beside an open file sits level with its middle; each box then nudged across the
+  // flow toward the boxes it connects to. The arrows follow the boxes wherever they end up.
   const u = new Array(n)
   const v = new Array(n)
   let cu = 0
   lanes.forEach((lane, i) => {
     if (i) cu += lanes[i - 1].layer === lane.layer ? gap.wrap : gap.layer
     const extent = Math.max(...lane.nodes.map(length))
-    for (const k of lane.nodes) u[k] = cu
+    for (const k of lane.nodes) u[k] = cu + (extent - length(k)) / 2
     cu += extent
     let cv = -stack(lane.nodes) / 2
     lane.nodes.forEach((k, j) => {
