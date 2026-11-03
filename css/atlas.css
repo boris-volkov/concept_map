@@ -14,6 +14,9 @@
   --gold: #b8862b;
   --gold-ink: #8a5f0e;
   --gold-fill: #fbeab8;
+  --green: #2f6b3c;
+  --green-edge: #a8c8ae;
+  --green-fill: #eef6ee;
   --blue: #2b4c84;
   --blue-edge: #a9b9d6;
   --blue-fill: #eef2f9;
@@ -264,6 +267,15 @@ math { font-family: var(--math); font-size: 1.04em; }
 }
 .node.kind-theorem .kind { color: var(--blue); font-weight: bold; }
 .node.kind-theorem .quiz-badge { --c: var(--blue); }
+
+/* Definitions are green boxes, the same way. */
+.node.kind-definition {
+  background: var(--green-fill);
+  border: 1px solid var(--green-edge);
+  border-left: 4px solid var(--green);
+}
+.node.kind-definition .kind { color: var(--green); font-weight: bold; }
+.node.kind-definition .quiz-badge { --c: var(--green); }
 
 /* Axioms, the foundations everything else is proved from, are gilded: a gold gradient,
    a double gold rule (inset shadows without blur, so they cost nothing) and a star. */
@@ -616,6 +628,7 @@ math { font-family: var(--math); font-size: 1.04em; }
   border-left: 3px solid var(--ink-3);
 }
 .statement-theorem { background: var(--blue-fill); border-color: var(--blue-edge); border-left-color: var(--blue); }
+.statement-definition { background: var(--green-fill); border-color: var(--green-edge); border-left-color: var(--green); }
 .statement-axiom {
   padding: 12px 16px 6px;
   background: linear-gradient(160deg, #fffaf0 0%, var(--gold-fill) 60%, #f1d384 100%);
@@ -626,6 +639,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 .statement-axiom .prose, .statement-theorem .prose { font-style: italic; }
 .statement-label { font-weight: bold; font-size: 15px; letter-spacing: 0.02em; margin-bottom: 2px; }
 .statement-theorem .statement-label { color: var(--blue); }
+.statement-definition .statement-label { color: var(--green); }
 .statement-axiom .statement-label { color: var(--gold-ink); font-size: 17px; letter-spacing: 0.1em; font-variant-caps: all-small-caps; }
 .statement-axiom .statement-label::before { content: "✦ "; }
 .statement .prose p { margin-bottom: 0.6em; }

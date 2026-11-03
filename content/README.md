@@ -27,7 +27,7 @@ A heading with headings under it is a **topic**: it shows as a card that opens u
 
 The first paragraph under a heading is its summary, shown on cards and in search results. Everything after that is the explanation, shown in the side panel.
 
-The atlas is a reference for tutoring, so entries favour formal statements over casual explanation. For an **axiom**, **theorem**, **definition**, **formula** or **property**, the first paragraph is its formal statement, and the panel sets it in a box: gold for axioms, blue for theorems, with the statement in italics. Each domain keeps all of its axioms together in one topic, `## Axioms`, at the top of its file; a topic that holds nothing but axioms is gilded on the map. Theorems proved from them belong in other topics. Write the statement as one paragraph, a displayed formula included, with no blank line inside it; proofs, examples and remarks follow after a blank line.
+The atlas is a reference for tutoring, so entries favour formal statements over casual explanation. For an **axiom**, **theorem**, **definition**, **formula** or **property**, the first paragraph is its formal statement, and the panel sets it in a box: gold for axioms, blue for theorems (with the statement in italics), green for definitions. Each domain keeps all of its axioms together in one topic, `## Axioms`, at the top of its file; a topic that holds nothing but axioms is gilded on the map. Theorems proved from them belong in other topics. Write the statement as one paragraph, a displayed formula included, with no blank line inside it; proofs, examples and remarks follow after a blank line.
 
 ```markdown
 ### Mean Value Theorem {#mvt}
