@@ -892,7 +892,8 @@ const frameHead = n => `<div class="frame-head">
 function widen(el) {
   let extra = el.scrollWidth - el.clientWidth
   for (const box of el.querySelectorAll('.math-block, .table-wrap, pre')) extra = Math.max(extra, box.scrollWidth - box.clientWidth)
-  if (extra > 0) el.style.width = `${el.offsetWidth + extra}px`
+  // A pixel to spare: the widths are whole pixels, and a fraction left over would bring the scroll bar back.
+  if (extra > 0) el.style.width = `${el.offsetWidth + extra + 1}px`
 }
 
 function addTo(map, key, item) {
