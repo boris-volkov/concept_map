@@ -14,22 +14,18 @@ prereqs: number-systems
 For all $a, b \in \mathbb{R}$:
 $$a + b \in \mathbb{R} \quad\text{and}\quad ab \in \mathbb{R}.$$
 
-### The Field Axioms: CANI CANI D {#field-axioms}
+### The Field Axioms {#field-axioms}
 wrap: 4
-summary: The axioms of addition and multiplication on $\mathbb{R}$, remembered as **CANI CANI D**.
 
-The axioms of addition and multiplication on $\mathbb{R}$, remembered, as Frederic Schuller teaches them, as **CANI CANI D**:
-- **C**ommutativity, **A**ssociativity, a **N**eutral element and **I**nverses, for addition;
-- the same four again, for multiplication;
-- and finally **D**istributivity, which links the two.
+The axioms of addition and multiplication on $\mathbb{R}$: four for each operation, and distributivity, which links the two.
 
 | | Addition | Multiplication |
 | --- | --- | --- |
-| **C** | $a + b = b + a$ | $ab = ba$ |
-| **A** | $(a + b) + c = a + (b + c)$ | $(ab)c = a(bc)$ |
-| **N** | $a + 0 = a$ | $a \cdot 1 = a$ |
-| **I** | $a + (-a) = 0$ | $a \cdot a^{-1} = 1$ for $a \ne 0$ |
-| **D** | $a(b + c) = ab + ac$ | |
+| Commutativity | $a + b = b + a$ | $ab = ba$ |
+| Associativity | $(a + b) + c = a + (b + c)$ | $(ab)c = a(bc)$ |
+| Neutral element | $a + 0 = a$ | $a \cdot 1 = a$ |
+| Inverses | $a + (-a) = 0$ | $a \cdot a^{-1} = 1$ for $a \ne 0$ |
+| Distributivity | $a(b + c) = ab + ac$ | |
 
 #### Commutativity of Addition {#add-commutative}
 kind: axiom
