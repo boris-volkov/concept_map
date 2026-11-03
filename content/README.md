@@ -27,7 +27,7 @@ A heading with headings under it is a **topic**: it shows as a card that opens u
 
 The first paragraph under a heading is its summary, shown on cards and in search results. Everything after that is the explanation, shown when the concept is opened. A topic's text is its README, which the *i* on its open frame shows at the top of the frame.
 
-The atlas is a reference for tutoring, so entries favour formal statements over casual explanation. For an **axiom**, **theorem**, **definition**, **formula** or **property**, the first paragraph is its formal statement, and the entry sets it in a box: gold for axioms, blue for theorems (with the statement in italics), green for definitions. Each domain keeps all of its axioms together in one topic, `## Axioms`, at the top of its file; a topic that holds nothing but axioms is gilded on the map. Theorems proved from them belong in other topics. Write the statement as one paragraph, a displayed formula included, with no blank line inside it; proofs, examples and remarks follow after a blank line.
+The atlas is a reference for tutoring, so entries favour formal statements over casual explanation. For an **axiom**, **theorem**, **definition**, **formula** or **property**, the first paragraph is its formal statement, and the entry sets it in a box: gold for axioms, blue for theorems (with the statement in italics), green for definitions. Each domain keeps all of its axioms together in one topic, `## Axioms`, at the top of its file; a topic that holds nothing but axioms is gilded on the map. Theorems proved from them belong in other topics. Write the statement with no blank line inside it: it may include displayed formulas, and it may end with a list, such as numbered axioms. Proofs, examples and remarks follow after a blank line.
 
 ```markdown
 ### Mean Value Theorem {#mvt}
@@ -94,6 +94,14 @@ $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
 ```
 
 Fractions, roots, powers, Greek letters, `\sin`, `\lim`, `\int`, `\sum`, `\begin{cases}`, matrices and the like all work. A command the atlas doesn't know is drawn in red, and can be added to the lists at the top of `js/tex.js`. For a literal dollar sign, write `\$5`.
+
+**One thing to a line.** Give every equation that stands on its own (a result, an example, a step) a line of its own between `$$`, and keep inline math for symbols and conditions inside a sentence, like "for $b \ne 0$". Equations that belong together, such as a set of laws or the steps of a derivation, go one to a line in an `aligned` block, lined up at `&`:
+
+```markdown
+$$\begin{aligned} 3(x - 2) &= x + 4 \\ 3x - 6 &= x + 4 \\ x &= 5 \end{aligned}$$
+```
+
+Anything that is a list is written as one: `1.` for steps and numbered axioms, `-` for the rest.
 
 **Links to other concepts**: `[[lcm]]` becomes a link titled "Least Common Multiple", and `[[lcm|the LCM]]` uses your own words.
 

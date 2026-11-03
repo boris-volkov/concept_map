@@ -11,7 +11,15 @@ The axioms of a vector space.
 kind: axiom
 prereqs: vector-operations, field-axioms
 
-A vector space over $\mathbb{R}$ is a set $V$ with addition and scalar multiplication such that, for all $u, v, w \in V$ and $a, b \in \mathbb{R}$: $u + v = v + u$; $(u + v) + w = u + (v + w)$; there is $\mathbf{0}$ with $v + \mathbf{0} = v$; every $v$ has $-v$ with $v + (-v) = \mathbf{0}$; $a(u + v) = au + av$; $(a + b)v = av + bv$; $a(bv) = (ab)v$; and $1v = v$.
+A vector space over $\mathbb{R}$ is a set $V$ with addition and scalar multiplication such that, for all $u, v, w \in V$ and $a, b \in \mathbb{R}$:
+1. $u + v = v + u$;
+2. $(u + v) + w = u + (v + w)$;
+3. there is $\mathbf{0}$ with $v + \mathbf{0} = v$;
+4. every $v$ has $-v$ with $v + (-v) = \mathbf{0}$;
+5. $a(u + v) = au + av$;
+6. $(a + b)v = av + bv$;
+7. $a(bv) = (ab)v$;
+8. $1v = v$.
 
 The arrows in the plane, $\mathbb{R}^n$, polynomials and functions are all vector spaces.
 
@@ -29,18 +37,28 @@ An arrow with a length and a direction, like a displacement or a force, written 
 kind: skill
 prereqs: vector-basics
 
-Add vectors tip to tail, or component by component: $\langle 1, 2 \rangle + \langle 3, -1 \rangle = \langle 4, 1 \rangle$. Multiplying by a number stretches the arrow.
+Add vectors tip to tail, or component by component:
+$$\langle 1, 2 \rangle + \langle 3, -1 \rangle = \langle 4, 1 \rangle.$$
+Multiplying by a number stretches the arrow:
+$$2\langle 1, 2 \rangle = \langle 2, 4 \rangle.$$
 
 ### Magnitude & Direction {#vector-magnitude-direction}
 prereqs: vector-basics, distance-formula, inverse-trig-ratios
 
-The length of $\langle a, b \rangle$ is $\sqrt{a^2 + b^2}$, and its direction angle has $\tan\theta = \frac{b}{a}$. $\langle 3, 4 \rangle$ has length 5.
+The length of $\langle a, b \rangle$ and its direction angle $\theta$:
+$$\begin{aligned} |\langle a, b \rangle| &= \sqrt{a^2 + b^2}, \\ \tan\theta &= \frac{b}{a}. \end{aligned}$$
+So $\langle 3, 4 \rangle$ has length
+$$\sqrt{9 + 16} = 5.$$
 
 ### The Dot Product {#dot-product}
 kind: definition
 prereqs: vector-operations, law-of-cosines
 
-$\langle a, b \rangle \cdot \langle c, d \rangle = ac + bd$, a single number that also equals $|u||v|\cos\theta$. It is 0 exactly when the vectors are perpendicular.
+A single number from two vectors,
+$$\langle a, b \rangle \cdot \langle c, d \rangle = ac + bd,$$
+which also equals
+$$u \cdot v = |u||v|\cos\theta,$$
+where $\theta$ is the angle between them. It is 0 exactly when the vectors are perpendicular.
 
 ## Matrices
 
@@ -56,26 +74,40 @@ A rectangular array of numbers. A system of linear equations can be stored as th
 kind: skill
 prereqs: matrix-basics
 
-Add matrices entry by entry. Multiply them row by column, which is not commutative: $AB$ and $BA$ usually differ.
+Two operations:
+- add matrices entry by entry;
+- multiply them row by column, which is not commutative: $AB$ and $BA$ usually differ.
 
 ### Row Reduction
 kind: technique
 prereqs: matrix-basics, elimination-method
 
-The elimination method carried out on a system's matrix: swap two rows, scale a row, or add a multiple of one row to another, until the solution can be read straight off.
+The elimination method carried out on a system's matrix. Repeat three row operations until the solution can be read straight off:
+- swap two rows;
+- scale a row;
+- add a multiple of one row to another.
 
 ### Matrices as Transformations {#matrix-transformations}
 prereqs: matrix-operations, rigid-motions, dilations
 
-A $2 \times 2$ matrix moves every point of the plane: $\begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}$ turns it a quarter turn about the origin, and $\begin{pmatrix} 2 & 0 \\ 0 & 2 \end{pmatrix}$ doubles its distance from it. Multiplying two matrices does one move after the other.
+A $2 \times 2$ matrix moves every point of the plane. For example,
+- $\begin{pmatrix} 0 & -1 \\ 1 & 0 \end{pmatrix}$ turns it a quarter turn about the origin;
+- $\begin{pmatrix} 2 & 0 \\ 0 & 2 \end{pmatrix}$ doubles its distance from it.
+
+Multiplying two matrices does one move after the other.
 
 ### Determinants
 kind: definition
 prereqs: matrix-operations
 
-A single number computed from a square matrix: for a $2 \times 2$ matrix, $\det\begin{pmatrix} a & b \\ c & d \end{pmatrix} = ad - bc$. It is the factor by which the matrix scales areas, and it is 0 exactly when the matrix has no inverse.
+A single number computed from a square matrix. For a $2 \times 2$ matrix,
+$$\det\begin{pmatrix} a & b \\ c & d \end{pmatrix} = ad - bc.$$
+It is the factor by which the matrix scales areas, and it is 0 exactly when the matrix has no inverse.
 
 ### Inverse Matrices & Systems {#matrix-inverses}
 prereqs: determinants, row-reduction
 
-$A^{-1}$ undoes $A$, so the system $A\mathbf{x} = \mathbf{b}$ has the solution $\mathbf{x} = A^{-1}\mathbf{b}$.
+$A^{-1}$ undoes $A$, so the system
+$$A\mathbf{x} = \mathbf{b}$$
+has the solution
+$$\mathbf{x} = A^{-1}\mathbf{b}.$$
