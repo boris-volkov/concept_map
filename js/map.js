@@ -612,7 +612,8 @@ export class AtlasMap {
     if (!this.isFileOpen(n)) return this.openFile(n, { at: hit('.quiz-badge') ? '.practice' : null, keyboard })
     if (hit('.doc-head .card-add')) return deck.toggle(n.id)
     if (hit('.doc-head .about')) return this.toggleInfo(n)
-    if (hit('.doc-head')) return this.closeFile(n)
+    // Only the × closes an open concept; a click anywhere else on it, its head included, selects it.
+    if (hit('.doc-head .shut')) return this.closeFile(n)
     if (hit('.mastery')) return progress.setMastered(n.id, !progress.isMastered(n.id))
     const reveal = hit('[data-reveal]')
     if (reveal) return this.revealAround(n, reveal.dataset.reveal)
@@ -620,7 +621,7 @@ export class AtlasMap {
   }
 
   readmeClick(n, hit) {
-    if (hit('.doc-head')) return this.closeReadme(n)
+    if (hit('.doc-head .shut')) return this.closeReadme(n) // like everything else, only its × closes it
     const reveal = hit('[data-reveal]')
     if (reveal) return this.revealAround(n, reveal.dataset.reveal)
     if (this.selected !== n) this.select(n, { pan: false })

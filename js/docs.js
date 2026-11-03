@@ -130,7 +130,6 @@ export function refresh(el, n = null) {
 }
 
 // A file's head: what it is, its title, and the × that closes it (and on a concept, its "i").
-// The whole head closes the file when clicked, so a second click where it opened puts it away.
 const head = (label, title, name, extra) => `<header class="doc-head">
     <span class="doc-kind">${label}</span>${extra}
     <button type="button" class="shut" title="Close (Esc)" aria-label="Close ${esc(name)}">×</button>
