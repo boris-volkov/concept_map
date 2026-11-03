@@ -3,37 +3,269 @@ color: #3c6e47
 
 Shape, size and position, and the art of proving things about them.
 
-## Axioms {#euclids-postulates}
+## Axioms {#geometry-axioms}
+wrap: 6
+
+Geometry has more than one set of axioms. Here are six, side by side: four for the familiar Euclidean plane, and two that change its parallel postulate.
+
+The first four describe the same geometry. Euclid's postulates were the first; Hilbert's fill the gaps that Euclid's proofs left; Birkhoff's, and the high-school postulates that grew from them, start from a ruler and a protractor, so that lengths and angles are numbers from the beginning. The rest of this map follows Euclid's.
+
+The last two keep most of Euclid's postulates but not the fifth, and so describe different geometries, which disagree on how many parallels to a line pass through a point off it:
+
+| Geometry | Parallels | Angles of a triangle add to |
+| --- | --- | --- |
+| Euclidean | exactly one | $180^\circ$ |
+| Elliptic | none | more than $180^\circ$ |
+| Hyperbolic | infinitely many | less than $180^\circ$ |
+
+Open any two systems to compare them, one above the other.
+
+### Euclid's Postulates {#euclids-postulates}
 wrap: 5
 
-The five postulates from which Euclid's *Elements* derives plane geometry.
+The five postulates, and five common notions, from which Euclid's *Elements*, around 300 BC, derives plane geometry: the oldest axiom system we have, and the model for every one since.
 
-### Postulate 1: Lines {#postulate-lines}
+Euclid's proofs also use facts that none of these state. His first construction, of an equilateral triangle, assumes that two circles, each through the other's centre, meet; and he proves the SAS criterion by laying one triangle on top of the other, a move nothing here allows. [[hilberts-axioms|Hilbert's axioms]] fill these gaps.
+
+#### Postulate 1: Lines {#postulate-lines}
 kind: axiom
 
 Through any two distinct points there is exactly one straight line.
 
-### Postulate 2: Extension {#postulate-extension}
+#### Postulate 2: Extension {#postulate-extension}
 kind: axiom
 
 Any line segment can be extended indefinitely in a straight line.
 
-### Postulate 3: Circles {#postulate-circles}
+In [[elliptic-geometry|elliptic geometry]] a line can be extended forever and still be finite, closing up on itself like the equator.
+
+#### Postulate 3: Circles {#postulate-circles}
 kind: axiom
 
 For any point and any length there is a circle with that point as centre and that length as radius.
 
-### Postulate 4: Right Angles {#postulate-right-angles}
+#### Postulate 4: Right Angles {#postulate-right-angles}
 kind: axiom
 
 All right angles are equal.
 
-### Postulate 5: Parallels {#parallel-postulate}
+#### Postulate 5: Parallels {#parallel-postulate}
 kind: axiom
 
 Through a point not on a given line there is exactly one line parallel to the given line (Playfair's form).
 
-Denying it gives the non-Euclidean geometries, where the angles of a triangle no longer sum to $180^\circ$.
+Euclid's own wording is longer: if a line crossing two others makes the interior angles on one side add to less than two right angles, those two lines, extended far enough, meet on that side.
+
+For two thousand years mathematicians tried to prove it from the other four. Around 1830 Bolyai and Lobachevsky showed that it can be denied without contradiction, giving [[hyperbolic-geometry|hyperbolic geometry]], with many parallels; Riemann's [[elliptic-geometry|elliptic geometry]] has none at all. In both, the angles of a triangle no longer add to $180^\circ$.
+
+#### Common Notions {#common-notions}
+kind: axiom
+
+Euclid's axioms for all of mathematics, where his postulates are about geometry alone:
+1. Things equal to the same thing are equal to each other.
+2. If equals are added to equals, the wholes are equal.
+3. If equals are subtracted from equals, the remainders are equal.
+4. Things that coincide with one another are equal to one another.
+5. The whole is greater than the part.
+
+The first three are the [[equality-properties|properties of equality]] used in algebra. The fifth fails for infinite sets: the even numbers are only part of the whole numbers, yet the two can be paired off exactly, $n \leftrightarrow 2n$.
+
+### Hilbert's Axioms {#hilberts-axioms}
+wrap: 5
+
+The twenty axioms, in five groups, with which David Hilbert in 1899 rebuilt Euclid's geometry so that every proof follows from the axioms alone, and nothing is taken from the picture.
+
+Point, line and plane are left undefined, and so are *lies on*, *between* and *congruent*: the proofs must work whatever the words mean, as long as the axioms hold. In Hilbert's words, "one must be able to say at all times, instead of points, straight lines and planes, tables, chairs and beer mugs."
+
+#### Axioms of Incidence {#hilbert-incidence}
+kind: axiom
+
+In the plane:
+1. For any two distinct points $A$ and $B$ there is a line through both.
+2. There is at most one such line.
+3. Every line has at least two points on it, and there are at least three points not on one line.
+
+Five more say the same of planes in space: any three points not on one line lie in exactly one plane, a line with two of its points in a plane lies in it, two planes with a point in common have a second, and there are four points not all in one plane.
+
+#### Axioms of Order {#hilbert-order}
+kind: axiom
+
+When a point lies *between* two others:
+1. If $B$ lies between $A$ and $C$, then $A$, $B$ and $C$ are distinct points on one line, and $B$ also lies between $C$ and $A$.
+2. For any two distinct points $A$ and $C$, there is a point $B$ on the line $AC$ such that $C$ lies between $A$ and $B$.
+3. Of any three points on a line, at most one lies between the other two.
+4. (Pasch's axiom) A line in the plane of a triangle that passes through none of its vertices, but through a point of one side, also passes through a point of another side.
+
+The second says that a line never ends: the precise form of [[postulate-extension|Euclid's second postulate]]. Pasch's axiom, from 1882, states what Euclid read off his diagrams: a line that goes into a triangle must come out.
+
+#### Axioms of Congruence {#hilbert-congruence}
+kind: axiom
+
+When two segments, or two angles, are *congruent*, written $\cong$:
+1. Any segment $AB$ can be laid off on any ray from any point $A'$: the ray has a point $B'$ with $AB \cong A'B'$.
+2. Two segments congruent to the same segment are congruent to each other.
+3. If $B$ lies between $A$ and $C$, and $B'$ between $A'$ and $C'$, with $AB \cong A'B'$ and $BC \cong B'C'$, then $AC \cong A'C'$.
+4. Any angle can be laid off on any ray, on a given side of it, in exactly one way; and every angle is congruent to itself.
+5. If $AB \cong A'B'$, $AC \cong A'C'$ and $\angle BAC \cong \angle B'A'C'$, then $\angle ABC \cong \angle A'B'C'$.
+
+The fifth is most of the SAS criterion, which Euclid proved by laying one triangle on the other. Hilbert assumes it instead, and proves the rest of the [[triangle-congruence|congruence criteria]] from it.
+
+#### Axiom of Parallels {#hilbert-parallels}
+kind: axiom
+
+Through a point $A$ not on a line $a$ there is at most one line, in the plane of $a$ and $A$, that does not meet $a$.
+
+That there is at least one follows from the other axioms, so only "at most one" needs assuming. Replace it with "at least two" and every other axiom still holds: the result is [[hyperbolic-geometry|hyperbolic geometry]].
+
+#### Axioms of Continuity {#hilbert-continuity}
+kind: axiom
+
+That a line has no gaps:
+1. (Archimedes' axiom) For any segments $AB$ and $CD$, laying $CD$ off enough times along the ray from $A$ through $B$ carries it past $B$.
+2. (Completeness) No new points can be added to a line while keeping its order, its congruences and Archimedes' axiom.
+
+Together they make every line a copy of the [[number-systems|real number line]]. They are what guarantees, for instance, that two circles, each through the other's centre, really meet, as Euclid assumed in his first construction.
+
+### Birkhoff's Postulates {#birkhoffs-postulates}
+kind: axiom
+prereqs: number-systems, absolute-value
+summary: George Birkhoff's four postulates of 1932, which build plane geometry on the real numbers: a ruler for lengths, a protractor for angles.
+
+Plane geometry follows from four postulates about distance $d$ and angle measure:
+1. (Line measure) The points of any line can be numbered, one to one, by the real numbers, so that any two points $A$ and $B$, numbered $x_A$ and $x_B$, are a distance $d(A, B) = |x_B - x_A|$ apart.
+2. (Point–line) Through any two distinct points there is exactly one line.
+3. (Angle measure) The rays from any point $O$ can be numbered, one to one, by the real numbers modulo $360^\circ$, so that the angle from one ray to another is the difference of their numbers; and as a point $B$ moves continuously along a line not through $O$, the number of the ray $OB$ changes continuously.
+4. (Similarity) If two triangles $ABC$ and $A'B'C'$ have, for some $k > 0$, $A'B' = k \cdot AB$, $A'C' = k \cdot AC$ and $\angle A' = \angle A$, then $B'C' = k \cdot BC$, $\angle B' = \angle B$ and $\angle C' = \angle C$.
+
+Four postulates do the work of [[hilberts-axioms|Hilbert's twenty]] because the real numbers come with them, ready-made. There is no parallel postulate: it follows from the fourth, since in [[elliptic-geometry|elliptic]] and [[hyperbolic-geometry|hyperbolic]] geometry triangles of different sizes are never similar. The [[school-postulates|high-school postulates]] grew from these.
+
+### High-School Postulates (SMSG) {#school-postulates}
+wrap: 4
+tags: smsg, american, textbook
+
+The 22 postulates written for American schools around 1960 by the School Mathematics Study Group (SMSG), from which today's textbooks take their Ruler, Protractor and SAS Postulates.
+
+They grew out of [[birkhoffs-postulates|Birkhoff's four]], expanded on purpose into more postulates than strictly needed, so that students reach interesting theorems sooner. Textbooks reorder, rename and add to them. Many courses since the Common Core (2010) instead take the [[rigid-motions]] as basic, define [[congruence]] by them, and derive SAS rather than assume it.
+
+#### Incidence Postulates {#smsg-incidence}
+kind: axiom
+
+Points, lines and planes:
+- Given any two distinct points, there is exactly one line that contains them.
+- Every plane contains at least three points not on one line, and space contains at least four points not in one plane.
+- If two points lie in a plane, the line containing them lies in the plane.
+- Any three points lie in at least one plane, and any three points not on one line lie in exactly one plane.
+- If two planes intersect, their intersection is a line.
+
+#### Ruler Postulate {#smsg-ruler}
+kind: axiom
+prereqs: number-systems, absolute-value
+
+Distances are numbers:
+- (Distance) To every pair of distinct points there corresponds a unique positive number, the distance between them.
+- (Ruler) The points of a line can be matched one to one with the real numbers so that the distance between two points is the absolute value of the difference of their numbers.
+- (Ruler placement) Given two points $P$ and $Q$ of a line, the numbering can be chosen so that $P$ is at $0$ and $Q$ is positive.
+
+The ruler laid along the line: if $P$ is at $-2$ and $Q$ at $5$, the distance between them is
+$$|5 - (-2)| = 7.$$
+
+#### Plane Separation {#smsg-separation}
+kind: axiom
+
+A line divides a plane, and a plane divides space, into two sides:
+- The points of a plane that are not on a given line in it form two half-planes, each convex, and a segment joining points of different half-planes crosses the line.
+- The points of space that are not in a given plane form two half-spaces, each convex, and a segment joining points of different half-spaces crosses the plane.
+
+A set is convex when the segment joining any two of its points lies inside it. In Hilbert's system the same work is done by [[hilbert-order|Pasch's axiom]].
+
+#### Protractor Postulate {#smsg-protractor}
+kind: axiom
+
+Angles are numbers too:
+- (Angle measure) To every angle there corresponds a real number between $0$ and $180$, its measure.
+- (Angle construction) Given a ray $\overrightarrow{AB}$ on the edge of a half-plane $H$, for every $r$ between $0$ and $180$ there is exactly one ray $\overrightarrow{AP}$, with $P$ in $H$, such that $m\angle PAB = r$.
+- (Angle addition) If $D$ is in the interior of $\angle BAC$, then $m\angle BAC = m\angle BAD + m\angle DAC$.
+- (Supplement) If two angles form a linear pair, they are supplementary.
+
+Textbooks combine the first two into a single Protractor Postulate, and often call the last the Linear Pair Postulate.
+
+#### SAS Postulate {#smsg-sas}
+kind: axiom
+
+If two sides and the included angle of one triangle are congruent to the corresponding parts of another, the triangles are congruent.
+
+In this system SAS is assumed, and the other [[triangle-congruence|congruence criteria]] are proved from it. Euclid proved SAS by laying one triangle on the other; the Common Core derives it from the [[rigid-motions]].
+
+#### Parallel Postulate {#smsg-parallel}
+kind: axiom
+
+Through a given point not on a line there is at most one line parallel to the given line.
+
+As with [[hilbert-parallels|Hilbert's axiom]], that there is at least one can be proved, so only "at most one" is assumed.
+
+#### Area Postulates {#smsg-area}
+kind: axiom
+
+Areas are numbers:
+- To every polygonal region there corresponds a unique positive number, its area.
+- Congruent triangles have the same area.
+- If a region is the union of two regions that overlap only in segments and points, its area is the sum of their areas.
+- The area of a rectangle is the product of its base and its height.
+
+From these come the areas of [[area-basic|triangles]], and of every other polygon.
+
+#### Volume Postulates {#smsg-volume}
+kind: axiom
+
+Volumes are numbers:
+- The volume of a rectangular box is the area of its base times its height.
+- (Cavalieri's principle) If every plane parallel to a given plane cuts two solids in cross-sections of equal area, the two solids have the same volume.
+
+Cavalieri's principle gives the [[volume-pyramids-cones-spheres|volume of a sphere]]. A sphere of radius $r$ has the same cross-sections as a cylinder of radius $r$ and height $2r$ with two cones, tip to tip at its centre, cut out of it, so its volume is
+$$2\pi r^3 - \frac{2}{3}\pi r^3 = \frac{4}{3}\pi r^3.$$
+
+### Elliptic Geometry (Riemann) {#elliptic-geometry}
+kind: axiom
+tags: riemann, spherical, sphere, non-euclidean
+summary: Bernhard Riemann's geometry of 1854, pictured on a sphere: lines close up like the equator, and any two of them meet.
+
+Euclid's postulates, with the second and the fifth changed:
+1. Through any two distinct points there is exactly one line.
+2. **Any line segment can be extended indefinitely, but every line has the same finite length: extended far enough, it closes up on itself.**
+3. For any point and any length there is a circle with that point as centre and that length as radius.
+4. All right angles are equal.
+5. **Any two lines meet: there are no parallels.**
+
+Its model is the surface of a sphere, whose lines are the great circles, such as the equator and the meridians: the shortest routes on a globe, which long flights follow. Two opposite points, like the poles, lie on infinitely many great circles, so the model counts each pair of opposite points as a single point; then Postulate 1 holds, and any two lines meet exactly once.
+
+On the sphere,
+- the angles of a triangle add to more than $180^\circ$: one with a vertex at the North Pole and two on the equator, a quarter of the way round from each other, has three right angles;
+- the bigger the triangle, the bigger the sum;
+- triangles with the same angles are congruent: there are no similar triangles of different sizes;
+- the Pythagorean theorem fails.
+
+Riemann's insight was that a line can be *unbounded*, never coming to an end, without being *infinite*.
+
+### Hyperbolic Geometry (Bolyai, Lobachevsky) {#hyperbolic-geometry}
+kind: axiom
+tags: bolyai, lobachevsky, non-euclidean, poincare
+summary: The geometry that János Bolyai and Nikolai Lobachevsky found around 1830, in which a line has many parallels through the same point.
+
+Euclid's postulates, with the fifth changed:
+1. Through any two distinct points there is exactly one line.
+2. Any line segment can be extended indefinitely in a straight line.
+3. For any point and any length there is a circle with that point as centre and that length as radius.
+4. All right angles are equal.
+5. **Through a point not on a given line there are at least two lines parallel to the given line.**
+
+Its best-known model is the Poincaré disk: the inside of a circle, whose lines are its diameters and the arcs that meet its edge at right angles. Distances grow toward the edge, so that it is never reached; M. C. Escher's *Circle Limit* prints are tilings of this disk.
+
+In hyperbolic geometry,
+- through a point off a line pass infinitely many parallels;
+- the angles of a triangle add to less than $180^\circ$, and the bigger the triangle, the smaller the sum;
+- triangles with the same angles are congruent: there are no similar triangles of different sizes.
+
+In 1868 Beltrami built a model of it inside Euclidean geometry, which showed that it is free of contradiction if Euclidean geometry is, and so that the parallel postulate can never be proved from the others.
 
 ## Foundations {#geometry-foundations}
 
