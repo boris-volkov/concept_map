@@ -4,6 +4,7 @@ import { loadSources, buildAtlas } from './content.js'
 import { AtlasMap } from './map.js'
 import { Search } from './search.js'
 import { esc } from './markdown.js'
+import { index } from './docs.js'
 
 const CONTENT = 'content/'
 const VIEW_KEY = 'concept-atlas:view'
@@ -11,6 +12,8 @@ const HINT_KEY = 'concept-atlas:hinted'
 const $ = id => document.getElementById(id)
 // Served from this computer: watch the content files and redraw when one is saved.
 const LOCAL = /^(localhost|127\.0\.0\.1|\[::1\])$|\.localhost$/.test(location.hostname)
+// A phone, where the index covers the map rather than standing beside it (see the stylesheet).
+const NARROW = matchMedia('(max-width: 760px)')
 
 let atlas, map, search, sourceKey
 
@@ -25,6 +28,9 @@ async function start() {
   }
   sourceKey = keyOf(sources)
   atlas = buildAtlas(sources)
+  const view = readView()
+  // Before the map is made, so that it starts out the size it keeps.
+  if (view?.index) showIndex(true)
   map = new AtlasMap({ viewport: $('viewport'), world: $('world'), svg: $('edges'), grid: $('grid'), atlas, onSelect: selected, onView: saveView })
   search = new Search($('search'), $('search-results'), { onPick: n => go(n.id) })
   search.setAtlas(atlas)
@@ -32,7 +38,6 @@ async function start() {
   titles()
   issues()
 
-  const view = readView()
   if (view?.open) map.restore(view)
   map.relayout()
   await map.camera.ready()
@@ -57,6 +62,7 @@ function go(id) {
   const n = atlas.nodes.get(id)
   if (!n) return
   if (hashId() !== id) history.pushState(null, '', `#${encodeURIComponent(id)}`)
+  if (NARROW.matches) showIndex(false) // it would hide what it went to
   map.reveal(n)
 }
 
@@ -67,8 +73,8 @@ function hashId() {
 function wire() {
   $('btn-overview').onclick = () => map.overview()
   $('btn-expand').onclick = () => map.openAll()
-  $('btn-index').onclick = () => map.toggleRoot('@index')
-  $('btn-ranking').onclick = () => map.toggleRoot('@ranking')
+  $('btn-index').onclick = () => showIndex($('panel').hidden)
+  $('panel').querySelector('.shut').onclick = () => showIndex(false)
   $('btn-zoom-in').onclick = () => map.zoomBy(1.3)
   $('btn-zoom-out').onclick = () => map.zoomBy(1 / 1.3)
   $('btn-fit').onclick = () => map.fitAll()
@@ -99,8 +105,7 @@ function wire() {
       '-': () => map.zoomBy(1 / 1.3),
       0: () => map.fitAll(),
       h: () => map.overview(),
-      i: () => map.toggleRoot('@index'),
-      r: () => map.toggleRoot('@ranking'),
+      i: () => showIndex($('panel').hidden),
     }
     const action = actions[e.key.toLowerCase()]
     if (!action) return
@@ -112,6 +117,23 @@ function wire() {
 function titles() {
   $('atlas-title').textContent = atlas.title
   document.title = atlas.title
+}
+
+// The index, in a panel beside the map; the map makes room for it. It is written when it first
+// opens, and again when it is open and the content changes, with the same domains unfolded.
+let indexed = null // the atlas it was written for
+
+function showIndex(on) {
+  const panel = $('panel')
+  panel.hidden = !on
+  $('btn-index').setAttribute('aria-expanded', on)
+  saveView()
+  if (!on || indexed === atlas) return
+  const body = panel.querySelector('.panel-body')
+  const unfolded = new Set([...body.querySelectorAll('details[open]')].map(d => d.dataset.domain))
+  body.innerHTML = index(atlas)
+  for (const d of body.querySelectorAll('details')) d.open = unfolded.has(d.dataset.domain)
+  indexed = atlas
 }
 
 function issues() {
@@ -153,6 +175,7 @@ function watch() {
       search.setAtlas(atlas)
       titles()
       issues()
+      if (!$('panel').hidden) showIndex(true)
       toast('Redrawn from the content files')
     } catch {
       // A file mid-save or the server restarting: try again on the next tick.
@@ -180,7 +203,7 @@ function writeView() {
   clearTimeout(saveTimer)
   try {
     const { x, y, k } = map.camera
-    localStorage.setItem(VIEW_KEY, JSON.stringify({ open: [...map.open], readmes: [...map.readmes], camera: { x, y, k } }))
+    localStorage.setItem(VIEW_KEY, JSON.stringify({ open: [...map.open], readmes: [...map.readmes], camera: { x, y, k }, index: !$('panel').hidden }))
   } catch { /* storage unavailable: the view just isn't remembered */ }
 }
 

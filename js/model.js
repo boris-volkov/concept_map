@@ -101,7 +101,8 @@ export const TIERS = [
 // score on to the concepts it directly builds on, split evenly between them, so a concept scores
 // high when concepts that score high build on it. A topic named as a prerequisite shares its part
 // among everything inside it. As in PageRank, 15% of every score, and everything that reaches a
-// starting point such as Counting, is spread evenly over all the concepts.
+// starting point such as Counting, is spread evenly over all the concepts. Nothing on the page
+// shows the ranking for now.
 function rank(atlas) {
   const concepts = [...atlas.nodes.values()].filter(n => !n.children.length)
   const N = concepts.length

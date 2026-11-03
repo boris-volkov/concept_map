@@ -36,10 +36,19 @@
     <nav class="tools" aria-label="Map controls">
       <button id="btn-expand" type="button" title="Open every topic">Open all</button>
       <button id="btn-overview" type="button" title="Close everything and show the whole map (H)">Close all</button>
-      <button id="btn-index" type="button" title="Every concept as a list: a file beside the domains (I)">Index</button>
-      <button id="btn-ranking" type="button" title="Every concept ranked: a file beside the domains (R)">Ranking</button>
+      <button id="btn-index" type="button" title="Every concept as a list, beside the map (I)" aria-controls="panel" aria-expanded="false">Index</button>
     </nav>
   </header>
+
+  <!-- The index: every concept, domain by domain, in a panel beside the map. It comes before the
+       map so that the stylesheet can make room for it. -->
+  <aside id="panel" aria-labelledby="panel-title" hidden>
+    <header class="panel-head">
+      <h2 id="panel-title">Index</h2>
+      <button type="button" class="shut" title="Close (I)" aria-label="Close the index">×</button>
+    </header>
+    <div class="panel-body index"></div>
+  </aside>
 
   <main id="viewport" aria-label="Concept map">
     <div id="world">

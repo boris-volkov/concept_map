@@ -2,22 +2,16 @@
 //
 // On the map everything is a file. A domain or a topic is a folder, which opens into a frame
 // around what it holds; a concept is a file, which opens right where it sits into its entry;
-// and the "i" on a topic's frame opens the topic's README, at the top of the frame. Beside the
-// domains are two more files, the Index and the Ranking. This module writes what each shows.
+// and the "i" on a topic's frame opens the topic's README, at the top of the frame. This module
+// writes what each shows, and the index of every concept, which opens in a panel beside the map.
 //
 // An open concept shows its content and nothing else: the arrows on the map already say what
 // it builds on. The "i" on it opens a band under its head with those connections spelled out.
 
 import { renderMarkdown, renderInline, esc } from './markdown.js'
-import { ancestors, learningPath, externalPrereqs, externalDependents, leaves, domainOf, TIERS } from './model.js'
+import { learningPath, externalPrereqs, externalDependents, leaves } from './model.js'
 import { KINDS } from './content.js'
 import * as progress from './progress.js'
-
-/** The files at the root of the atlas, beside the domains, in their order on the map. */
-export const ROOT_FILES = [
-  { id: '@index', title: 'Index', root: true },
-  { id: '@ranking', title: 'Ranking', root: true },
-]
 
 /** A concept, open: its content and its exercises. `info`: with the band its "i" opens. */
 export function conceptDoc(n, atlas, { info = false } = {}) {
@@ -76,25 +70,18 @@ export function readme(n, atlas) {
     <footer class="doc-foot">${source(n)}</footer>`
 }
 
-/** A root file, closed: a card beside the domains. */
-export function rootCard(f, atlas) {
-  const supers = atlas.ranking.filter(n => n.tier?.key === 's').length
-  const [eyebrow, summary] = f.id === '@index'
-    ? [`${atlas.ranking.length} concepts in ${atlas.roots.length} domains`, 'Every concept, domain by domain.']
-    : [`${supers} super-concepts`, 'Every concept, ranked by how much is built on it.']
-  return `<div class="face">
-      <div class="eyebrow">${eyebrow}</div>
-      <div class="title">${esc(f.title)}</div>
-      <div class="summary">${summary}</div>
-    </div>`
-}
-
-/** A root file, open. `domain`: the Ranking shows only that domain's concepts, when set. */
-export function rootDoc(f, atlas, domain) {
-  const body = f.id === '@index'
-    ? `<div class="doc-body index">${index(atlas)}</div>`
-    : `<div class="doc-body ranking">${ranking(atlas, domain)}</div>`
-  return head('The atlas', esc(f.title), f.title, '') + body
+/**
+ * The index: every concept, domain by domain, for the panel beside the map. Each domain is
+ * folded under its name, and carries its id so that the panel can keep it unfolded when the
+ * index is written again.
+ */
+export function index(atlas) {
+  const tree = list => `<ul>${list.map(n => `<li><a href="#${esc(n.id)}" style="--c:${n.color}">` +
+    `${renderInline(n.title)}</a>${n.children.length ? tree(n.children) : ''}</li>`).join('')}</ul>`
+  const count = atlas.roots.reduce((s, d) => s + d.leafCount, 0)
+  return `<p class="index-note">${count} concepts in ${atlas.roots.length} domains. Choose one to open it where it sits on the map.</p>
+    ${atlas.roots.map(d => `<details data-domain="${esc(d.id)}" style="--c:${d.color}"><summary>${renderInline(d.title)}` +
+      `<span class="where">${d.leafCount}</span></summary>${tree(d.children)}</details>`).join('')}`
 }
 
 /** Brings the marks of mastery inside an open file up to date. `n`: the file's concept or topic, if any. */
@@ -162,54 +149,6 @@ function links(title, list, kind, note, empty) {
       : `<p class="none">${empty}</p>`}
   </section>`
 }
-
-function index(atlas) {
-  const tree = list => `<ul>${list.map(n => `<li><a href="#${esc(n.id)}" data-id="${esc(n.id)}" style="--c:${n.color}">` +
-    `${renderInline(n.title)}</a>${superMark(n)}${n.children.length ? tree(n.children) : ''}</li>`).join('')}</ul>`
-  return `<p class="index-note">${atlas.ranking.length} concepts in ${atlas.roots.length} domains. Choose one to open it where it sits on the map.</p>
-    ${atlas.roots.map(d => `<details style="--c:${d.color}"><summary>${renderInline(d.title)}` +
-      `<span class="where">${d.leafCount}</span></summary>${tree(d.children)}</details>`).join('')}`
-}
-
-function ranking(atlas, domain) {
-  return `<p class="index-note">Ranked the way a search engine ranks pages: a concept scores high when concepts that score high
-      build on it. Scores are multiples of the average. Super-concepts carry a red ★ on the map.</p>
-    <label class="rank-filter">Show <select>
-      <option value="">every domain</option>
-      ${atlas.roots.map(d => `<option value="${esc(d.id)}"${d.id === domain ? ' selected' : ''}>${esc(d.plainTitle)}</option>`).join('')}
-    </select></label>
-    <div class="tiers">${tiers(atlas, domain)}</div>`
-}
-
-/**
- * The ranking as a tier list. Each concept keeps its number in the whole ranking, even when only
- * one domain is shown. With every domain shown, the long lower tiers start folded.
- */
-export function tiers(atlas, domain) {
-  const shown = domain ? atlas.ranking.filter(n => domainOf(n).id === domain) : atlas.ranking
-  return TIERS.map(t => {
-    const list = shown.filter(n => n.tier === t)
-    const end = t.key === 'end' // these all share the last place, so their number says nothing
-    const items = `<ol class="ranked chips">${list.map(n => `<li><a class="chip" href="#${esc(n.id)}" data-id="${esc(n.id)}" ` +
-      `style="--c:${n.color}" title="${esc(placeOf(n, atlas))}"><span class="chip-title">` +
-      `${end ? '' : `<span class="rank-no">${n.rank}</span> `}${renderInline(n.title)}</span></a></li>`).join('')}</ol>`
-    const heading = `<h3>${t.name} <span class="note">${t.note}</span> <span class="count">${list.length}</span></h3>`
-    const fold = !domain && list.length && ['c', 'd', 'end'].includes(t.key)
-    return `<section class="tier tier-${t.key}">
-      <div class="tier-mark" aria-hidden="true">${t.mark}</div>
-      <div class="tier-body">${fold ? `<details><summary>${heading}</summary>${items}</details>`
-        : heading + (list.length ? items : '<p class="none">None.</p>')}</div>
-    </section>`
-  }).join('')
-}
-
-const placeOf = (n, atlas) => (n.tier.key === 'end' ? 'Nothing builds on it yet'
-  : `${ordinal(n.rank)} of ${atlas.ranking.length}, scoring ${n.score.toFixed(1)} times the average`) +
-  ` · ${ancestors(n).reverse().map(a => a.plainTitle).join(' › ')}`
-
-const ordinal = k => k + (k % 100 > 10 && k % 100 < 14 ? 'th' : ['th', 'st', 'nd', 'rd'][k % 10] ?? 'th')
-
-const superMark = n => (n.tier?.key === 's' ? ' <span class="super-mark" title="Super-concept">★</span>' : '')
 
 function pathSection(n, path) {
   const known = q => leaves(q).every(l => progress.isMastered(l.id))

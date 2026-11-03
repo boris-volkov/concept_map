@@ -6,8 +6,7 @@
 // them all, clear of those arrows. Everything else opens where it sits, the way a folder opens in a file
 // manager's tree: a topic into a frame around what it holds, a concept into its entry, the card
 // growing into the full text while the map makes room for it. The "i" on a topic's frame opens
-// the topic's README at the top of the frame, and the Index and the Ranking are files too, at
-// the top left. Nothing opens anywhere else.
+// the topic's README at the top of the frame. Nothing on the map opens anywhere else.
 //
 // A new layout is applied at once, without any animation, so the map stays quick however much
 // of it is open.
@@ -25,12 +24,8 @@ import * as progress from './progress.js'
 import * as docs from './docs.js'
 
 const SVG = 'http://www.w3.org/2000/svg'
-const GRID = 160 // the survey grid's large squares
-const GRID_MARGIN = 4000 // how far the survey grid runs past the edges of the map; a multiple of GRID
-const ROOT_GAP = 56 // between the root files and the domains
+const GRID_MARGIN = 4000 // how far the survey grid runs past the edges of the map
 const READABLE = 0.7 // a file opened from further out than this brings the map in close enough to read it
-const ROOT = new Map(docs.ROOT_FILES.map(f => [f.id, f]))
-const RANKING = ROOT.get('@ranking')
 const readmeKey = n => 'readme:' + n.id
 const stubKey = n => 'spine:' + n.id // an open domain's card, left in its place among the domains
 const tetherKey = n => 'tether:' + n.id // the line from it to its frame
@@ -44,7 +39,7 @@ export class AtlasMap {
     this.grid = grid
     this.onSelect = onSelect
     this.onView = onView
-    this.open = new Set() // ids of what is open: domains and topics, concepts, and the root files
+    this.open = new Set() // ids of what is open: domains and topics, and concepts
     this.readmes = new Set() // ids of the topics whose README is open, and of the open concepts whose "i" is
     this.els = new Map() // key → element, for everything on screen; a README's key is "readme:" and its topic's id
     this.boxes = new Map() // key → its box on the map
@@ -53,7 +48,6 @@ export class AtlasMap {
     this.sizes = new Map() // id → its size as a closed card
     this.fileSizes = new Map() // key → the size of an open file or README, which changes with what it shows
     this.heads = new Map()
-    this.rankDomain = '' // the Ranking shows only this domain's concepts, when set
     this.spine = new Map() // domain id → the place of its card
     this.routes = new Map() // edge key → the route of an arrow between domains (see layoutDomains)
     this.tethers = new Map() // domain id → the <path> tying its card to its open frame
@@ -63,7 +57,6 @@ export class AtlasMap {
     // An open file changes size when its quiz moves on, a list in it unfolds, or a font arrives.
     this.resizes = new ResizeObserver(entries => this.resized(entries))
     viewport.addEventListener('click', e => this.click(e))
-    viewport.addEventListener('change', e => this.changed(e))
     viewport.addEventListener('pointerover', e => {
       const el = e.target.closest?.('.node.leaf, .node.group:not(.is-open)')
       this.hover(el ? this.atlas.nodes.get(el.dataset.node ?? el.dataset.id) : null)
@@ -86,16 +79,15 @@ export class AtlasMap {
     for (const p of this.paths.values()) p.remove()
     for (const m of [this.els, this.boxes, this.paths, this.sizes, this.fileSizes, this.heads]) m.clear()
     this.edges = new Map()
-    this.open = new Set([...this.open].filter(id => atlas.nodes.has(id) || ROOT.has(id)))
+    this.open = new Set([...this.open].filter(id => atlas.nodes.has(id)))
     this.readmes = new Set([...this.readmes].filter(id => atlas.nodes.has(id)))
     this.selected = (this.selected && atlas.nodes.get(this.selected.id)) || null
     this.current = (this.current && atlas.nodes.get(this.current.id)) || null
-    if (!atlas.roots.some(d => d.id === this.rankDomain)) this.rankDomain = ''
   }
 
   /** Opens what was open when the map was last left. */
   restore({ open = [], readmes = [] }) {
-    this.open = new Set(open.filter(id => this.atlas.nodes.has(id) || ROOT.has(id)))
+    this.open = new Set(open.filter(id => this.atlas.nodes.has(id)))
     this.readmes = new Set(readmes.filter(id => this.atlas.nodes.has(id)))
   }
 
@@ -106,9 +98,9 @@ export class AtlasMap {
     return n.children.length > 0 && this.open.has(n.id)
   }
 
-  /** Whether a concept, or a root file, is open, showing its entry. */
+  /** Whether a concept is open, showing its entry. */
   isFileOpen(n) {
-    return (n.root || !n.children.length) && this.open.has(n.id)
+    return !n.children.length && this.open.has(n.id)
   }
 
   /** Whether an open topic shows its README. */
@@ -139,14 +131,14 @@ export class AtlasMap {
       this.fill(n, el)
       this.world.append(el)
       this.els.set(n.id, el)
-    } else if ((n.root || !n.children.length) && el.classList.contains('doc') !== this.isFileOpen(n)) {
+    } else if (!n.children.length && el.classList.contains('doc') !== this.isFileOpen(n)) {
       this.fill(n, el) // opened or closed since it was drawn
     }
     return el
   }
 
-  // Writes what an element shows: a card, or an open concept or root file. (An open topic is
-  // the same element as its card, which the stylesheet draws as a frame.)
+  // Writes what an element shows: a card, or an open concept. (An open topic is the same
+  // element as its card, which the stylesheet draws as a frame.)
   fill(n, el) {
     const s = el.style
     s.removeProperty('width')
@@ -155,13 +147,10 @@ export class AtlasMap {
     this.fileSizes.delete(n.id)
     this.resizes.unobserve(el)
     el.removeAttribute('title')
-    if (n.root) return this.fillRoot(n, el)
     s.setProperty('--c', n.color)
     if (n.children.length) return this.fillGroup(n, el)
     const open = this.isFileOpen(n)
-    // A super-concept, at the top of the ranking, carries a red star (see the stylesheet).
-    const sup = n.tier?.key === 's'
-    el.className = `node leaf kind-${n.kind}${sup ? ' is-super' : ''}${open ? ' is-open doc' : ''}`
+    el.className = `node leaf kind-${n.kind}${open ? ' is-open doc' : ''}`
     if (open) {
       el.innerHTML = docs.conceptDoc(n, this.atlas, { info: this.readmes.has(n.id) })
       el.removeAttribute('tabindex')
@@ -183,25 +172,21 @@ export class AtlasMap {
         <div class="marks">${n.quiz.length
           ? `<button type="button" class="quiz-badge" title="Quiz: ${n.quiz.length} question${n.quiz.length > 1 ? 's' : ''}" aria-label="Quiz">?</button>`
           : ''}<span class="check" title="Mastered">✓</span></div>`
-      el.setAttribute('aria-label', n.plainTitle + (n.kind !== 'concept' ? ` (${n.kind})` : '') + (sup ? ', a super-concept' : ''))
-      const tip = [n.summary && plainText(n.summary), sup && `★ Super-concept, ranked ${n.rank} of ${this.atlas.ranking.length}`]
-        .filter(Boolean).join('\n\n')
-      if (tip) el.title = tip
+      el.setAttribute('aria-label', n.plainTitle + (n.kind !== 'concept' ? ` (${n.kind})` : ''))
+      if (n.summary) el.title = plainText(n.summary)
     }
     this.markProgress(n, el)
   }
 
   fillGroup(n, el) {
     const label = n.depth === 0 ? 'Domain' : 'Topic'
-    const supers = descendants(n).filter(d => d.tier?.key === 's').length
     el.className = `node group depth-${Math.min(n.depth, 4)}`
     // A topic holding nothing but axioms is gilded like its axioms.
     if (descendants(n).every(d => d.children.length || d.kind === 'axiom')) el.classList.add('axioms')
     el.tabIndex = 0
     el.setAttribute('role', 'button')
     el.innerHTML = groupFace(n) + frameHead(n)
-    el.setAttribute('aria-label', `${n.plainTitle}, ${label.toLowerCase()} of ${n.leafCount} concepts` +
-      (supers ? `, ${supers} of them ${supers === 1 ? 'a super-concept' : 'super-concepts'}` : ''))
+    el.setAttribute('aria-label', `${n.plainTitle}, ${label.toLowerCase()} of ${n.leafCount} concepts`)
     this.markProgress(n, el)
   }
 
@@ -227,24 +212,6 @@ export class AtlasMap {
     return el
   }
 
-  fillRoot(f, el) {
-    const open = this.isFileOpen(f)
-    el.className = `node rootfile${open ? ' is-open doc' : ''}`
-    if (open) {
-      el.innerHTML = docs.rootDoc(f, this.atlas, this.rankDomain)
-      el.removeAttribute('tabindex')
-      el.setAttribute('role', 'article')
-      el.setAttribute('aria-label', f.title)
-      docs.refresh(el)
-      this.resizes.observe(el)
-    } else {
-      el.innerHTML = docs.rootCard(f, this.atlas)
-      el.tabIndex = 0
-      el.setAttribute('role', 'button')
-      el.setAttribute('aria-label', `The ${f.title.toLowerCase()} of the atlas`)
-    }
-  }
-
   // A topic's README is an element of its own, laid in the top of the topic's frame.
   readmeElement(n) {
     const key = readmeKey(n)
@@ -268,11 +235,10 @@ export class AtlasMap {
   // shows changes. Every new element is put in place before any is measured, so the browser lays
   // the page out once rather than once per card.
   measure(visible, readmes) {
-    const items = [...visible, ...docs.ROOT_FILES]
-    for (const n of items) this.element(n)
+    for (const n of visible) this.element(n)
     for (const n of readmes) this.readmeElement(n)
-    const cards = items.filter(n => !this.isFileOpen(n) && !this.sizes.has(n.id))
-    const files = [...items.filter(n => this.isFileOpen(n)).map(n => n.id), ...readmes.map(readmeKey)]
+    const cards = visible.filter(n => !this.isFileOpen(n) && !this.sizes.has(n.id))
+    const files = [...visible.filter(n => this.isFileOpen(n)).map(n => n.id), ...readmes.map(readmeKey)]
       .filter(key => !this.fileSizes.has(key))
     const frames = visible.filter(n => this.isOpen(n) && !this.heads.has(n.id))
     const probes = frames.map(n => {
@@ -333,7 +299,7 @@ export class AtlasMap {
     const visible = this.visibleNodes()
     const readmes = visible.filter(n => this.hasReadme(n))
     const stubs = this.atlas.roots.filter(d => this.isOpen(d))
-    const keep = new Set([...visible.map(n => n.id), ...readmes.map(readmeKey), ...stubs.map(stubKey), ...ROOT.keys()])
+    const keep = new Set([...visible.map(n => n.id), ...readmes.map(readmeKey), ...stubs.map(stubKey)])
     for (const [key, el] of this.els) {
       if (keep.has(key)) continue
       this.resizes.unobserve(el)
@@ -360,19 +326,7 @@ export class AtlasMap {
       boxes.set(readmeKey(n), { x: frame.x + FRAME_PAD.left, y: frame.y + FRAME_PAD.top, w: size.w, h: size.h })
     }
     this.routes = layout.routes
-    // The root files stand in a column of their own at the top left, the way an old atlas keeps
-    // its index apart from the plates. An open one grows away from the domains.
-    const right = -ROOT_GAP
-    let left = 0
-    let y = 0
-    for (const f of docs.ROOT_FILES) {
-      const s = this.sizeOf(f)
-      boxes.set(f.id, { x: right - s.w, y, w: s.w, h: s.h })
-      left = Math.min(left, right - s.w)
-      y += s.h + 18
-    }
-    const height = Math.max(layout.height, y - 18)
-    this.bounds = { x: left, y: 0, w: layout.width - left, h: height }
+    this.bounds = { x: 0, y: 0, w: layout.width, h: layout.height }
     for (const [key, b] of boxes) {
       const was = this.boxes.get(key)
       if (was && was.x === b.x && was.y === b.y && was.w === b.w && was.h === b.h) continue
@@ -383,12 +337,10 @@ export class AtlasMap {
       el.style.height = `${r1(b.h)}px`
     }
     this.boxes = boxes
-    // The grid starts on one of its own lines, so it stays put when the map's edge moves.
     const g = this.grid.style
-    const gx = Math.floor(left / GRID) * GRID - GRID_MARGIN
-    g.transform = `translate(${gx}px, ${-GRID_MARGIN}px)`
-    g.width = `${Math.ceil(layout.width - gx) + GRID_MARGIN}px`
-    g.height = `${Math.ceil(height) + 2 * GRID_MARGIN}px`
+    g.transform = `translate(${-GRID_MARGIN}px, ${-GRID_MARGIN}px)`
+    g.width = `${Math.ceil(layout.width) + 2 * GRID_MARGIN}px`
+    g.height = `${Math.ceil(layout.height) + 2 * GRID_MARGIN}px`
     this.drawEdges()
     this.highlight()
     return boxes
@@ -640,7 +592,6 @@ export class AtlasMap {
     const stub = hit('.stub')
     if (stub) return this.collapse(this.atlas.nodes.get(stub.dataset.node))
     const el = hit('.node')
-    if (el && ROOT.has(el.dataset.id)) return this.rootClick(ROOT.get(el.dataset.id), hit)
     const n = el && this.atlas.nodes.get(el.dataset.id)
     if (!n) return this.background()
     const keyboard = e.type === 'keydown'
@@ -664,21 +615,6 @@ export class AtlasMap {
     const reveal = hit('[data-reveal]')
     if (reveal) return this.revealAround(n, reveal.dataset.reveal)
     if (this.selected !== n) this.select(n, { pan: false })
-  }
-
-  rootClick(f, hit) {
-    if (!this.isFileOpen(f)) return this.openRoot(f, { here: true })
-    if (hit('.doc-head')) return this.closeRoot(f)
-  }
-
-  // The Ranking's choice of domain.
-  changed(e) {
-    const choice = e.target.closest?.('.rank-filter select')
-    if (!choice) return
-    this.rankDomain = choice.value
-    const el = this.els.get(RANKING.id)
-    el.querySelector('.tiers').innerHTML = docs.tiers(this.atlas, this.rankDomain)
-    docs.refresh(el)
   }
 
   background() {
@@ -797,33 +733,6 @@ export class AtlasMap {
     if (was) this.onSelect?.(null)
     this.settle(n.id, before, { show: b => ({ ...b, w: Math.min(b.w, 480), h: FRAME_PAD.top }) })
     this.onView?.()
-  }
-
-  /** Opens the Index or the Ranking: `here`, in place (its card was clicked), or else the map goes to it. */
-  openRoot(f, { here = false } = {}) {
-    const before = this.boxes.get(f.id)
-    this.open.add(f.id)
-    const box = this.relayout().get(f.id)
-    const c = this.camera
-    if (here) this.settle(f.id, before, { read: true })
-    else c.moveTo(c.frame(box, { k: Math.min(1.1, Math.max(c.k, 0.9)) }))
-    this.onView?.()
-  }
-
-  closeRoot(f) {
-    const before = this.boxes.get(f.id)
-    this.open.delete(f.id)
-    this.relayout()
-    this.settle(f.id, before)
-    this.onView?.()
-  }
-
-  /** The Index or Ranking button: goes to that file and opens it, or closes it if it is open in view. */
-  toggleRoot(id) {
-    const f = ROOT.get(id)
-    const box = this.boxes.get(id)
-    if (this.isFileOpen(f) && box && this.camera.sees(box)) return this.closeRoot(f)
-    this.openRoot(f)
   }
 
   /**
@@ -957,10 +866,8 @@ export class AtlasMap {
 // A domain's or topic's card: what it is, its title and summary, and a bar of progress.
 function groupFace(n) {
   const label = n.depth === 0 ? 'Domain' : 'Topic'
-  const supers = descendants(n).filter(d => d.tier?.key === 's').length
   return `<div class="face">
-      <div class="eyebrow">${label} · ${n.leafCount} ${n.leafCount === 1 ? 'concept' : 'concepts'}${supers
-        ? ` · <span class="super-mark" title="Super-concepts inside">★ ${supers}</span>` : ''}</div>
+      <div class="eyebrow">${label} · ${n.leafCount} ${n.leafCount === 1 ? 'concept' : 'concepts'}</div>
       <div class="title">${renderInline(n.title)}</div>
       ${n.summary ? `<div class="summary">${renderInline(n.summary)}</div>` : ''}
       <div class="meter"><span></span></div>

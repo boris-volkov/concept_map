@@ -22,12 +22,14 @@
   --blue-fill: #eef2f9;
   --pre: #a3461a;  /* what the selection builds on */
   --post: #2f6b6a; /* what builds on the selection */
-  --rubric: #8f2d2d; /* the ranking: super-concepts, and the tiers below them */
+  --rubric: #8f2d2d; /* the atlas's own red, as in its mark: the index and its button */
   --right: #3d6b35;
   --wrong: #9b2d2d;
   --serif: "Palatino Linotype", Palatino, "Book Antiqua", "URW Palladio L", "TeX Gyre Pagella", Georgia, serif;
   --math: "Latin Modern Math", "STIX Two Math", "Cambria Math", math;
   --bar-h: 56px;
+  --panel-w: 360px; /* the index, beside the map */
+  --side: 0px; /* how far the open index moves the map over (see the index) */
   /* Small blurs only: hundreds of cards are redrawn whenever the map is zoomed. */
   --shadow: 0 1px 2px rgba(70, 45, 15, 0.18);
   --lift: 0 2px 5px rgba(70, 45, 15, 0.26);
@@ -156,12 +158,63 @@ math { font-family: var(--math); font-size: 1.04em; }
   cursor: pointer;
 }
 .tools button:hover, #zoom button:hover { color: var(--ink); border-color: var(--ink-3); background: #fffdf6; }
+/* The Index button while the index is open. */
+.tools button[aria-expanded="true"] {
+  color: var(--rubric);
+  background: color-mix(in srgb, var(--rubric) 9%, var(--card));
+  border-color: color-mix(in srgb, var(--rubric) 45%, var(--card-edge));
+  box-shadow: inset 0 1px 2px rgba(70, 45, 15, 0.15);
+}
+
+/* ---------- the index: a panel beside the map ---------- */
+
+/* While it is open, the map and what floats over it move over to make room for it. */
+#panel:not([hidden]) ~ * { --side: var(--panel-w); }
+
+#panel {
+  --c: var(--rubric);
+  position: fixed;
+  top: var(--bar-h);
+  bottom: 0;
+  left: 0;
+  z-index: 80;
+  width: var(--panel-w);
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border-right: 1px solid var(--rule);
+  box-shadow: 2px 0 0 -1px #f7f1e2, 3px 0 0 -1px var(--rule); /* the top bar's double rule */
+}
+.panel-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 8px 18px;
+  background: color-mix(in srgb, var(--c) 5%, var(--card));
+  border-bottom: 1px solid color-mix(in srgb, var(--c) 20%, var(--card-edge));
+}
+.panel-head h2 { margin: 0 auto 0 0; font-size: 22px; font-weight: normal; font-variant-caps: small-caps; letter-spacing: 0.04em; color: var(--c); }
+/* The ×, as on an open file. */
+.panel-head .shut {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
+  background: var(--card);
+  color: var(--c);
+  font-size: 14px;
+  line-height: 22px;
+  cursor: pointer;
+}
+.panel-head .shut:hover { background: var(--c); color: var(--card); }
+.panel-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 14px 18px 24px; }
 
 /* ---------- the map ---------- */
 
 #viewport {
   position: fixed;
-  inset: var(--bar-h) 0 0 0;
+  inset: var(--bar-h) 0 0 var(--side);
   overflow: hidden;
   touch-action: none;
   cursor: grab;
@@ -346,24 +399,6 @@ math { font-family: var(--math); font-size: 1.04em; }
 .node.leaf.is-mastered:not(.doc) { background: linear-gradient(color-mix(in srgb, var(--right) 7%, var(--card)), var(--card)); }
 .node.leaf.is-ready:not(.doc) { border-style: solid dashed dashed solid; }
 
-/* A super-concept, at the top of the ranking, carries a red star on its corner, as a capital does
-   on an old map. Unlike the other marks it stays when the map is zoomed far out. */
-.node.leaf.is-super::before {
-  content: "★";
-  position: absolute;
-  left: -13px;
-  top: -10px;
-  width: 19px;
-  height: 19px;
-  border-radius: 50%;
-  background: var(--rubric);
-  color: #fff8e2;
-  font-size: 12px;
-  line-height: 19px;
-  text-align: center;
-  box-shadow: 0 0 0 1.5px var(--card), 0 1px 2px rgba(70, 45, 15, 0.3);
-}
-
 /* A closed topic: a framed plate. */
 .node.group {
   width: 232px;
@@ -380,7 +415,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 .eyebrow { font-size: 11.5px; color: var(--c); font-variant-caps: all-small-caps; letter-spacing: 0.09em; }
 .node.group .title { font-size: 19px; line-height: 1.2; margin: 3px 0 5px; font-variant-caps: small-caps; letter-spacing: 0.02em; }
 .node.group.depth-0 .title { font-size: 25px; margin: 4px 0 7px; }
-.node.group .summary, .node.rootfile .summary {
+.node.group .summary {
   font-size: 13.5px;
   line-height: 1.38;
   color: var(--ink-2);
@@ -444,7 +479,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 
 #key {
   position: fixed;
-  left: 16px;
+  left: calc(var(--side) + 16px);
   bottom: 16px;
   z-index: 60;
   display: flex;
@@ -476,12 +511,12 @@ math { font-family: var(--math); font-size: 1.04em; }
 #hint {
   display: none;
   position: fixed;
-  left: 50%;
+  left: calc(50% + var(--side) / 2);
   bottom: 20px;
   z-index: 60;
   margin: 0;
   translate: -50% 0;
-  max-width: calc(100vw - 120px);
+  max-width: calc(100vw - var(--side) - 120px);
   padding: 8px 16px;
   font-size: 14px;
   font-style: italic;
@@ -497,7 +532,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 
 .toast {
   position: fixed;
-  left: 50%;
+  left: calc(50% + var(--side) / 2);
   top: calc(var(--bar-h) + 14px);
   translate: -50% 0;
   z-index: 120;
@@ -562,7 +597,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 .quiz-score span { font-size: 20px; color: var(--ink-3); }
 .quiz-done p { margin: 4px 0 12px; font-style: italic; color: var(--ink-2); }
 
-/* ---------- open files: a concept's entry, a topic's README, the Index and the Ranking ---------- */
+/* ---------- open files: a concept's entry, and a topic's README ---------- */
 
 /* An open concept is its card grown into its entry, in the card's place: the card's colour down its
    left edge, and the card itself, its kind and title, as the head of the entry. */
@@ -654,22 +689,6 @@ math { font-family: var(--math); font-size: 1.04em; }
 .readme .doc-head { padding: 7px 9px 7px 15px; }
 .readme .topic-progress { grid-column: 2; grid-row: 1; font-size: 13px; }
 .readme .doc-foot { justify-content: flex-end; }
-
-/* The Index and the Ranking: files at the root of the atlas, before the domains, in its rubric red. */
-.node.rootfile {
-  --c: var(--rubric);
-  width: 232px;
-  padding: 12px 14px 13px;
-  background: var(--card);
-  border: 1px solid color-mix(in srgb, var(--c) 40%, var(--card-edge));
-  border-left: 4px solid var(--c);
-  border-radius: 6px;
-  box-shadow: var(--shadow);
-}
-.node.rootfile:not(.doc):hover { box-shadow: var(--lift); }
-.node.rootfile .title { font-size: 21px; line-height: 1.2; margin: 3px 0 5px; font-variant-caps: small-caps; letter-spacing: 0.03em; }
-.node.rootfile.doc { width: 460px; padding: 0; }
-.node.rootfile .doc-title { font-variant-caps: small-caps; letter-spacing: 0.03em; }
 
 /* Selection: the selected card or file, what it builds on, what builds on it; everything else fades.
    (After the open files, so these rings win over their shadows.) */
@@ -782,7 +801,7 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
 .none { margin: 0; font-style: italic; color: var(--ink-3); font-size: 14.5px; }
 .where { font-size: 12px; color: var(--ink-3); font-style: italic; }
 .path details summary { cursor: pointer; font-size: 15px; color: var(--ink-2); }
-.path .count, .tier .count { font-size: 12px; color: var(--card); background: var(--ink-3); border-radius: 9px; padding: 0 7px; margin-left: 4px; font-style: normal; }
+.path .count { font-size: 12px; color: var(--card); background: var(--ink-3); border-radius: 9px; padding: 0 7px; margin-left: 4px; font-style: normal; }
 .path .note { margin: 6px 0; font-size: 13px; font-style: italic; color: var(--ink-3); }
 .path ol { margin: 0; padding-left: 2em; font-size: 14.5px; line-height: 1.5; }
 .path ol a { color: var(--ink); text-decoration-color: color-mix(in srgb, var(--c) 45%, transparent); }
@@ -824,59 +843,12 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
 .index li > a:hover { text-decoration: underline; }
 .index li:has(> ul) > a { font-variant-caps: small-caps; color: var(--c); letter-spacing: 0.02em; }
 .index-note { font-style: italic; color: var(--ink-3); font-size: 14px; margin: 0 0 12px; }
-.super-mark { color: var(--rubric); font-size: 0.85em; }
-
-/* ---------- the ranking ---------- */
-
-/* Tier colours: rubric red for the super-concepts, fading tier by tier. */
-.tier-s { --t: var(--rubric); --t-ink: #fff8e2; }
-.tier-a { --t: color-mix(in srgb, var(--rubric) 62%, var(--card)); --t-ink: #fff8e2; }
-.tier-b { --t: color-mix(in srgb, var(--rubric) 30%, var(--card)); --t-ink: var(--rubric); }
-.tier-c { --t: color-mix(in srgb, var(--rubric) 14%, var(--card)); --t-ink: color-mix(in srgb, var(--rubric) 75%, var(--ink-2)); }
-.tier-d { --t: color-mix(in srgb, var(--ink-3) 14%, var(--card)); --t-ink: var(--ink-2); }
-.tier-end { --t: var(--card); --t-ink: var(--ink-3); }
-
-.rank-filter { display: flex; align-items: center; gap: 8px; margin: 0 0 18px; font-size: 14px; color: var(--ink-2); }
-.rank-filter select {
-  padding: 3px 6px;
-  font: inherit;
-  color: var(--ink);
-  background: #fffdf6;
-  border: 1px solid var(--card-edge);
-  border-radius: 5px;
-}
-.ranking .tier { display: flex; gap: 12px; margin: 0 0 18px; }
-.tier-mark {
-  flex: none;
-  width: 38px;
-  min-height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  color: var(--t-ink);
-  background: var(--t);
-  border: 1px solid color-mix(in srgb, var(--rubric) 28%, transparent);
-  border-radius: 5px;
-}
-.tier-end .tier-mark { border-style: dashed; }
-.tier-body { flex: 1; min-width: 0; }
-.tier-s h3 { color: var(--rubric); }
-/* A long tier folds away under its heading. */
-.tier summary { list-style: none; cursor: pointer; }
-.tier summary::-webkit-details-marker { display: none; }
-.tier summary h3::after { content: "show"; float: right; font-variant-caps: normal; letter-spacing: 0; font-style: italic; font-size: 13px; color: var(--ink-2); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
-.tier details[open] summary h3::after { content: "hide"; }
-.tier summary:hover h3::after { color: var(--ink); }
-.ranked { margin: 0; padding: 0; list-style: none; }
-.ranked .chip { padding: 3px 9px 4px 7px; }
-.rank-no { font-size: 11.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 
 /* ---------- content problems ---------- */
 
 #issues {
   position: fixed;
-  left: 16px;
+  left: calc(var(--side) + 16px);
   bottom: 62px;
   z-index: 70;
   padding: 6px 12px 6px 30px;
@@ -892,10 +864,10 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
 #issues.has-errors { color: #7d2222; background-color: #f8e1d8; border-color: #dba08e; }
 #issues-list {
   position: fixed;
-  left: 16px;
+  left: calc(var(--side) + 16px);
   bottom: 100px;
   z-index: 95;
-  width: min(560px, calc(100vw - 32px));
+  width: min(560px, calc(100vw - var(--side) - 32px));
   max-height: 55vh;
   overflow-y: auto;
   padding: 12px 16px;
@@ -941,7 +913,10 @@ merror { color: #b22; background: #fbe3e0; }
   .tools button { padding: 6px 8px; font-size: 13px; }
   #btn-expand { display: none; }
   /* An open file is as wide as a phone, so it can be read without zooming out. */
-  .node.doc, .node.rootfile.doc, .readme { width: 340px; }
+  .node.doc, .readme { width: 340px; }
+  /* The index covers the map instead of standing beside it, and goes when a concept is chosen. */
+  #panel { width: 100%; border-right: 0; box-shadow: none; }
+  #panel:not([hidden]) ~ * { --side: 0px; }
   #key { display: none; } /* it would cover the open file */
   #hint { bottom: 70px; }
 }
