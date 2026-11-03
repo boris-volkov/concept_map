@@ -19,7 +19,7 @@ start()
 async function start() {
   let sources
   try {
-    sources = await loadSources(CONTENT, { fresh: LOCAL })
+    sources = await loadSources(CONTENT)
   } catch (e) {
     return fail(e)
   }
@@ -143,7 +143,7 @@ function watch() {
     if (document.hidden || busy) return
     busy = true
     try {
-      const sources = await loadSources(CONTENT, { fresh: true })
+      const sources = await loadSources(CONTENT)
       const key = keyOf(sources)
       if (key === sourceKey) return
       sourceKey = key
