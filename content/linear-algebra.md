@@ -3,6 +3,18 @@ color: #6b6b2a
 
 Vectors and matrices: arithmetic with whole lists of numbers at once, for arrows in the plane, systems of equations, and the transformations that move shapes around.
 
+## Axioms {#linear-algebra-axioms}
+
+The axioms of a vector space.
+
+### Vector Space Axioms {#vector-space-axioms}
+kind: axiom
+prereqs: vector-operations, field-axioms
+
+A vector space over $\mathbb{R}$ is a set $V$ with addition and scalar multiplication such that, for all $u, v, w \in V$ and $a, b \in \mathbb{R}$: $u + v = v + u$; $(u + v) + w = u + (v + w)$; there is $\mathbf{0}$ with $v + \mathbf{0} = v$; every $v$ has $-v$ with $v + (-v) = \mathbf{0}$; $a(u + v) = au + av$; $(a + b)v = av + bv$; $a(bv) = (ab)v$; and $1v = v$.
+
+The arrows in the plane, $\mathbb{R}^n$, polynomials and functions are all vector spaces.
+
 ## Vectors
 
 Quantities with a size and a direction.

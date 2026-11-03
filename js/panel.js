@@ -56,6 +56,7 @@ export class Panel {
         <h2 class="panel-title">${renderInline(n.title)}</h2>
         ${entry(n, resolve)}
         ${topic ? contents(n) : ''}
+        ${n.twins?.length ? `<section class="links twins"><h3>Intertwined with <span class="note">each builds on part of the other</span></h3><div class="chips">${n.twins.map(chip).join('')}</div></section>` : ''}
         ${links('Prerequisites', pre, 'pre', topic ? 'from outside this topic' : '', 'None: a starting point.')}
         ${links('Required for', post, 'post', topic ? 'outside this topic' : '', '')}
         ${path.length ? pathSection(n, path) : ''}

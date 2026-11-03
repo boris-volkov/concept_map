@@ -43,7 +43,7 @@ export function computeLayout(root, isOpen, cardSize, headerWidth) {
     const kids = container.children
     const size = kids.map(measure)
     const at = new Map(kids.map((k, i) => [k, i]))
-    const edges = container.localEdges.map(e => ({ a: at.get(e.from), b: at.get(e.to), w: e.weight }))
+    const edges = container.localEdges.map(e => ({ a: at.get(e.from), b: at.get(e.to), w: e.weight, twin: e.twin }))
     const pos = placeLayered(size, edges, direction(container.depth), container.wrap)
     kids.forEach((k, i) => rel.set(k, { x: pos.x[i], y: pos.y[i], w: size[i].w, h: size[i].h }))
     return { w: pos.w, h: pos.h }
@@ -74,11 +74,17 @@ function placeLayered(size, edges, dir, wrap = 0) {
   const gap = GAP[dir]
   const between = (p, q) => (size[p].frame || size[q].frame ? GAP_FRAME : gap.card)
 
+  // Intertwined boxes (a two-way link) go in the same layer, side by side: union them into groups.
+  const group = Array.from({ length: n }, (_, i) => i)
+  const find = v => (group[v] === v ? v : (group[v] = find(group[v])))
+  for (const e of edges) if (e.twin) group[find(e.a)] = find(e.b)
+  const arrows = edges.filter(e => !e.twin)
+
   // 1. Turn the few arrows that close a loop around (the lightest ones), so every arrow points one way.
-  const rank = linearOrder(n, edges)
+  const rank = linearOrder(n, arrows)
   const preds = Array.from({ length: n }, () => [])
   const succs = Array.from({ length: n }, () => [])
-  for (const e of edges) {
+  for (const e of arrows) {
     if (e.a === e.b) continue
     const [a, b] = rank[e.a] < rank[e.b] ? [e.a, e.b] : [e.b, e.a]
     preds[b].push({ v: a, w: e.w })
@@ -94,6 +100,16 @@ function placeLayered(size, edges, dir, wrap = 0) {
     if (!succs[v].length || succs[v].length <= preds[v].length) continue
     layer[v] = Math.min(...succs[v].map(s => layer[s.v])) - 1
   }
+  // ...and an intertwined group shares one layer, its latest member's, with what follows pushed on.
+  for (let changed = true; changed;) {
+    changed = false
+    const latest = new Map()
+    for (let v = 0; v < n; v++) latest.set(find(v), Math.max(latest.get(find(v)) ?? 0, layer[v]))
+    for (let v = 0; v < n; v++) {
+      if (layer[v] !== latest.get(find(v))) { layer[v] = latest.get(find(v)); changed = true }
+      for (const { v: u } of preds[v]) if (layer[v] <= layer[u]) { layer[v] = layer[u] + 1; changed = true }
+    }
+  }
   const used = [...new Set(layer)].sort((p, q) => p - q)
   const compact = new Map(used.map((l, i) => [l, i]))
   const layers = used.map(() => [])
@@ -108,7 +124,16 @@ function placeLayered(size, edges, dir, wrap = 0) {
       const total = ns.reduce((s, x) => s + x.w, 0)
       return [v, ns.length ? ns.reduce((s, x) => s + position[x.v] * x.w, 0) / total : position[v]]
     }))
-    list.sort((p, q) => key.get(p) - key.get(q) || position[p] - position[q])
+    // Intertwined boxes share their average key, so they stay next to each other.
+    const mean = new Map()
+    for (const v of list) {
+      const m = mean.get(find(v)) ?? { sum: 0, count: 0 }
+      m.sum += key.get(v)
+      m.count++
+      mean.set(find(v), m)
+    }
+    for (const v of list) key.set(v, mean.get(find(v)).sum / mean.get(find(v)).count)
+    list.sort((p, q) => key.get(p) - key.get(q) || find(p) - find(q) || position[p] - position[q])
     list.forEach((v, i) => { position[v] = (i + 0.5) / list.length })
   }
   for (let sweep = 0; sweep < 4; sweep++) {

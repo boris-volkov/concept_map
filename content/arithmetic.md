@@ -3,6 +3,18 @@ color: #a06a1c
 
 Numbers and the four operations: the bedrock everything else stands on.
 
+## Axioms {#arithmetic-axioms}
+
+The axioms of the natural numbers, from which arithmetic is built.
+
+### Peano Axioms {#peano-axioms}
+kind: axiom
+prereqs: counting
+
+The natural numbers $\mathbb{N} = \{0, 1, 2, \ldots\}$ are characterised by: (1) $0 \in \mathbb{N}$; (2) every $n \in \mathbb{N}$ has a successor $S(n) \in \mathbb{N}$; (3) $0$ is not a successor; (4) $S(m) = S(n)$ implies $m = n$; (5) induction: any set containing $0$ and closed under $S$ contains all of $\mathbb{N}$.
+
+Counting is repeated succession: $1 = S(0)$, $2 = S(1)$, and addition is defined by $n + 0 = n$, $n + S(m) = S(n + m)$.
+
 ## Whole Numbers
 
 How whole numbers are written, ordered and compared.
@@ -340,3 +352,11 @@ kind: definition
 prereqs: exponents
 
 $\sqrt{n}$ is the non-negative number whose square is $n$: $\sqrt{49} = 7$. Perfect squares have whole-number roots; others, like $\sqrt{2}$, do not.
+
+
+## Number Systems
+kind: definition
+prereqs: negative-numbers, fractions-to-decimals, square-roots
+
+The natural numbers $\mathbb{N} = \{0, 1, 2, \ldots\}$ (some authors start at 1), the integers $\mathbb{Z}$, the rationals $\mathbb{Q} = \left\{ \frac{p}{q} : p, q \in \mathbb{Z},\ q \ne 0 \right\}$ and the reals $\mathbb{R}$, which also contain the irrationals such as $\sqrt{2}$ and $\pi$:
+$$\mathbb{N} \subset \mathbb{Z} \subset \mathbb{Q} \subset \mathbb{R}$$

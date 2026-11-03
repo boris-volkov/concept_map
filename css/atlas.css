@@ -10,6 +10,10 @@
   --ink-2: #5a4936;
   --ink-3: #8a775f;
   --rule: #cbb68e;
+  --lit: #f5b700; /* highlighted arrows */
+  --gold: #b8862b;
+  --gold-ink: #8a5f0e;
+  --gold-fill: #fbeab8;
   --blue: #2b4c84;
   --blue-edge: #a9b9d6;
   --blue-fill: #eef2f9;
@@ -194,11 +198,19 @@ math { font-family: var(--math); font-size: 1.04em; }
   opacity: 0.62;
 }
 .edge.cross { opacity: 0.26; }
-.edge.lit { opacity: 1; stroke-width: calc(var(--w) * 1px + 1px); }
+
+/* Two intertwined topics: each builds on part of the other. */
+.edge.twin { stroke-dasharray: 6 3; opacity: 0.85; stroke-width: calc(var(--w) * 1px + 0.6px); }
 .has-selection .edge.dim { opacity: 0.06; }
-.has-selection .edge.dim.lit { opacity: 0.5; }
-.edge.pre { stroke: var(--pre); opacity: 0.95; stroke-width: calc(var(--w) * 1px + 0.9px); }
-.edge.post { stroke: var(--post); opacity: 0.9; stroke-width: calc(var(--w) * 1px + 0.6px); }
+.has-selection .edge.dim.lit { opacity: 0.6; }
+/* Lit arrows (hovered, or the selected concept's) are bold gold with a dark edge, so they stand
+   out from the paper. The edge is a drop-shadow, which costs little on the handful of lit arrows. */
+.edge.lit, .edge.pre, .edge.post {
+  stroke: var(--lit);
+  opacity: 1;
+  stroke-width: calc(var(--w) * 1px + 2.6px);
+  filter: drop-shadow(0 0 1px rgba(60, 38, 0, 0.95));
+}
 
 #loading {
   position: absolute;
@@ -242,14 +254,41 @@ math { font-family: var(--math); font-size: 1.04em; }
   margin-bottom: 1px;
 }
 .node.leaf .title { font-size: 15px; line-height: 1.25; }
-/* Axioms and theorems are the load-bearing statements: blue boxes, whatever domain they are in. */
-.node.kind-axiom, .node.kind-theorem {
+/* Theorems are blue boxes, whatever domain they are in. */
+.node.kind-theorem {
   background: var(--blue-fill);
   border: 1px solid var(--blue-edge);
   border-left: 4px solid var(--blue);
 }
-.node.kind-axiom .kind, .node.kind-theorem .kind { color: var(--blue); font-weight: bold; }
-.node.kind-axiom .quiz-badge, .node.kind-theorem .quiz-badge { --c: var(--blue); }
+.node.kind-theorem .kind { color: var(--blue); font-weight: bold; }
+.node.kind-theorem .quiz-badge { --c: var(--blue); }
+
+/* Axioms, the foundations everything else is proved from, are gilded: a gold gradient,
+   a double gold rule (inset shadows without blur, so they cost nothing) and a star. */
+.node.kind-axiom {
+  background: linear-gradient(160deg, #fffaf0 0%, var(--gold-fill) 55%, #f1d384 100%);
+  border: 1px solid var(--gold);
+  border-left: 4px solid var(--gold);
+  box-shadow: inset 0 0 0 2px #fff8e2, inset 0 0 0 3px rgba(176, 128, 32, 0.55), 0 1px 3px rgba(120, 80, 0, 0.3);
+}
+.node.kind-axiom .kind { color: var(--gold-ink); font-weight: bold; letter-spacing: 0.14em; }
+.node.kind-axiom .kind::before { content: "✦ "; }
+.node.kind-axiom .title { color: #3d2a06; font-weight: 600; }
+.node.kind-axiom .quiz-badge { --c: var(--gold-ink); }
+/* A topic of axioms: gilded as a closed card, a gold frame when open. */
+.node.group.axioms {
+  background: linear-gradient(160deg, #fffaf0 0%, var(--gold-fill) 55%, #f1d384 100%);
+  border-color: var(--gold);
+  box-shadow: inset 0 0 0 3px #fff8e2, inset 0 0 0 4px rgba(176, 128, 32, 0.6), 0 1px 3px rgba(120, 80, 0, 0.3);
+}
+.node.group.axioms .title::before, .node.group.axioms .frame-title::before { content: "✦ "; }
+.node.group.axioms .eyebrow, .node.group.axioms .frame-title { color: var(--gold-ink); }
+.node.group.axioms .frame-head { border-bottom-color: rgba(176, 128, 32, 0.45); }
+#world .node.group.axioms.is-open {
+  background: linear-gradient(160deg, #fdf6e2, #f6e6b8);
+  border: 1px solid var(--gold);
+  box-shadow: inset 0 0 0 4px rgba(255, 248, 226, 0.7), inset 0 0 0 5px rgba(176, 128, 32, 0.45);
+}
 
 .marks { position: absolute; top: 6px; right: 5px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
 .quiz-badge {
@@ -565,10 +604,19 @@ math { font-family: var(--math); font-size: 1.04em; }
   border: 1px solid var(--card-edge);
   border-left: 3px solid var(--ink-3);
 }
-.statement-axiom, .statement-theorem { background: var(--blue-fill); border-color: var(--blue-edge); border-left-color: var(--blue); }
+.statement-theorem { background: var(--blue-fill); border-color: var(--blue-edge); border-left-color: var(--blue); }
+.statement-axiom {
+  padding: 12px 16px 6px;
+  background: linear-gradient(160deg, #fffaf0 0%, var(--gold-fill) 60%, #f1d384 100%);
+  border: 1px solid var(--gold);
+  border-left: 4px solid var(--gold);
+  box-shadow: inset 0 0 0 3px #fff8e2, inset 0 0 0 4px rgba(176, 128, 32, 0.5);
+}
 .statement-axiom .prose, .statement-theorem .prose { font-style: italic; }
 .statement-label { font-weight: bold; font-size: 15px; letter-spacing: 0.02em; margin-bottom: 2px; }
-.statement-axiom .statement-label, .statement-theorem .statement-label { color: var(--blue); }
+.statement-theorem .statement-label { color: var(--blue); }
+.statement-axiom .statement-label { color: var(--gold-ink); font-size: 17px; letter-spacing: 0.1em; font-variant-caps: all-small-caps; }
+.statement-axiom .statement-label::before { content: "✦ "; }
 .statement .prose p { margin-bottom: 0.6em; }
 .prose blockquote {
   margin: 0 0 1em;

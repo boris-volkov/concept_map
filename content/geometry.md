@@ -3,6 +3,38 @@ color: #3c6e47
 
 Shape, size and position, and the art of proving things about them.
 
+## Axioms {#euclids-postulates}
+wrap: 5
+
+The five postulates from which Euclid's *Elements* derives plane geometry.
+
+### Postulate 1: Lines {#postulate-lines}
+kind: axiom
+
+Through any two distinct points there is exactly one straight line.
+
+### Postulate 2: Extension {#postulate-extension}
+kind: axiom
+
+Any line segment can be extended indefinitely in a straight line.
+
+### Postulate 3: Circles {#postulate-circles}
+kind: axiom
+
+For any point and any length there is a circle with that point as centre and that length as radius.
+
+### Postulate 4: Right Angles {#postulate-right-angles}
+kind: axiom
+
+All right angles are equal.
+
+### Postulate 5: Parallels {#parallel-postulate}
+kind: axiom
+
+Through a point not on a given line there is exactly one line parallel to the given line (Playfair's form).
+
+Denying it gives the non-Euclidean geometries, where the angles of a triangle no longer sum to $180^\circ$.
+
 ## Foundations {#geometry-foundations}
 
 The undefined terms and first definitions that everything else in geometry is built from.
@@ -37,7 +69,7 @@ Lines that meet at a right angle, written $\ell \perp m$. The shortest path from
 
 ### Parallel Lines & Transversals {#parallel-lines}
 kind: theorem
-prereqs: angle-pairs
+prereqs: angle-pairs, parallel-postulate
 
 When a line crosses two parallel lines, corresponding angles are equal, alternate interior angles are equal, and co-interior angles add to $180^\circ$. Each of these, conversely, proves two lines are parallel.
 

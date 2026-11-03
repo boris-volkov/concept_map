@@ -60,7 +60,7 @@ $f$ is continuous at $a$ if $f(a)$ is defined, $\lim_{x \to a} f(x)$ exists, and
 
 ### Intermediate Value Theorem {#ivt}
 kind: theorem
-prereqs: continuity
+prereqs: continuity, completeness-axiom
 
 If $f$ is continuous on $[a, b]$ and $N$ lies between $f(a)$ and $f(b)$, then $f(c) = N$ for some $c \in [a, b]$.
 
@@ -251,7 +251,7 @@ Points where $f' = 0$ or $f'$ doesn't exist: the only places a smooth function c
 
 ### Extreme Value Theorem {#evt}
 kind: theorem
-prereqs: continuity
+prereqs: continuity, completeness-axiom
 
 If $f$ is continuous on the closed interval $[a, b]$, then $f$ attains a maximum and a minimum value on $[a, b]$.
 

@@ -92,6 +92,8 @@ export class AtlasMap {
     if (n.children.length) {
       const label = n.depth === 0 ? 'Domain' : 'Topic'
       el.className = `node group depth-${Math.min(n.depth, 4)}`
+      // A topic holding nothing but axioms is gilded like its axioms.
+      if (descendants(n).every(d => d.children.length || d.kind === 'axiom')) el.classList.add('axioms')
       el.innerHTML = `<div class="face">
           <div class="eyebrow">${label} · ${n.leafCount} ${n.leafCount === 1 ? 'concept' : 'concepts'}</div>
           <div class="title">${renderInline(n.title)}</div>
@@ -185,8 +187,10 @@ export class AtlasMap {
       if (!a || !b) continue
       // An arrow follows the flow of the topic it runs within: out of a right side into a left one, or bottom into top.
       const it = { e, a, b, dir: direction(e.within ? e.within.depth : -1) }
-      addTo(outs, e.from.id + it.dir, it)
-      addTo(ins, e.to.id + it.dir, it)
+      if (!e.twin) {
+        addTo(outs, e.from.id + it.dir, it)
+        addTo(ins, e.to.id + it.dir, it)
+      }
       live.push(it)
     }
     // Several arrows leaving (or entering) one side spread out along it, in the order of their other ends.
@@ -194,9 +198,9 @@ export class AtlasMap {
     fan(ins, 'in')
     for (const it of live) {
       const p = this.paths.get(it.e.key) ?? this.makePath(it.e)
-      p.setAttribute('d', it.dir === 'down'
+      p.setAttribute('d', it.e.twin ? link(it.a, it.b, it.dir === 'down') : (it.dir === 'down'
         ? curve(it.out, it.a.y + it.a.h, it.in, it.b.y, true)
-        : curve(it.a.x + it.a.w, it.out, it.b.x, it.in, false))
+        : curve(it.a.x + it.a.w, it.out, it.b.x, it.in, false)))
     }
     for (const [key, p] of this.paths) {
       if (this.edges.has(key)) continue
@@ -211,6 +215,7 @@ export class AtlasMap {
     // Arrows between cards in different topics run across other cards and frames; draw them lighter.
     if (e.from.parent !== e.to.parent) p.classList.add('cross')
     if (e.focus) p.classList.add('focus')
+    if (e.twin) p.classList.add('twin')
     p.style.setProperty('--c', e.from.color)
     p.style.setProperty('--w', (1.2 + Math.min(2.6, Math.log2(e.pairs.length) * 0.65)).toFixed(2))
     this.svg.append(p)
@@ -256,6 +261,8 @@ export class AtlasMap {
       p.classList.toggle('post', state === 'post')
       p.classList.toggle('dim', state === 'dim')
       p.classList.toggle('lit', !!this.hovered && (this.edges.get(key).from === this.hovered || this.edges.get(key).to === this.hovered))
+      // Highlighted arrows go on top, so others crossing them don't hide them.
+      if (state === 'pre' || state === 'post') this.svg.append(p)
     }
   }
 
@@ -293,7 +300,9 @@ export class AtlasMap {
     this.hovered = n
     for (const [key, p] of this.paths) {
       const e = this.edges.get(key)
-      p.classList.toggle('lit', !!n && !!e && (e.from === n || e.to === n))
+      const lit = !!n && !!e && (e.from === n || e.to === n)
+      p.classList.toggle('lit', lit)
+      if (lit) this.svg.append(p)
     }
   }
 
@@ -492,6 +501,24 @@ function curve(sx, sy, tx, ty, down) {
     ? `M${r1(tx - 4)},${r1(ty - 7)}L${r1(tx)},${r1(ty)}L${r1(tx + 4)},${r1(ty - 7)}`
     : `M${r1(tx - 7)},${r1(ty - 4)}L${r1(tx)},${r1(ty)}L${r1(tx - 7)},${r1(ty + 4)}`
   return `M${r1(sx)},${r1(sy)}C${r1(p[0])},${r1(p[1])} ${r1(q[0])},${r1(q[1])} ${r1(tx)},${r1(ty)}${head}`
+}
+
+// The link between two intertwined topics, which sit side by side in one layer: a straight line
+// between their facing sides, with a dot at each end and no arrowhead, since each needs the other.
+function link(a, b, down) {
+  const V = q => (down ? q.x : q.y)
+  const W = q => (down ? q.w : q.h)
+  const U = q => (down ? q.y : q.x)
+  const L = q => (down ? q.h : q.w)
+  const [p, q] = V(a) <= V(b) ? [a, b] : [b, a]
+  const lo = Math.max(U(p), U(q))
+  const hi = Math.min(U(p) + L(p), U(q) + L(q))
+  const u = hi > lo ? (lo + hi) / 2 : (U(p) + L(p) / 2 + U(q) + L(q) / 2) / 2
+  const xy = (uu, vv) => (down ? [vv, uu] : [uu, vv])
+  const [x1, y1] = xy(u, V(p) + W(p))
+  const [x2, y2] = xy(u, V(q))
+  const dot = (x, y) => `M${r1(x - 2.5)},${r1(y)}a2.5,2.5 0 1,0 5,0a2.5,2.5 0 1,0 -5,0`
+  return `M${r1(x1)},${r1(y1)}L${r1(x2)},${r1(y2)}${dot(x1, y1)}${dot(x2, y2)}`
 }
 
 function union(boxes) {

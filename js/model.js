@@ -77,8 +77,64 @@ export function prepare(atlas) {
     }
   }
   for (const n of [atlas.root, ...all]) n.localEdges = [...n.localEdges.values()]
+  for (const n of all) n.twins = []
+  for (const n of [atlas.root, ...all]) markIntertwined(n)
 
   findLoops(atlas)
+}
+
+// Concepts never form a loop (findLoops reports one as an error), but topics can: Polynomials
+// builds on Complex Numbers (the Fundamental Theorem of Algebra) and Complex Numbers on
+// Polynomials (multiplying them). Topics that build on each other, directly or around a cycle,
+// are intertwined: their arrows merge into one two-way link, and the layout keeps them together.
+function markIntertwined(container) {
+  const kids = container.children
+  if (kids.length < 2) return
+  const index = new Map(kids.map((k, i) => [k, i]))
+  const out = kids.map(() => [])
+  for (const e of container.localEdges) out[index.get(e.from)].push(index.get(e.to))
+  const comp = components(out)
+  for (const k of kids) k.twins = kids.filter(o => o !== k && comp[index.get(o)] === comp[index.get(k)])
+  const merged = new Map()
+  const edges = []
+  for (const e of container.localEdges) {
+    if (comp[index.get(e.from)] !== comp[index.get(e.to)]) { edges.push(e); continue }
+    const [a, b] = index.get(e.from) < index.get(e.to) ? [e.from, e.to] : [e.to, e.from]
+    const key = `${a.id}<>${b.id}`
+    let t = merged.get(key)
+    if (!t) {
+      merged.set(key, (t = { key, from: a, to: b, within: e.within, weight: 0, pairs: [], twin: true }))
+      edges.push(t)
+    }
+    t.weight += e.weight
+    t.pairs.push(...e.pairs)
+  }
+  container.localEdges = edges
+}
+
+// Strongly connected components (Tarjan): comp[v] is the same for nodes that can reach each other.
+function components(out) {
+  const n = out.length
+  const comp = new Array(n).fill(-1)
+  const low = new Array(n)
+  const num = new Array(n).fill(-1)
+  const stack = []
+  let counter = 0
+  let found = 0
+  const visit = v => {
+    num[v] = low[v] = counter++
+    stack.push(v)
+    for (const w of out[v]) {
+      if (num[w] === -1) { visit(w); low[v] = Math.min(low[v], low[w]) }
+      else if (comp[w] === -1) low[v] = Math.min(low[v], num[w])
+    }
+    if (low[v] !== num[v]) return
+    let w
+    do { w = stack.pop(); comp[w] = found } while (w !== v)
+    found++
+  }
+  for (let v = 0; v < n; v++) if (num[v] === -1) visit(v)
+  return comp
 }
 
 // The pair of siblings that contain p and c, and the topic they sit in.

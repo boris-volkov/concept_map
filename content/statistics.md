@@ -92,6 +92,17 @@ prereqs: combinations, addition
 
 Each entry is the sum of the two above it, and row $n$ lists $\binom{n}{0}, \binom{n}{1}, \ldots, \binom{n}{n}$.
 
+## Axioms {#probability-axioms}
+
+The axioms of probability, from which every rule of chance is derived.
+
+### Kolmogorov Axioms {#kolmogorov-axioms}
+kind: axiom
+
+A probability $P$ on a sample space $\Omega$ satisfies: (1) $P(A) \ge 0$ for every event $A$; (2) $P(\Omega) = 1$; (3) if $A_1, A_2, \ldots$ are pairwise disjoint, then $P\left(\bigcup_i A_i\right) = \sum_i P(A_i)$.
+
+Every rule of probability, such as $P(A^c) = 1 - P(A)$, is derived from these three.
+
 ## Probability
 
 Measuring how likely things are, on a scale from 0 to 1.
@@ -110,13 +121,13 @@ The list of every possible outcome, often drawn as a table or a tree: two coins 
 
 ### Complement Rule
 kind: theorem
-prereqs: probability-basics
+prereqs: kolmogorov-axioms
 
 $P(\text{not } A) = 1 - P(A)$. Often the easy way round: the chance of at least one six in four rolls is $1 - \left(\frac{5}{6}\right)^4 \approx 0.52$.
 
 ### Addition Rule
 kind: theorem
-prereqs: sample-spaces, adding-fractions
+prereqs: kolmogorov-axioms, adding-fractions
 
 $P(A \text{ or } B) = P(A) + P(B) - P(A \text{ and } B)$. Subtract the overlap so it isn't counted twice.
 
@@ -149,7 +160,7 @@ Random quantities, and the shapes their values take.
 
 ### Random Variables
 kind: definition
-prereqs: probability-basics, function-concept
+prereqs: probability-basics, function-notation
 
 A number decided by chance, like the total of two dice, together with the probability of each of its values.
 
