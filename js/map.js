@@ -825,9 +825,12 @@ export class AtlasMap {
     this.onView?.()
   }
 
-  /** The + on an open folder's head: opens every folder inside it, and shows the whole frame. */
+  /**
+   * The + on an open folder's head: opens everything inside it, every folder and every concept's
+   * entry, and shows the whole frame.
+   */
   openInside(n) {
-    for (const d of descendants(n)) if (d.children.length) this.open.add(d.id)
+    for (const d of descendants(n)) this.open.add(d.id)
     this.current = n
     const boxes = this.relayout()
     // A domain is shown with the card it floated out from, as when it opened.
@@ -892,12 +895,11 @@ function groupFace(n) {
     </div>`
 }
 
-// An open folder's head: its title, its count, and its buttons. The + is there only when the folder
-// holds folders of its own for it to open.
+// An open folder's head: its title, its count, and its buttons.
 const frameHead = n => `<div class="frame-head">
   <span class="frame-title">${renderInline(n.title)}</span>
   <span class="frame-count">${n.leafCount}</span>
-  ${n.children.some(c => c.children.length) ? `<button type="button" class="open-all" title="Open everything inside" aria-label="Open everything inside ${esc(n.plainTitle)}">+</button>` : ''}
+  <button type="button" class="open-all" title="Open everything inside" aria-label="Open everything inside ${esc(n.plainTitle)}">+</button>
   <button type="button" class="about" title="About this ${n.depth === 0 ? 'domain' : 'topic'}" aria-label="About ${esc(n.plainTitle)}">i</button>
   <button type="button" class="shut" title="Close this ${n.depth === 0 ? 'domain' : 'topic'}" aria-label="Close ${esc(n.plainTitle)}">×</button>
 </div>`
