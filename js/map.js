@@ -1,9 +1,9 @@
 // The map on screen: one element per card, open topic and open file, and a layer of arrows
 // underneath the cards.
 //
-// The domains stand in a column, the spine, with the arrows between them running down its left
-// side. An open domain keeps its card in the spine and floats its frame out to the right, clear
-// of those arrows. Everything else opens where it sits, the way a folder opens in a file
+// The domains stand in rows, each below those it builds on, with the arrows between them running
+// down the gaps. An open domain keeps its card in place and floats its frame out to the right of
+// them all, clear of those arrows. Everything else opens where it sits, the way a folder opens in a file
 // manager's tree: a topic into a frame around what it holds, a concept into its entry, the card
 // growing into the full text while the map makes room for it. The "i" on a topic's frame opens
 // the topic's README at the top of the frame, and the Index and the Ranking are files too, at
@@ -12,7 +12,7 @@
 // A new layout is applied at once, without any animation, so the map stays quick however much
 // of it is open.
 
-import { computeLayout, planSpine, flowOf, FRAME_PAD, SPINE } from './layout.js'
+import { computeLayout, flowOf, FRAME_PAD } from './layout.js'
 import {
   ancestors, isAncestor, descendants, visibleRep, visibleEdges, prerequisitesOf, dependentsOf,
   externalPrereqs, externalDependents,
@@ -27,12 +27,13 @@ import * as docs from './docs.js'
 const SVG = 'http://www.w3.org/2000/svg'
 const GRID = 160 // the survey grid's large squares
 const GRID_MARGIN = 4000 // how far the survey grid runs past the edges of the map; a multiple of GRID
-const ROOT_GAP = 44 // between the root files and the lanes of the arrows down the spine
+const ROOT_GAP = 56 // between the root files and the domains
 const READABLE = 0.7 // a file opened from further out than this brings the map in close enough to read it
 const ROOT = new Map(docs.ROOT_FILES.map(f => [f.id, f]))
 const RANKING = ROOT.get('@ranking')
 const readmeKey = n => 'readme:' + n.id
-const stubKey = n => 'spine:' + n.id // an open domain's card, left in the spine
+const stubKey = n => 'spine:' + n.id // an open domain's card, left in its place among the domains
+const tetherKey = n => 'tether:' + n.id // the line from it to its frame
 const r1 = v => Math.round(v * 10) / 10
 
 export class AtlasMap {
@@ -53,12 +54,12 @@ export class AtlasMap {
     this.fileSizes = new Map() // key → the size of an open file or README, which changes with what it shows
     this.heads = new Map()
     this.rankDomain = '' // the Ranking shows only this domain's concepts, when set
-    this.spine = new Map() // domain id → its place in the spine
-    this.arcs = [] // the arrows down the left of the spine, with their lanes (see planSpine)
+    this.spine = new Map() // domain id → the place of its card
+    this.routes = new Map() // edge key → the route of an arrow between domains (see layoutDomains)
+    this.tethers = new Map() // domain id → the <path> tying its card to its open frame
     this.selected = null
     this.hl = null
     this.camera = new Camera(viewport, world, () => this.cameraMoved())
-    world.style.setProperty('--float', `${SPINE.float}px`) // how far an open domain's frame floats from its card
     // An open file changes size when its quiz moves on, a list in it unfolds, or a font arrives.
     this.resizes = new ResizeObserver(entries => this.resized(entries))
     viewport.addEventListener('click', e => this.click(e))
@@ -204,7 +205,7 @@ export class AtlasMap {
     this.markProgress(n, el)
   }
 
-  // An open domain's card stays in the spine, outlined and tied to the frame it floated out into;
+  // An open domain's card stays in its place, outlined and tied to the frame it floated out into;
   // clicking it closes the domain again.
   stubElement(n) {
     const key = stubKey(n)
@@ -358,15 +359,11 @@ export class AtlasMap {
       const size = this.fileSizes.get(readmeKey(n))
       boxes.set(readmeKey(n), { x: frame.x + FRAME_PAD.left, y: frame.y + FRAME_PAD.top, w: size.w, h: size.h })
     }
-    // The arrows between domains, each in its lane down the left of the spine.
-    this.order = layout.order
-    this.arcs = planSpine(layout.order, this.atlas.root.localEdges)
-    const lanes = Math.max(0, ...this.arcs.map(a => a.lane + 1))
-    const gutter = lanes ? SPINE.lane0 + SPINE.lane * (lanes - 1) : 0
-    // The root files stand in a column of their own at the top left, beyond the arrows, the way an
-    // old atlas keeps its index apart from the plates. An open one grows away from the spine.
-    const right = -gutter - ROOT_GAP
-    let left = -gutter
+    this.routes = layout.routes
+    // The root files stand in a column of their own at the top left, the way an old atlas keeps
+    // its index apart from the plates. An open one grows away from the domains.
+    const right = -ROOT_GAP
+    let left = 0
     let y = 0
     for (const f of docs.ROOT_FILES) {
       const s = this.sizeOf(f)
@@ -402,18 +399,22 @@ export class AtlasMap {
   drawEdges() {
     this.edges = visibleEdges(this.atlas, n => this.isOpen(n), this.selected)
     // A selected concept's links into other domains aren't drawn across the frames: the arrows
-    // between the domains, down the spine, carry them, and light up for it.
+    // between the domains carry them, and light up for it.
     for (const [key, e] of this.edges) if (e.focus && !e.within) this.edges.delete(key)
-    const arcs = new Map(this.arcs.map(arc => [arc.e.key, arc]))
     const outs = new Map()
     const ins = new Map()
     const live = []
+    const sides = new Map() // a domain card's top or bottom → the arrows that enter or leave it there
+    const routed = []
     for (const e of this.edges.values()) {
       const p = this.paths.get(e.key) ?? this.makePath(e)
-      const arc = arcs.get(e.key)
-      // Between domains: down the left of the spine, in the arrow's lane (see planSpine).
-      if (arc) {
-        p.setAttribute('d', this.bracket(arc))
+      // Between domains: down the gaps between the rows, along the arrow's route (see layoutDomains).
+      const route = this.routes.get(e.key)
+      if (route) {
+        const it = { e, p, route, U: this.spine.get(route.upper.id), L: this.spine.get(route.lower.id) }
+        addTo(sides, route.upper.id + ' bottom', it)
+        addTo(sides, route.lower.id + ' top', it)
+        routed.push(it)
         continue
       }
       let [from, to] = [e.from, e.to]
@@ -461,23 +462,68 @@ export class AtlasMap {
       }
       it.p.setAttribute('d', d)
     }
+    // The arrows leaving (or entering) a domain's card spread out along its side, in the order of
+    // where they head next. Each then runs from the upper card's bottom, straight down through its
+    // gap in every row it passes, into the lower card's top, turned round if it points up.
+    const mid = box => box.x + box.w / 2
+    for (const [key, list] of sides) {
+      const bottom = key.endsWith(' bottom')
+      const next = it => (bottom ? it.route.pass[0]?.x ?? mid(it.L) : it.route.pass.at(-1)?.x ?? mid(it.U))
+      list.sort((p, q) => next(p) - next(q))
+      const box = bottom ? list[0].U : list[0].L
+      const gap = list.length > 1 ? Math.min(16, (box.w * 0.6) / (list.length - 1)) : 0
+      list.forEach((it, i) => { it[bottom ? 'out' : 'in'] = mid(box) + (i - (list.length - 1) / 2) * gap })
+    }
+    for (const it of routed) {
+      const { U, L, route } = it
+      const pts = [[it.out, U.y + U.h], ...route.pass.flatMap(q => [[q.x, q.y0], [q.x, q.y1]]), [it.in, L.y]]
+      it.p.classList.toggle('back', route.back)
+      it.p.setAttribute('d', path(route.back ? pts.reverse() : pts, !!it.e.twin))
+    }
     for (const [key, p] of this.paths) {
       if (this.edges.has(key)) continue
       p.remove()
       this.paths.delete(key)
     }
+    this.drawTethers()
   }
 
-  // An arrow between domains: out of one card's left side, along its lane, and into the other's
-  // left side. Between domains that each build on the other, it has a head at each end.
-  bracket(arc) {
-    const upper = this.spine.get(this.order[arc.a].id)
-    const lower = this.spine.get(this.order[arc.b].id)
-    const ya = upper.y + upper.h * arc.out
-    const yb = lower.y + lower.h * arc.in
-    const depth = SPINE.lane0 + SPINE.lane * arc.lane
-    if (arc.e.twin) return lane(upper.x, ya, yb, depth, true, true)
-    return arc.e.to === this.order[arc.b] ? lane(upper.x, ya, yb, depth, true) : lane(upper.x, yb, ya, depth, true)
+  // An open domain's card, at the end of its row (see layoutDomains), is tied to its frame by a
+  // line from its side to the frame's head. Where two domains of one row are open, the inner one's
+  // line runs under the other card instead, and into its frame's side.
+  drawTethers() {
+    const open = this.atlas.roots.filter(d => this.isOpen(d) && this.spine.has(d.id) && this.boxes.has(d.id))
+    for (const [id, p] of this.tethers) {
+      if (open.some(d => d.id === id)) continue
+      p.remove()
+      this.tethers.delete(id)
+    }
+    for (const d of open) {
+      let p = this.tethers.get(d.id)
+      if (!p) {
+        p = document.createElementNS(SVG, 'path')
+        p.classList.add('tether')
+        p.style.setProperty('--c', d.color)
+        this.svg.append(p)
+        this.tethers.set(d.id, p)
+      }
+      const card = this.spine.get(d.id)
+      const frame = this.boxes.get(d.id)
+      const outer = ![...this.spine.values()].some(o => o !== card && o.y === card.y && o.x > card.x)
+      if (outer) {
+        const [x1, y1, x2, y2] = [card.x + card.w, card.y + 19, frame.x, frame.y + 19]
+        const c = (x2 - x1) / 2
+        p.setAttribute('d', `M${r1(x1)},${r1(y1)}C${r1(x1 + c)},${r1(y1)} ${r1(x2 - c)},${r1(y2)} ${r1(x2)},${r1(y2)}`)
+      } else {
+        // Down out of the card's bottom, along under the row, and up or down into the frame's side.
+        const x1 = card.x + card.w - 28
+        const yu = card.y + card.h + 16
+        const x2 = frame.x - 22
+        const y2 = Math.max(frame.y + 19, yu)
+        p.setAttribute('d', `M${r1(x1)},${r1(card.y + card.h)}V${r1(yu - 8)}Q${r1(x1)},${r1(yu)} ${r1(x1 + 8)},${r1(yu)}` +
+          `H${r1(x2 - 8)}Q${r1(x2)},${r1(yu)} ${r1(x2)},${r1(Math.min(y2, yu + 8))}V${r1(y2)}H${r1(frame.x)}`)
+      }
+    }
   }
 
   makePath(e) {
@@ -654,7 +700,7 @@ export class AtlasMap {
   }
 
   collapse(n) {
-    // Closed with the keyboard, from its frame or its card in the spine: the focus goes to its card.
+    // Closed with the keyboard, from its frame or from its card: the focus goes to its card.
     const focused = [n.id, stubKey(n)].some(key => this.els.get(key)?.contains(document.activeElement))
     for (const d of [n, ...descendants(n)]) {
       this.open.delete(d.id)
@@ -975,16 +1021,23 @@ function curve(sx, sy, tx, ty, down, both = false) {
   return `M${r1(sx)},${r1(sy)}C${r1(p[0])},${r1(p[1])} ${r1(q[0])},${r1(q[1])} ${r1(tx)},${r1(ty)}`
 }
 
-// An arrow down the left of the spine, from (x, y0) to (x, y1) on the cards' left sides: out to
-// its lane, `depth` to the left, along it with rounded corners, and back in, ending HEAD short of
-// the card for its arrowhead when it has one, and starting HEAD clear of the first card when it
-// has a head at that end too.
-function lane(x, y0, y1, depth, head, both = false) {
-  const lx = x - depth
-  const s = Math.sign(y1 - y0) || 1
-  const r = Math.min(10, Math.abs(y1 - y0) / 2, depth / 2)
-  return `M${r1(both ? x - HEAD : x)},${r1(y0)}H${r1(lx + r)}Q${r1(lx)},${r1(y0)} ${r1(lx)},${r1(y0 + s * r)}` +
-    `V${r1(y1 - s * r)}Q${r1(lx)},${r1(y1)} ${r1(lx + r)},${r1(y1)}H${r1(head ? x - HEAD : x)}`
+// An arrow between domains, through the points of its route: each joined to the next by an
+// S-curve, which runs straight down a gap where two points stand one above the other. It stops
+// HEAD short of its last point for the arrowhead, and starts HEAD clear of its first when it has
+// a head at that end too.
+function path(pts, both) {
+  const p = pts.map(q => [...q])
+  const s = Math.sign(p.at(-1)[1] - p[0][1]) || 1
+  p.at(-1)[1] -= s * HEAD
+  if (both) p[0][1] += s * HEAD
+  let d = `M${r1(p[0][0])},${r1(p[0][1])}`
+  for (let i = 1; i < p.length; i++) {
+    const [x0, y0] = p[i - 1]
+    const [x1, y1] = p[i]
+    const c = (y1 - y0) / 2
+    d += `C${r1(x0)},${r1(y0 + c)} ${r1(x1)},${r1(y1 - c)} ${r1(x1)},${r1(y1)}`
+  }
+  return d
 }
 
 function union(boxes) {

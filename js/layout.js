@@ -1,9 +1,10 @@
 // Where everything goes on the map.
 //
-// The domains stand in one column, the spine, prerequisites first, so that going
-// down the map is going deeper into mathematics. An open domain keeps its card in
-// the spine and floats its frame out to the right, in a row of its own; the arrows
-// between domains run down the left of the spine, so they never cross a frame.
+// The domains make a small layered drawing of their own, in rows: each domain a row
+// below the furthest of those it builds on, so that going down the map is going
+// deeper into mathematics, and domains that don't build on one another side by side.
+// An open domain keeps its card in place and floats its frame out to the right of all
+// the cards, level with its row, so the arrows between domains never cross a frame.
 //
 // Inside a domain, each open topic lays out its own children, inside out, as a
 // layered (or "Sugiyama") drawing: prerequisites first, what builds on them after.
@@ -15,8 +16,12 @@
 // the rest of the map.
 
 export const FRAME_PAD = { top: 54, right: 22, bottom: 22, left: 22 }
-/** The spine: between its rows, between a card and the frame it floats out into, and the lanes of its arrows. */
-export const SPINE = { gap: 30, float: 64, lane0: 26, lane: 14 }
+/**
+ * The domains' rows: between rows, from the cards to the frames that float out beside them,
+ * between frames that float out of one row, between cards side by side, and between an arrow
+ * passing a row and whatever is next to it.
+ */
+export const DOMAINS = { gap: 64, float: 72, stack: 30, card: 44, pass: 20 }
 const README_GAP = 22 // between an open topic's README and its contents
 const GAP = {
   right: { layer: 78, wrap: 22, card: 14 }, // layer: between the columns an arrow runs across
@@ -25,7 +30,7 @@ const GAP = {
 const GAP_FRAME = 26 // beside an open topic or an open file
 const ASPECT = 1.5 // a crowded layer wraps until its topic is about this wide for its height
 
-/** Which way a topic's contents flow, by its depth: domains (0) down, topics (1) across… (the map itself is the spine). */
+/** Which way a topic's contents flow, by its depth: domains (0) down, topics (1) across… (the domains themselves: see layoutDomains). */
 export const direction = depth => (depth % 2 === 0 ? 'down' : 'right')
 
 /** The way a topic's contents flow: its own "flow:" if it has one, otherwise by depth. */
@@ -35,8 +40,9 @@ export const flowOf = node => node.flow ?? direction(node.depth)
  * root: the atlas root; isOpen(node); cardSize(node) → {w, h}, with `file: true` for an open
  * file (a domain's is the size of its card, open or not); headerWidth(node) → minimum frame
  * width; readmeSize(node) → {w, h} of an open topic's README, or null when it has none showing.
- * Returns absolute boxes {x, y, w, h} by node id (an open domain's is its frame), each domain's
- * place in the spine by id, the domains in their order down it, and the overall size.
+ * Returns absolute boxes {x, y, w, h} by node id (an open domain's is its frame), each domain
+ * card's place by id (`spine`), the route of each arrow between domains by key (see
+ * layoutDomains), and the overall size.
  */
 export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = () => null) {
   const rel = new Map()
@@ -47,15 +53,15 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
     return FRAME_PAD.top + (r ? r.h + README_GAP : 0)
   }
 
+  // A frame wider than what it holds, for its title or its README, centres what it holds.
+  const indent = new Map()
   const measure = n => {
     if (!open(n)) return cardSize(n)
     const inner = arrange(n)
     const r = readmeSize(n)
-    return {
-      w: Math.max(inner.w + FRAME_PAD.left + FRAME_PAD.right, headerWidth(n), r ? r.w + FRAME_PAD.left + FRAME_PAD.right : 0),
-      h: inner.h + top(n) + FRAME_PAD.bottom,
-      frame: true,
-    }
+    const w = Math.max(inner.w + FRAME_PAD.left + FRAME_PAD.right, headerWidth(n), r ? r.w + FRAME_PAD.left + FRAME_PAD.right : 0)
+    indent.set(n, (w - inner.w - FRAME_PAD.left - FRAME_PAD.right) / 2)
+    return { w, h: inner.h + top(n) + FRAME_PAD.bottom, frame: true }
   }
 
   const arrange = container => {
@@ -68,23 +74,16 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
     return { w: pos.w, h: pos.h }
   }
 
-  // The spine: every domain's card takes a place of one size, so the column is even, and an open
-  // domain's frame sits to the right of its place, its row as tall as the frame.
-  const order = spineOrder(root)
+  // The domains: every card takes a place of one size, so the rows are even, and an open domain's
+  // frame floats out to the right of them all, level with its row.
+  const kids = root.children
   const slot = {
-    w: Math.max(0, ...order.map(k => cardSize(k).w)),
-    h: Math.max(0, ...order.map(k => cardSize(k).h)),
+    w: Math.max(0, ...kids.map(k => cardSize(k).w)),
+    h: Math.max(0, ...kids.map(k => cardSize(k).h)),
   }
-  const spine = new Map()
-  let y = 0
-  let width = slot.w
-  for (const k of order) {
-    const frame = open(k) ? measure(k) : null
-    spine.set(k.id, { x: 0, y, w: slot.w, h: slot.h })
-    rel.set(k, frame ? { x: slot.w + SPINE.float, y, w: frame.w, h: frame.h } : { x: 0, y, w: slot.w, h: slot.h })
-    if (frame) width = Math.max(width, slot.w + SPINE.float + frame.w)
-    y += Math.max(slot.h, frame ? frame.h : 0) + SPINE.gap
-  }
+  const frames = new Map(kids.filter(open).map(k => [k, measure(k)]))
+  const d = layoutDomains(root, slot, frames)
+  for (const k of kids) rel.set(k, d.frames.get(k) ?? d.places.get(k.id))
 
   const boxes = new Map()
   const place = (container, ox, oy) => {
@@ -92,88 +91,151 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
       const r = rel.get(k)
       const box = { x: ox + r.x, y: oy + r.y, w: r.w, h: r.h }
       boxes.set(k.id, box)
-      if (open(k)) place(k, box.x + FRAME_PAD.left, box.y + top(k))
+      if (open(k)) place(k, box.x + FRAME_PAD.left + indent.get(k), box.y + top(k))
     }
   }
   place(root, 0, 0)
-  return { boxes, spine, order, width, height: Math.max(0, y - SPINE.gap) }
-}
-
-// The domains in an order that keeps every arrow between them pointing down: intertwined
-// domains (building on each other, directly or around a loop) one after another, in the
-// order the content files are listed in, as are the rest (Kahn's algorithm, taking the first
-// listed of those ready).
-function spineOrder(root) {
-  const kids = root.children
-  const at = new Map(kids.map((k, i) => [k, i]))
-  const group = kids.map((_, i) => i)
-  const find = v => (group[v] === v ? v : (group[v] = find(group[v])))
-  for (const k of kids) for (const t of k.twins ?? []) group[find(at.get(k))] = find(at.get(t))
-  const groups = [...new Set(kids.map((_, i) => find(i)))]
-  const next = new Map(groups.map(g => [g, new Set()]))
-  const waits = new Map(groups.map(g => [g, 0]))
-  for (const e of root.localEdges) {
-    const a = find(at.get(e.from))
-    const b = find(at.get(e.to))
-    if (a === b || next.get(a).has(b)) continue
-    next.get(a).add(b)
-    waits.set(b, waits.get(b) + 1)
-  }
-  const first = g => kids.findIndex((_, i) => find(i) === g)
-  const ready = groups.filter(g => !waits.get(g))
-  const out = []
-  while (ready.length) {
-    ready.sort((p, q) => first(p) - first(q))
-    const g = ready.shift()
-    out.push(...kids.filter((_, i) => find(i) === g))
-    for (const h of next.get(g)) {
-      waits.set(h, waits.get(h) - 1)
-      if (!waits.get(h)) ready.push(h)
-    }
-  }
-  return out.length === kids.length ? out : [...out, ...kids.filter(k => !out.includes(k))]
+  return { boxes, spine: d.places, routes: d.routes, width: d.width, height: d.height }
 }
 
 /**
- * The arrows between domains run down the left of the spine, each in a lane of its own, so none
- * crosses a card or a frame. A longer arrow takes a lane outside the shorter ones beside it, so
- * they nest like brackets. Along a card's left side, the arrows coming from above enter over
- * the ones leaving for below; arrows from nearer domains enter above those from further off, and
- * arrows to further domains leave above those to nearer ones, so that none crosses another
- * there either. A two-way arrow, between domains that each build on the other, runs in a lane
- * like the rest, with a head at each end.
- * Returns { e, a, b, out, in, lane } for each arrow: a and b are the upper and lower places in
- * the spine, and out and in where along those cards it leaves and enters, as fractions of
- * their height.
+ * The domains, as a small layered drawing (placeLayered does the same inside a topic). Each
+ * domain goes a row below the furthest of those it builds on, after the few arrows that close a
+ * loop are turned round, so that going down is going deeper into mathematics and domains that
+ * don't build on one another stand side by side. An arrow that skips rows passes each row
+ * between at a point of its own, set into the row like a very narrow card, so it runs down a gap
+ * between the cards rather than behind one. An open domain's frame floats out to the right of
+ * all the cards, level with its row; frames out of one row stack, the rightmost card's first,
+ * so the lines that tie them to their cards don't cross. A row is as tall as its cards, or as
+ * the frames beside it.
+ * slot: {w, h}, the size of a domain's card; frames: domain → {w, h} of its open frame.
+ * Returns { places: id → card box, frames: domain → frame box, routes: edge key → { upper,
+ * lower, pass: [{x, y0, y1}], back }, width, height }. An arrow runs from the bottom of its upper
+ * card to the top of its lower one, straight down through each passing point from y0 to y1;
+ * `back` marks one that points up, closing a loop.
  */
-export function planSpine(order, edges) {
-  const row = new Map(order.map((k, i) => [k, i]))
-  const arcs = []
-  for (const e of edges) {
-    const [p, q] = [row.get(e.from), row.get(e.to)]
-    if (p === undefined || q === undefined) continue
-    arcs.push({ e, a: Math.min(p, q), b: Math.max(p, q), out: 0.5, in: 0.5, lane: 0 })
+function layoutDomains(root, slot, frames) {
+  const kids = root.children
+  const n = kids.length
+  const at = new Map(kids.map((k, i) => [k, i]))
+  const edges = root.localEdges.map(e => ({ e, a: at.get(e.from), b: at.get(e.to), w: e.weight }))
+
+  // 1. Rows: each domain one below the furthest it builds on.
+  const rank = linearOrder(n, edges)
+  const preds = Array.from({ length: n }, () => [])
+  for (const t of edges) {
+    [t.upper, t.lower] = rank[t.a] < rank[t.b] ? [t.a, t.b] : [t.b, t.a]
+    preds[t.lower].push(t.upper)
   }
-  const sides = order.map(() => [])
-  for (const arc of arcs) {
-    sides[arc.a].push({ arc, end: 'out', other: arc.b })
-    sides[arc.b].push({ arc, end: 'in', other: arc.a })
+  const row = new Array(n).fill(0)
+  for (const v of [...Array(n).keys()].sort((p, q) => rank[p] - rank[q])) {
+    for (const u of preds[v]) row[v] = Math.max(row[v], row[u] + 1)
   }
-  sides.forEach((list, k) => {
-    list.sort((p, q) => (p.other > k) - (q.other > k) || q.other - p.other)
-    list.forEach((s, i) => { s.arc[s.end] = 0.2 + (0.6 * (i + 0.5)) / list.length })
-  })
-  const span = arc => [arc.a + arc.out, arc.b + arc.in]
-  const placed = []
-  for (const arc of [...arcs].sort((p, q) => span(p)[1] - span(p)[0] - (span(q)[1] - span(q)[0]))) {
-    const [s, t] = span(arc)
-    for (const o of placed) {
-      const [s2, t2] = span(o)
-      if (s < t2 && s2 < t) arc.lane = Math.max(arc.lane, o.lane + 1)
+  const rows = n ? Math.max(...row) + 1 : 0
+
+  // 2. The things in each row: its cards, and a passing point for each arrow that skips it.
+  const items = kids.map((_, i) => ({ card: i, row: row[i] }))
+  const above = items.map(() => [])
+  const below = items.map(() => [])
+  const join = (p, q, w) => { below[p].push({ v: q, w }); above[q].push({ v: p, w }) }
+  for (const t of edges) {
+    t.pass = []
+    let prev = t.upper
+    for (let r = row[t.upper] + 1; r < row[t.lower]; r++) {
+      const i = items.push({ row: r }) - 1
+      above.push([])
+      below.push([])
+      t.pass.push(i)
+      join(prev, i, t.w)
+      prev = i
     }
-    placed.push(arc)
+    join(prev, t.lower, t.w)
   }
-  return arcs
+  const isCard = i => items[i].card !== undefined
+
+  // 3. Order each row to uncross the arrows: by the weighted average place of what each thing
+  // connects to, sweeping down and up a few times; ties keep the order of index.md. An open
+  // domain's card goes to the end of its row, next to the frames, so the line tying it to its
+  // frame passes nothing on the way.
+  const layers = Array.from({ length: rows }, () => [])
+  items.forEach((it, i) => layers[it.row].push(i))
+  const pos = new Array(items.length)
+  layers.forEach(list => list.forEach((i, j) => { pos[i] = (j + 0.5) / list.length }))
+  const last = i => isCard(i) && frames.has(kids[items[i].card])
+  const sortBy = (list, nbrs) => {
+    const key = new Map(list.map(i => {
+      const total = nbrs[i].reduce((s, t) => s + t.w, 0)
+      return [i, total ? nbrs[i].reduce((s, t) => s + pos[t.v] * t.w, 0) / total : pos[i]]
+    }))
+    list.sort((p, q) => last(p) - last(q) || key.get(p) - key.get(q) || pos[p] - pos[q])
+    list.forEach((i, j) => { pos[i] = (j + 0.5) / list.length })
+  }
+  for (let sweep = 0; sweep < 4; sweep++) {
+    for (let r = 1; r < rows; r++) sortBy(layers[r], above)
+    for (let r = rows - 2; r >= 0; r--) sortBy(layers[r], below)
+  }
+
+  // 4. Across: each row's cards and passing points side by side, each then nudged toward what it
+  // connects to, as close as the things beside it allow (as in placeLayered).
+  const breadth = i => (isCard(i) ? slot.w : 0)
+  const between = (p, q) => (isCard(p) && isCard(q) ? DOMAINS.card : DOMAINS.pass)
+  const px = new Array(items.length)
+  for (const list of layers) {
+    let cx = 0
+    list.forEach((i, j) => {
+      if (j) cx += between(list[j - 1], i)
+      px[i] = cx
+      cx += breadth(i)
+    })
+    for (const i of list) px[i] -= cx / 2
+  }
+  const middle = i => px[i] + breadth(i) / 2
+  const settle = (list, nbrs) => {
+    const want = list.map(i => {
+      const total = nbrs[i].reduce((s, t) => s + t.w, 0)
+      return total ? nbrs[i].reduce((s, t) => s + middle(t.v) * t.w, 0) / total - breadth(i) / 2 : px[i]
+    })
+    stackNear(list, want, px, breadth, between)
+  }
+  for (let pass = 0; pass < 4; pass++) {
+    for (const list of layers) settle(list, above)
+    for (const list of [...layers].reverse()) settle(list, below)
+  }
+  for (const list of layers) settle(list, above)
+  const lo = Math.min(...items.map((_, i) => px[i]))
+  const right = Math.max(...items.map((_, i) => px[i] + breadth(i))) - lo
+  for (let i = 0; i < items.length; i++) px[i] -= lo
+
+  // 5. Down: each row as tall as its cards, or as the frames floating out beside it, stacked.
+  const fx = right + DOMAINS.float
+  const places = new Map()
+  const boxes = new Map()
+  const top = []
+  const tall = []
+  let y = 0
+  for (let r = 0; r < rows; r++) {
+    const cards = layers[r].filter(isCard)
+    let fy = y
+    for (const i of [...cards].reverse()) {
+      const k = kids[items[i].card]
+      const f = frames.get(k)
+      if (!f) continue
+      boxes.set(k, { x: fx, y: fy, w: f.w, h: f.h })
+      fy += f.h + DOMAINS.stack
+    }
+    for (const i of cards) places.set(kids[items[i].card].id, { x: px[i], y, w: slot.w, h: slot.h })
+    top.push(y)
+    tall.push(Math.max(slot.h, fy - DOMAINS.stack - y))
+    y += tall[r] + DOMAINS.gap
+  }
+  const routes = new Map(edges.map(t => [t.e.key, {
+    upper: kids[t.upper],
+    lower: kids[t.lower],
+    pass: t.pass.map(i => ({ x: px[i], y0: top[items[i].row], y1: top[items[i].row] + tall[items[i].row] })),
+    back: !t.e.twin && t.upper !== t.a,
+  }]))
+  const width = Math.max(right, ...[...boxes.values()].map(b => b.x + b.w))
+  return { places, frames: boxes, routes, width, height: rows ? y - DOMAINS.gap : 0 }
 }
 
 // Lays out boxes of the given sizes, with weighted arrows a → b between them, flowing `dir`.
@@ -257,14 +319,16 @@ function placeLayered(size, edges, dir, wrap = 0) {
     lanes.push({ layer: l, nodes: lane })
   })
 
-  // 5. Coordinates: lanes one after another along the flow; each box then nudged toward the boxes it connects to.
+  // 5. Coordinates: lanes one after another along the flow, the boxes of each lined up at its
+  // start, so that a card beside an open frame stays level with the frame's head and the arrows
+  // into a lane all arrive at one line; each box then nudged toward the boxes it connects to.
   const u = new Array(n)
   const v = new Array(n)
   let cu = 0
   lanes.forEach((lane, i) => {
     if (i) cu += lanes[i - 1].layer === lane.layer ? gap.wrap : gap.layer
     const extent = Math.max(...lane.nodes.map(length))
-    for (const k of lane.nodes) u[k] = cu + (extent - length(k)) / 2
+    for (const k of lane.nodes) u[k] = cu
     cu += extent
     let cv = -stack(lane.nodes) / 2
     lane.nodes.forEach((k, j) => {

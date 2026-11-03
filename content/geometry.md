@@ -4,6 +4,7 @@ color: #3c6e47
 Shape, size and position, and the art of proving things about them.
 
 ## Axioms {#geometry-axioms}
+flow: down
 wrap: 6
 
 Geometry has more than one set of axioms. Here are six, side by side: four for the familiar Euclidean plane, and two that change its parallel postulate.
@@ -18,10 +19,11 @@ The last two keep most of Euclid's postulates but not the fifth, and so describe
 | Elliptic | none | more than $180^\circ$ |
 | Hyperbolic | infinitely many | less than $180^\circ$ |
 
-Open any two systems to compare them, one above the other.
+Open any of them to compare them side by side, each a column of its axioms.
 
 ### Euclid's Postulates {#euclids-postulates}
-wrap: 5
+flow: across
+wrap: 6
 
 The five postulates, and five common notions, from which Euclid's *Elements*, around 300 BC, derives plane geometry: the oldest axiom system we have, and the model for every one since.
 
@@ -71,6 +73,7 @@ Euclid's axioms for all of mathematics, where his postulates are about geometry 
 The first three are the [[equality-properties|properties of equality]] used in algebra. The fifth fails for infinite sets: the even numbers are only part of the whole numbers, yet the two can be paired off exactly, $n \leftrightarrow 2n$.
 
 ### Hilbert's Axioms {#hilberts-axioms}
+flow: across
 wrap: 5
 
 The twenty axioms, in five groups, with which David Hilbert in 1899 rebuilt Euclid's geometry so that every proof follows from the axioms alone, and nothing is taken from the picture.
@@ -140,6 +143,7 @@ Plane geometry follows from four postulates about distance $d$ and angle measure
 Four postulates do the work of [[hilberts-axioms|Hilbert's twenty]] because the real numbers come with them, ready-made. There is no parallel postulate: it follows from the fourth, since in [[elliptic-geometry|elliptic]] and [[hyperbolic-geometry|hyperbolic]] geometry triangles of different sizes are never similar. The [[school-postulates|high-school postulates]] grew from these.
 
 ### High-School Postulates (SMSG) {#school-postulates}
+flow: across
 wrap: 4
 tags: smsg, american, textbook
 
