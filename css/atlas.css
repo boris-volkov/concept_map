@@ -250,7 +250,7 @@ math { font-family: var(--math); font-size: 1.04em; }
   border-radius: 4px;
   box-shadow: var(--shadow);
 }
-.node.leaf:hover { box-shadow: var(--lift); border-color: color-mix(in srgb, var(--c) 55%, var(--card-edge)); }
+.node.leaf:not(.doc):hover { box-shadow: var(--lift); border-color: color-mix(in srgb, var(--c) 55%, var(--card-edge)); }
 .node.leaf .kind {
   font-size: 11px;
   line-height: 1.2;
@@ -331,8 +331,8 @@ math { font-family: var(--math); font-size: 1.04em; }
 .quiz-badge:hover, .has-quiz-open .quiz-badge { background: var(--c); color: var(--card); }
 .check { display: none; color: var(--right); font-size: 13px; line-height: 1; }
 .is-mastered .check { display: block; }
-.node.leaf.is-mastered { background: linear-gradient(color-mix(in srgb, var(--right) 7%, var(--card)), var(--card)); }
-.node.leaf.is-ready { border-style: solid dashed dashed solid; }
+.node.leaf.is-mastered:not(.doc) { background: linear-gradient(color-mix(in srgb, var(--right) 7%, var(--card)), var(--card)); }
+.node.leaf.is-ready:not(.doc) { border-style: solid dashed dashed solid; }
 
 /* A super-concept, at the top of the ranking, carries a red star on its corner, as a capital does
    on an old map. Unlike the other marks it stays when the map is zoomed far out. */
@@ -368,7 +368,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 .eyebrow { font-size: 11.5px; color: var(--c); font-variant-caps: all-small-caps; letter-spacing: 0.09em; }
 .node.group .title { font-size: 19px; line-height: 1.2; margin: 3px 0 5px; font-variant-caps: small-caps; letter-spacing: 0.02em; }
 .node.group.depth-0 .title { font-size: 25px; margin: 4px 0 7px; }
-.node.group .summary {
+.node.group .summary, .node.rootfile .summary {
   font-size: 13.5px;
   line-height: 1.38;
   color: var(--ink-2);
@@ -424,17 +424,8 @@ math { font-family: var(--math); font-size: 1.04em; }
   cursor: pointer;
 }
 .frame-head .about { font-style: italic; font-weight: bold; font-size: 13px; }
-.frame-head button:hover { background: var(--c); color: var(--card); }
+.frame-head button:hover, .frame-head .about.is-on { background: var(--c); color: var(--card); }
 .probe { visibility: hidden; width: max-content !important; }
-
-/* Selection: the selected card, what it builds on, what builds on it; everything else fades. */
-.node.is-selected { z-index: 35; box-shadow: 0 0 0 2px var(--ink), var(--lift); }
-.node.is-pre { box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--pre) 55%, transparent), var(--shadow); }
-.node.is-pre-direct { box-shadow: 0 0 0 2.5px var(--pre), var(--lift); }
-.node.is-post { box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--post) 50%, transparent), var(--shadow); }
-.node.is-post-direct { box-shadow: 0 0 0 2.5px var(--post), var(--lift); }
-.has-selection .node.is-dim { opacity: 0.3; }
-.has-selection .node.is-dim:hover { opacity: 0.75; }
 
 /* Far out, only the big names matter. */
 .is-far .node.leaf .kind, .is-far .marks { visibility: hidden; }
@@ -469,7 +460,6 @@ math { font-family: var(--math); font-size: 1.04em; }
   gap: 4px;
 }
 #zoom button { width: 34px; height: 34px; padding: 0; font-size: 18px; font-variant-caps: normal; box-shadow: var(--shadow); }
-.panel-open #zoom { right: calc(min(440px, 100vw - 24px) + 28px); }
 
 #hint {
   display: none;
@@ -507,42 +497,7 @@ math { font-family: var(--math); font-size: 1.04em; }
   border-radius: 16px;
 }
 
-/* ---------- quiz cards inside the map ---------- */
-
-.quiz-pop {
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 80;
-  width: 330px;
-  cursor: default;
-  user-select: text;
-  -webkit-user-select: text;
-  background: var(--card);
-  border: 1px solid color-mix(in srgb, var(--c) 45%, var(--card-edge));
-  border-top: 4px solid var(--c);
-  border-radius: 6px;
-  box-shadow: 0 16px 40px -18px rgba(50, 30, 10, 0.65);
-}
-.quiz-pop::before { /* the tab that ties it to its card */
-  content: "";
-  position: absolute;
-  left: -9px;
-  top: 18px;
-  width: 14px;
-  height: 14px;
-  rotate: 45deg;
-  background: var(--card);
-  border-left: 1px solid color-mix(in srgb, var(--c) 45%, var(--card-edge));
-  border-bottom: 1px solid color-mix(in srgb, var(--c) 45%, var(--card-edge));
-}
-.quiz-pop-head { position: relative; display: flex; align-items: flex-start; gap: 8px; padding: 9px 10px 4px 14px; }
-.quiz-pop-title { flex: 1; font-size: 13px; color: var(--c); font-variant-caps: all-small-caps; letter-spacing: 0.06em; }
-.quiz-pop-close { border: 0; background: none; font-size: 20px; line-height: 1; color: var(--ink-3); cursor: pointer; padding: 0 2px; }
-.quiz-pop-close:hover { color: var(--ink); }
-.quiz-pop-body { position: relative; padding: 0 14px 14px; }
-
-/* ---------- quizzes (in the map and in the panel) ---------- */
+/* ---------- quizzes, inside an open concept ---------- */
 
 .quiz { font-size: 15px; line-height: 1.45; }
 .quiz-meta { font-size: 12px; color: var(--ink-3); font-style: italic; }
@@ -595,66 +550,117 @@ math { font-family: var(--math); font-size: 1.04em; }
 .quiz-score span { font-size: 20px; color: var(--ink-3); }
 .quiz-done p { margin: 4px 0 12px; font-style: italic; color: var(--ink-2); }
 
-/* ---------- side panel ---------- */
+/* ---------- open files: a concept's entry, a topic's README, the Index and the Ranking ---------- */
 
-#panel {
-  position: fixed;
-  top: calc(var(--bar-h) + 12px);
-  right: 12px;
-  bottom: 12px;
-  z-index: 90;
-  width: min(440px, calc(100vw - 24px));
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+/* An open concept is its card grown into its entry, in the card's place: the card's colour down its
+   left edge, and the card itself, its kind and title, as the head of the entry. */
+.node.doc {
+  width: 440px;
+  padding: 0;
+  cursor: default;
   background: var(--card);
-  border: 1px solid var(--card-edge);
-  border-radius: 8px;
-  box-shadow: 0 20px 50px -22px rgba(50, 30, 10, 0.6);
+  border: 1px solid color-mix(in srgb, var(--c) 32%, var(--card-edge));
+  border-left: 4px solid var(--c);
+  border-radius: 6px;
+  box-shadow: var(--lift);
 }
-.panel-top {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  display: flex;
+.node.leaf.doc.kind-theorem { border-color: var(--blue-edge); border-left-color: var(--blue); }
+.node.leaf.doc.kind-definition { border-color: var(--green-edge); border-left-color: var(--green); }
+.node.leaf.doc.kind-axiom { border-color: var(--gold); }
+
+/* Like an open topic's frame, the whole head closes the file: click again where it opened. */
+.doc-head {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px 9px 20px;
-  background: var(--card);
-  border-bottom: 1px solid color-mix(in srgb, var(--card-edge) 60%, transparent);
-}
-.crumbs { flex: 1; min-width: 0; font-size: 13px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 2px 7px; }
-.crumbs a { color: var(--c); text-decoration: none; font-variant-caps: all-small-caps; letter-spacing: 0.05em; font-size: 14px; }
-.crumbs a:hover { text-decoration: underline; }
-.tabs { flex: 1; display: flex; gap: 18px; }
-.tabs button {
-  padding: 1px 0 2px;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  background: none;
-  font-size: 18px;
-  font-variant-caps: small-caps;
-  letter-spacing: 0.05em;
-  color: var(--ink-3);
+  gap: 1px 10px;
+  padding: 9px 9px 11px 15px;
+  background: color-mix(in srgb, var(--c) 6%, var(--card));
+  border-bottom: 1px solid color-mix(in srgb, var(--c) 20%, var(--card-edge));
+  border-radius: 2px 5px 0 0;
   cursor: pointer;
 }
-.tabs button:hover { color: var(--ink); }
-.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--rubric); }
-.panel-close { border: 0; background: none; font-size: 24px; line-height: 1; color: var(--ink-3); cursor: pointer; padding: 0 4px; }
-.panel-close:hover { color: var(--ink); }
-
-.panel-body { padding: 14px 22px 8px; }
-.panel-kind {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  font-size: 13px;
-  color: var(--c);
-  font-variant-caps: all-small-caps;
-  letter-spacing: 0.1em;
+.kind-theorem > .doc-head { --c: var(--blue); background: var(--blue-fill); border-bottom-color: var(--blue-edge); }
+.kind-definition > .doc-head { --c: var(--green); background: var(--green-fill); border-bottom-color: var(--green-edge); }
+.kind-axiom > .doc-head {
+  --c: var(--gold-ink);
+  background: linear-gradient(160deg, #fffaf0 0%, var(--gold-fill) 55%, #f1d384 100%);
+  border-bottom-color: var(--gold);
+  box-shadow: inset 0 0 0 2px #fff8e2, inset 0 0 0 3px rgba(176, 128, 32, 0.55);
 }
-.panel-title { margin: 2px 0 12px; font-size: 28px; line-height: 1.15; font-weight: normal; }
+.doc-kind { font-size: 12.5px; line-height: 1.3; color: var(--c); font-variant-caps: all-small-caps; letter-spacing: 0.1em; }
+:is(.kind-theorem, .kind-definition, .kind-axiom) > .doc-head .doc-kind { font-weight: bold; }
+.kind-axiom > .doc-head .doc-kind { letter-spacing: 0.14em; }
+.kind-axiom > .doc-head .doc-kind::before { content: "✦ "; }
+.doc-title { grid-column: 1 / -1; margin: 0; font-size: 24px; line-height: 1.18; font-weight: normal; overflow-wrap: anywhere; }
+.kind-axiom > .doc-head .doc-title { color: #3d2a06; font-weight: 600; }
+.doc-head .rank-tag { grid-column: 2; grid-row: 1; }
+.doc-head .shut {
+  grid-column: 3;
+  grid-row: 1;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--c) 35%, transparent);
+  background: var(--card);
+  color: var(--c);
+  font-size: 14px;
+  line-height: 22px;
+  cursor: pointer;
+}
+.doc-head .shut:hover { background: var(--c); color: var(--card); }
+
+.doc-body { padding: 14px 18px 2px; }
+.doc-body > :first-child { margin-top: 0; }
+
+/* A topic's README sits at the top of its open frame, above what the topic holds. */
+.readme {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 30;
+  width: 440px;
+  cursor: default;
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--c) 35%, var(--card-edge));
+  border-left: 4px solid var(--c);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+}
+.readme .doc-head { padding: 7px 9px 7px 15px; }
+.readme .topic-progress { grid-column: 2; grid-row: 1; font-size: 13px; }
+.readme .doc-foot { justify-content: flex-end; }
+
+/* The Index and the Ranking: files at the root of the atlas, before the domains, in its rubric red. */
+.node.rootfile {
+  --c: var(--rubric);
+  width: 232px;
+  padding: 12px 14px 13px;
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--c) 40%, var(--card-edge));
+  border-left: 4px solid var(--c);
+  border-radius: 6px;
+  box-shadow: var(--shadow);
+}
+.node.rootfile:not(.doc):hover { box-shadow: var(--lift); }
+.node.rootfile .title { font-size: 21px; line-height: 1.2; margin: 3px 0 5px; font-variant-caps: small-caps; letter-spacing: 0.03em; }
+.node.rootfile.doc { width: 460px; padding: 0; }
+.node.rootfile .doc-title { font-variant-caps: small-caps; letter-spacing: 0.03em; }
+
+/* Selection: the selected card or file, what it builds on, what builds on it; everything else fades.
+   (After the open files, so these rings win over their shadows.) */
+.node.is-selected { z-index: 35; box-shadow: 0 0 0 2px var(--ink), var(--lift); }
+.node.is-pre { box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--pre) 55%, transparent), var(--shadow); }
+.node.is-pre-direct { box-shadow: 0 0 0 2.5px var(--pre), var(--lift); }
+.node.is-post { box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--post) 50%, transparent), var(--shadow); }
+.node.is-post-direct { box-shadow: 0 0 0 2.5px var(--post), var(--lift); }
+.has-selection .node.is-dim { opacity: 0.3; }
+.has-selection .node.is-dim:hover { opacity: 0.75; }
+/* An open file is still being read: it only fades a little. */
+.has-selection .node.doc.is-dim { opacity: 0.62; }
+.has-selection .node.doc.is-dim:hover { opacity: 1; }
+
 .prose { font-size: 16.5px; line-height: 1.6; }
 .prose p { margin: 0 0 0.85em; }
 .prose.empty { color: var(--ink-3); font-style: italic; }
@@ -704,8 +710,8 @@ math { font-family: var(--math); font-size: 1.04em; }
 .concept-link { text-decoration-color: color-mix(in srgb, var(--c, var(--ink)) 40%, transparent); text-underline-offset: 2px; }
 .broken-link { color: var(--wrong); border-bottom: 1px dashed; }
 
-.panel-body section { margin-top: 20px; }
-.panel-body h3 {
+.doc-body section { margin-top: 20px; }
+.doc-body h3 {
   margin: 0 0 8px;
   font-size: 15px;
   font-weight: normal;
@@ -735,7 +741,7 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
 .chip:hover { background: color-mix(in srgb, var(--c) 8%, #fffdf6); }
 .chip-title { font-size: 14.5px; }
 .chip-where { font-size: 11.5px; color: var(--ink-3); font-style: italic; }
-.chip.is-mastered .chip-title::after, .path li .is-mastered::after, .contents a.is-mastered::after { content: " ✓"; color: var(--right); }
+.chip.is-mastered .chip-title::after, .path li .is-mastered::after { content: " ✓"; color: var(--right); }
 .reveal {
   margin-top: 8px;
   padding: 3px 0;
@@ -751,10 +757,6 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
 }
 .reveal:hover { color: var(--ink); }
 .none { margin: 0; font-style: italic; color: var(--ink-3); font-size: 14.5px; }
-.contents ul { margin: 0; padding-left: 1.2em; columns: 2 170px; column-gap: 20px; }
-.contents li { break-inside: avoid; margin: 0 0 4px; font-size: 15px; }
-.contents li::marker { color: var(--c); }
-.contents a { color: var(--ink); text-decoration-color: color-mix(in srgb, var(--c) 40%, transparent); }
 .where { font-size: 12px; color: var(--ink-3); font-style: italic; }
 .path details summary { cursor: pointer; font-size: 15px; color: var(--ink-2); }
 .path .count, .tier .count { font-size: 12px; color: var(--card); background: var(--ink-3); border-radius: 9px; padding: 0 7px; margin-left: 4px; font-style: normal; }
@@ -765,16 +767,18 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
 .next-up { margin: 0 0 8px; padding: 7px 11px; background: color-mix(in srgb, var(--right) 8%, transparent); border-left: 3px solid var(--right); border-radius: 0 4px 4px 0; font-size: 15px; }
 .practice .quiz { padding: 12px 14px; background: #fffdf6; border: 1px solid var(--card-edge); border-radius: 6px; }
 
-.panel-foot {
+.doc-foot {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  margin-top: 22px;
-  padding: 12px 22px 16px;
+  gap: 8px 10px;
+  margin-top: 16px;
+  padding: 10px 18px 12px;
   border-top: 1px solid color-mix(in srgb, var(--card-edge) 70%, transparent);
 }
 .mastery {
+  white-space: nowrap;
   padding: 5px 12px;
   font-size: 14px;
   background: #fffdf6;
@@ -846,7 +850,7 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
 .ranked .chip.is-focus { box-shadow: 0 0 0 2px var(--ink); }
 .rank-no { font-size: 11.5px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 
-/* A concept's place in the ranking, beside its kind in the panel. */
+/* A concept's place in the ranking, in the head of its entry. */
 .rank-tag {
   flex: none;
   padding: 1px 9px 2px;
@@ -930,7 +934,8 @@ merror { color: #b22; background: #fbe3e0; }
   .brand-title, .search-key { display: none; }
   .tools button { padding: 6px 8px; font-size: 13px; }
   #btn-expand { display: none; }
-  #panel { top: auto; left: 0; right: 0; bottom: 0; width: auto; height: 62vh; border-radius: 14px 14px 0 0; }
-  .panel-open #zoom, .panel-open #key { display: none; }
+  /* An open file is as wide as a phone, so it can be read without zooming out. */
+  .node.doc, .node.rootfile.doc, .readme { width: 340px; }
+  #key { display: none; } /* it would cover the open file */
   #hint { bottom: 70px; }
 }

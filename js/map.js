@@ -1,20 +1,35 @@
-// The map on screen: one element per visible card or open topic, and a layer of
-// arrows underneath the cards. A new layout is applied at once, without any
-// animation, so the map stays quick however much of it is open.
+// The map on screen: one element per card, open topic and open file, and a layer of arrows
+// underneath the cards.
+//
+// Everything opens where it sits, the way a folder opens in a file manager's tree. A domain or a
+// topic opens into a frame around what it holds. A concept opens into its entry: the card grows
+// into the full text, and the map makes room for it. The "i" on a topic's frame opens the
+// topic's README at the top of the frame, and the Index and the Ranking are files too, beside
+// the domains. Nothing opens anywhere else.
+//
+// A new layout is applied at once, without any animation, so the map stays quick however much
+// of it is open.
 
-import { computeLayout, flowOf } from './layout.js'
+import { computeLayout, flowOf, FRAME_PAD } from './layout.js'
 import {
   ancestors, isAncestor, descendants, visibleRep, visibleEdges, prerequisitesOf, dependentsOf,
-  externalPrereqs, externalDependents,
+  externalPrereqs, externalDependents, domainOf,
 } from './model.js'
 import { renderInline, plainText, esc } from './markdown.js'
 import { KINDS } from './content.js'
 import { Camera } from './camera.js'
 import { mountQuiz } from './quiz.js'
 import * as progress from './progress.js'
+import * as docs from './docs.js'
 
 const SVG = 'http://www.w3.org/2000/svg'
-const GRID_MARGIN = 4000 // how far the survey grid runs past the edges of the map; a multiple of its 160px squares
+const GRID = 160 // the survey grid's large squares
+const GRID_MARGIN = 4000 // how far the survey grid runs past the edges of the map; a multiple of GRID
+const ROOT_GAP = 72 // between the root files and the domains
+const READABLE = 0.7 // a file opened from further out than this brings the map in close enough to read it
+const ROOT = new Map(docs.ROOT_FILES.map(f => [f.id, f]))
+const RANKING = ROOT.get('@ranking')
+const readmeKey = n => 'readme:' + n.id
 const r1 = v => Math.round(v * 10) / 10
 
 export class AtlasMap {
@@ -25,20 +40,26 @@ export class AtlasMap {
     this.grid = grid
     this.onSelect = onSelect
     this.onView = onView
-    this.open = new Set() // ids of open topics
-    this.els = new Map() // id → element, for everything on screen
-    this.boxes = new Map() // id → its box on the map
+    this.open = new Set() // ids of what is open: domains and topics, concepts, and the root files
+    this.readmes = new Set() // ids of the topics whose README is open
+    this.els = new Map() // key → element, for everything on screen; a README's key is "readme:" and its topic's id
+    this.boxes = new Map() // key → its box on the map
     this.paths = new Map() // edge key → <path>
     this.edges = new Map()
-    this.sizes = new Map()
+    this.sizes = new Map() // id → its size as a closed card
+    this.fileSizes = new Map() // key → the size of an open file or README, which changes with what it shows
     this.heads = new Map()
+    this.rankDomain = '' // the Ranking shows only this domain's concepts, when set
+    this.rankFocus = null // the concept the Ranking was last opened at
     this.selected = null
     this.hl = null
-    this.quiz = null
     this.camera = new Camera(viewport, world, () => this.cameraMoved())
+    // An open file changes size when its quiz moves on, a list in it unfolds, or a font arrives.
+    this.resizes = new ResizeObserver(entries => this.resized(entries))
     viewport.addEventListener('click', e => this.click(e))
+    viewport.addEventListener('change', e => this.changed(e))
     viewport.addEventListener('pointerover', e => {
-      const el = e.target.closest?.('.node:not(.is-open)')
+      const el = e.target.closest?.('.node.leaf, .node.group:not(.is-open)')
       this.hover(el ? this.atlas.nodes.get(el.dataset.id) : null)
     })
     viewport.addEventListener('pointerleave', () => this.hover(null))
@@ -53,19 +74,41 @@ export class AtlasMap {
   }
 
   setAtlas(atlas) {
-    this.closeQuiz()
     this.atlas = atlas
+    this.resizes.disconnect()
     for (const el of this.els.values()) el.remove()
     for (const p of this.paths.values()) p.remove()
-    for (const m of [this.els, this.boxes, this.paths, this.sizes, this.heads]) m.clear()
+    for (const m of [this.els, this.boxes, this.paths, this.sizes, this.fileSizes, this.heads]) m.clear()
     this.edges = new Map()
-    this.open = new Set([...this.open].filter(id => atlas.nodes.get(id)?.children.length))
+    this.open = new Set([...this.open].filter(id => atlas.nodes.has(id) || ROOT.has(id)))
+    this.readmes = new Set([...this.readmes].filter(id => atlas.nodes.get(id)?.children.length))
     this.selected = (this.selected && atlas.nodes.get(this.selected.id)) || null
     this.current = (this.current && atlas.nodes.get(this.current.id)) || null
+    this.rankFocus = null
+    if (!atlas.roots.some(d => d.id === this.rankDomain)) this.rankDomain = ''
   }
 
+  /** Opens what was open when the map was last left. */
+  restore({ open = [], readmes = [] }) {
+    this.open = new Set(open.filter(id => this.atlas.nodes.has(id) || ROOT.has(id)))
+    this.readmes = new Set(readmes.filter(id => this.atlas.nodes.get(id)?.children.length))
+  }
+
+  // ---- what is open ----
+
+  /** Whether a domain or topic is open, showing what it holds. */
   isOpen(n) {
     return n.children.length > 0 && this.open.has(n.id)
+  }
+
+  /** Whether a concept, or a root file, is open, showing its entry. */
+  isFileOpen(n) {
+    return (n.root || !n.children.length) && this.open.has(n.id)
+  }
+
+  /** Whether an open topic shows its README. */
+  hasReadme(n) {
+    return this.isOpen(n) && this.readmes.has(n.id)
   }
 
   visibleNodes() {
@@ -84,31 +127,52 @@ export class AtlasMap {
 
   element(n) {
     let el = this.els.get(n.id)
-    if (el) return el
-    el = document.createElement('div')
-    el.dataset.id = n.id
-    el.style.setProperty('--c', n.color)
-    el.tabIndex = 0
-    el.setAttribute('role', 'button')
-    if (n.children.length) {
-      const label = n.depth === 0 ? 'Domain' : 'Topic'
-      const supers = descendants(n).filter(d => d.tier?.key === 's').length
-      el.className = `node group depth-${Math.min(n.depth, 4)}`
-      // A topic holding nothing but axioms is gilded like its axioms.
-      if (descendants(n).every(d => d.children.length || d.kind === 'axiom')) el.classList.add('axioms')
-      el.innerHTML = `<div class="face">
-          <div class="eyebrow">${label} · ${n.leafCount} ${n.leafCount === 1 ? 'concept' : 'concepts'}${supers
-            ? ` · <span class="super-mark" title="Super-concepts inside">★ ${supers}</span>` : ''}</div>
-          <div class="title">${renderInline(n.title)}</div>
-          ${n.summary ? `<div class="summary">${renderInline(n.summary)}</div>` : ''}
-          <div class="meter"><span></span></div>
-        </div>${frameHead(n)}`
-      el.setAttribute('aria-label', `${n.plainTitle}, ${label.toLowerCase()} of ${n.leafCount} concepts` +
-        (supers ? `, ${supers} of them ${supers === 1 ? 'a super-concept' : 'super-concepts'}` : ''))
+    if (!el) {
+      // Filled before it joins the page, which is quicker for the hundreds of cards of "Open all".
+      el = document.createElement('div')
+      el.dataset.id = n.id
+      this.fill(n, el)
+      this.world.append(el)
+      this.els.set(n.id, el)
+    } else if ((n.root || !n.children.length) && el.classList.contains('doc') !== this.isFileOpen(n)) {
+      this.fill(n, el) // opened or closed since it was drawn
+    }
+    return el
+  }
+
+  // Writes what an element shows: a card, or an open concept or root file. (An open topic is
+  // the same element as its card, which the stylesheet draws as a frame.)
+  fill(n, el) {
+    const s = el.style
+    s.removeProperty('width')
+    s.removeProperty('height')
+    this.boxes.delete(n.id) // so the next layout puts it in place again
+    this.fileSizes.delete(n.id)
+    this.resizes.unobserve(el)
+    el.removeAttribute('title')
+    if (n.root) return this.fillRoot(n, el)
+    s.setProperty('--c', n.color)
+    if (n.children.length) return this.fillGroup(n, el)
+    const open = this.isFileOpen(n)
+    // A super-concept, at the top of the ranking, carries a red star (see the stylesheet).
+    const sup = n.tier?.key === 's'
+    el.className = `node leaf kind-${n.kind}${sup ? ' is-super' : ''}${open ? ' is-open doc' : ''}`
+    if (open) {
+      el.innerHTML = docs.conceptDoc(n, this.atlas)
+      el.removeAttribute('tabindex')
+      el.setAttribute('role', 'article')
+      el.setAttribute('aria-label', n.plainTitle)
+      const mount = el.querySelector('.quiz-mount')
+      if (mount) {
+        mountQuiz(mount, n.quiz, {
+          resolve: id => this.atlas.nodes.get(id),
+          onFinish: (right, total) => { if (right === total) progress.setMastered(n.id, true) },
+        })
+      }
+      this.resizes.observe(el)
     } else {
-      // A super-concept, at the top of the ranking, carries a red star (see the stylesheet).
-      const sup = n.tier?.key === 's'
-      el.className = `node leaf kind-${n.kind}${sup ? ' is-super' : ''}`
+      el.tabIndex = 0
+      el.setAttribute('role', 'button')
       el.innerHTML = `${n.kind !== 'concept' ? `<div class="kind">${KINDS[n.kind] ?? esc(n.kind)}</div>` : ''}
         <div class="title">${renderInline(n.title)}</div>
         <div class="marks">${n.quiz.length
@@ -119,18 +183,77 @@ export class AtlasMap {
         .filter(Boolean).join('\n\n')
       if (tip) el.title = tip
     }
-    this.world.append(el)
-    this.els.set(n.id, el)
     this.markProgress(n, el)
+  }
+
+  fillGroup(n, el) {
+    const label = n.depth === 0 ? 'Domain' : 'Topic'
+    const supers = descendants(n).filter(d => d.tier?.key === 's').length
+    el.className = `node group depth-${Math.min(n.depth, 4)}`
+    // A topic holding nothing but axioms is gilded like its axioms.
+    if (descendants(n).every(d => d.children.length || d.kind === 'axiom')) el.classList.add('axioms')
+    el.tabIndex = 0
+    el.setAttribute('role', 'button')
+    el.innerHTML = `<div class="face">
+        <div class="eyebrow">${label} · ${n.leafCount} ${n.leafCount === 1 ? 'concept' : 'concepts'}${supers
+          ? ` · <span class="super-mark" title="Super-concepts inside">★ ${supers}</span>` : ''}</div>
+        <div class="title">${renderInline(n.title)}</div>
+        ${n.summary ? `<div class="summary">${renderInline(n.summary)}</div>` : ''}
+        <div class="meter"><span></span></div>
+      </div>${frameHead(n)}`
+    el.setAttribute('aria-label', `${n.plainTitle}, ${label.toLowerCase()} of ${n.leafCount} concepts` +
+      (supers ? `, ${supers} of them ${supers === 1 ? 'a super-concept' : 'super-concepts'}` : ''))
+    this.markProgress(n, el)
+  }
+
+  fillRoot(f, el) {
+    const open = this.isFileOpen(f)
+    el.className = `node rootfile${open ? ' is-open doc' : ''}`
+    if (open) {
+      el.innerHTML = docs.rootDoc(f, this.atlas, this.rankDomain)
+      el.removeAttribute('tabindex')
+      el.setAttribute('role', 'article')
+      el.setAttribute('aria-label', f.title)
+      if (f === RANKING && this.rankFocus) docs.focusRanked(el, this.rankFocus)
+      docs.refresh(el)
+      this.resizes.observe(el)
+    } else {
+      el.innerHTML = docs.rootCard(f, this.atlas)
+      el.tabIndex = 0
+      el.setAttribute('role', 'button')
+      el.setAttribute('aria-label', `The ${f.title.toLowerCase()} of the atlas`)
+    }
+  }
+
+  // A topic's README is an element of its own, laid in the top of the topic's frame.
+  readmeElement(n) {
+    const key = readmeKey(n)
+    let el = this.els.get(key)
+    if (el) return el
+    el = document.createElement('section')
+    el.dataset.id = key
+    el.dataset.topic = n.id
+    el.className = 'readme doc'
+    el.style.setProperty('--c', n.color)
+    el.setAttribute('aria-label', `About ${n.plainTitle}`)
+    el.innerHTML = docs.readme(n, this.atlas)
+    docs.refresh(el, n)
+    this.world.append(el)
+    this.els.set(key, el)
+    this.resizes.observe(el)
     return el
   }
 
-  // Card sizes and frame-title widths are measured once each and remembered. Every new element
-  // is put in place before any is measured, so the browser lays the page out once rather than
-  // once per card.
-  measure(visible) {
-    for (const n of visible) this.element(n)
-    const cards = visible.filter(n => !this.sizes.has(n.id))
+  // Sizes are measured once and remembered: a card's for good, an open file's until what it
+  // shows changes. Every new element is put in place before any is measured, so the browser lays
+  // the page out once rather than once per card.
+  measure(visible, readmes) {
+    const items = [...visible, ...docs.ROOT_FILES]
+    for (const n of items) this.element(n)
+    for (const n of readmes) this.readmeElement(n)
+    const cards = items.filter(n => !this.isFileOpen(n) && !this.sizes.has(n.id))
+    const files = [...items.filter(n => this.isFileOpen(n)).map(n => n.id), ...readmes.map(readmeKey)]
+      .filter(key => !this.fileSizes.has(key))
     const frames = visible.filter(n => this.isOpen(n) && !this.heads.has(n.id))
     const probes = frames.map(n => {
       const probe = document.createElement('div')
@@ -143,47 +266,106 @@ export class AtlasMap {
       const el = this.els.get(n.id)
       this.sizes.set(n.id, { w: el.offsetWidth, h: el.offsetHeight })
     }
+    for (const key of files) {
+      const el = this.els.get(key)
+      widen(el)
+      this.fileSizes.set(key, { w: el.offsetWidth, h: el.offsetHeight })
+    }
     frames.forEach((n, i) => this.heads.set(n.id, probes[i].firstElementChild.scrollWidth + 4))
     for (const probe of probes) probe.remove()
   }
 
+  sizeOf(n) {
+    return this.isFileOpen(n) ? { ...this.fileSizes.get(n.id), file: true } : this.sizes.get(n.id)
+  }
+
+  // An open file grew or shrank: make room for it. The file in use (the one holding the focus, or
+  // else the first one in view) stays still on the screen while the map moves around it, so the
+  // text being read never jumps.
+  resized(entries) {
+    const changed = []
+    for (const { target: el } of entries) {
+      const key = el.dataset.id
+      const was = this.fileSizes.get(key)
+      if (!was || this.els.get(key) !== el) continue
+      widen(el)
+      const w = el.offsetWidth
+      const h = el.offsetHeight
+      if (w === was.w && h === was.h) continue
+      this.fileSizes.set(key, { w, h })
+      changed.push(key)
+    }
+    if (!changed.length) return
+    const active = document.activeElement
+    const inView = k => this.boxes.has(k) && this.camera.sees(this.boxes.get(k))
+    const key = changed.find(k => this.els.get(k).contains(active)) ?? changed.find(inView)
+    const before = key && this.boxes.get(key)
+    this.relayout()
+    const after = key && this.boxes.get(key)
+    const c = this.camera
+    if (before && after) c.set(c.x - (after.x - before.x) * c.k, c.y - (after.y - before.y) * c.k, c.k)
+  }
+
   // ---- layout ----
 
-  /** Lays the map out again and puts everything in its new place at once. Returns the boxes by id. */
+  /** Lays the map out again and puts everything in its new place at once. Returns the boxes by key. */
   relayout() {
     const visible = this.visibleNodes()
-    const shown = new Set(visible.map(n => n.id))
-    for (const [id, el] of this.els) {
-      if (shown.has(id)) continue
+    const readmes = visible.filter(n => this.hasReadme(n))
+    const keep = new Set([...visible.map(n => n.id), ...readmes.map(readmeKey), ...ROOT.keys()])
+    for (const [key, el] of this.els) {
+      if (keep.has(key)) continue
+      this.resizes.unobserve(el)
       el.remove()
-      this.els.delete(id)
+      this.els.delete(key)
+      this.fileSizes.delete(key)
     }
-    this.measure(visible)
+    this.measure(visible, readmes)
     for (const n of visible) {
       const el = this.els.get(n.id)
-      el.classList.toggle('is-open', this.isOpen(n))
-      el.classList.toggle('is-current', n === this.current) // the topic opened last, outlined in gold
+      el.classList.toggle('is-open', this.isOpen(n) || this.isFileOpen(n))
+      el.classList.toggle('is-current', n === this.current) // the topic opened last, outlined in its colour
+      if (n.children.length) el.querySelector('.frame-head .about').classList.toggle('is-on', this.hasReadme(n))
     }
-    const layout = computeLayout(this.atlas.root, n => this.isOpen(n), n => this.sizes.get(n.id), n => this.heads.get(n.id))
-    this.bounds = { x: 0, y: 0, w: layout.width, h: layout.height }
-    for (const n of visible) {
-      const b = layout.boxes.get(n.id)
-      const was = this.boxes.get(n.id)
+    const layout = computeLayout(this.atlas.root, n => this.isOpen(n), n => this.sizeOf(n), n => this.heads.get(n.id),
+      n => (this.hasReadme(n) ? this.fileSizes.get(readmeKey(n)) : null))
+    const boxes = layout.boxes
+    for (const n of readmes) {
+      const frame = boxes.get(n.id)
+      const size = this.fileSizes.get(readmeKey(n))
+      boxes.set(readmeKey(n), { x: frame.x + FRAME_PAD.left, y: frame.y + FRAME_PAD.top, w: size.w, h: size.h })
+    }
+    // The root files stand in a row before the domains, level with the top of the map, the way an
+    // old atlas puts its index before the plates. An open one grows away from the map, never into it.
+    let x = -ROOT_GAP
+    for (const f of [...docs.ROOT_FILES].reverse()) {
+      const s = this.sizeOf(f)
+      x -= s.w
+      boxes.set(f.id, { x, y: 0, w: s.w, h: s.h })
+      x -= 18
+    }
+    const left = x + 18
+    const height = Math.max(layout.height, ...docs.ROOT_FILES.map(f => boxes.get(f.id).h))
+    this.bounds = { x: left, y: 0, w: layout.width - left, h: height }
+    for (const [key, b] of boxes) {
+      const was = this.boxes.get(key)
       if (was && was.x === b.x && was.y === b.y && was.w === b.w && was.h === b.h) continue
-      const s = this.els.get(n.id).style
-      s.transform = `translate(${r1(b.x)}px, ${r1(b.y)}px)`
-      s.width = `${r1(b.w)}px`
-      s.height = `${r1(b.h)}px`
+      const el = this.els.get(key)
+      el.style.transform = `translate(${r1(b.x)}px, ${r1(b.y)}px)`
+      if (el.classList.contains('doc')) continue // an open file takes the size of what it shows
+      el.style.width = `${r1(b.w)}px`
+      el.style.height = `${r1(b.h)}px`
     }
-    this.boxes = layout.boxes
+    this.boxes = boxes
+    // The grid starts on one of its own lines, so it stays put when the map's edge moves.
     const g = this.grid.style
-    g.transform = `translate(${-GRID_MARGIN}px, ${-GRID_MARGIN}px)`
-    g.width = `${Math.ceil(layout.width) + 2 * GRID_MARGIN}px`
-    g.height = `${Math.ceil(layout.height) + 2 * GRID_MARGIN}px`
+    const gx = Math.floor(left / GRID) * GRID - GRID_MARGIN
+    g.transform = `translate(${gx}px, ${-GRID_MARGIN}px)`
+    g.width = `${Math.ceil(layout.width - gx) + GRID_MARGIN}px`
+    g.height = `${Math.ceil(height) + 2 * GRID_MARGIN}px`
     this.drawEdges()
     this.highlight()
-    this.placeQuiz()
-    return layout.boxes
+    return boxes
   }
 
   // ---- arrows ----
@@ -266,7 +448,10 @@ export class AtlasMap {
       this.hl.preRep = reps(this.hl.pre)
       this.hl.postRep = reps(this.hl.post)
     }
-    for (const [id, el] of this.els) this.markNode(this.atlas.nodes.get(id), el)
+    for (const [key, el] of this.els) {
+      const n = this.atlas.nodes.get(key)
+      if (n) this.markNode(n, el)
+    }
     for (const [key, p] of this.paths) {
       const state = this.edgeState(this.edges.get(key))
       p.classList.toggle('pre', state === 'pre')
@@ -319,22 +504,59 @@ export class AtlasMap {
   }
 
   click(e) {
-    const t = e.target
-    // The path, not t.closest(): a quiz redraws itself on click, detaching the button that was clicked.
-    if (e.composedPath().some(x => x.classList?.contains('quiz-pop'))) return
-    const el = t.closest('.node')
+    // A double click, as on a file, opens with its first click; the second would land on the
+    // open file's head, where the card was, and close it again.
+    if (e.detail > 1) return
+    // Look along the event's path rather than with e.target.closest(): a quiz redraws itself on
+    // click, detaching the button that was clicked.
+    const path = e.composedPath()
+    const hit = selector => path.find(x => x.matches?.(selector))
+    if (hit('a[href], input, select, label')) return // main.js follows the links; the rest work by themselves
+    const readme = hit('.readme')
+    if (readme) return this.readmeClick(this.atlas.nodes.get(readme.dataset.topic), hit)
+    const el = hit('.node')
+    if (el && ROOT.has(el.dataset.id)) return this.rootClick(ROOT.get(el.dataset.id), hit)
     const n = el && this.atlas.nodes.get(el.dataset.id)
     if (!n) return this.background()
-    if (t.closest('.quiz-badge')) return this.openQuiz(n)
-    if (t.closest('.frame-head .about')) return this.select(n)
-    if (t.closest('.frame-head') || (this.isOpen(n) && e.type === 'keydown')) return this.collapse(n)
-    if (this.isOpen(n)) return this.background()
-    if (n.children.length) return this.expand(n)
-    this.select(n)
+    const keyboard = e.type === 'keydown'
+    if (n.children.length) {
+      if (hit('.frame-head .about')) return this.toggleReadme(n)
+      if (hit('.frame-head') || (this.isOpen(n) && keyboard)) return this.collapse(n)
+      if (this.isOpen(n)) return this.background()
+      return this.expand(n)
+    }
+    if (!this.isFileOpen(n)) return this.openFile(n, { at: hit('.quiz-badge') ? '.practice' : null, keyboard })
+    if (hit('.rank-tag')) return this.openRoot(RANKING, { focus: n })
+    if (hit('.doc-head')) return this.closeFile(n)
+    if (hit('.mastery')) return progress.setMastered(n.id, !progress.isMastered(n.id))
+    const reveal = hit('[data-reveal]')
+    if (reveal) return this.revealAround(n, reveal.dataset.reveal)
+    if (this.selected !== n) this.select(n, { pan: false })
+  }
+
+  readmeClick(n, hit) {
+    if (hit('.doc-head')) return this.closeReadme(n)
+    const reveal = hit('[data-reveal]')
+    if (reveal) return this.revealAround(n, reveal.dataset.reveal)
+    if (this.selected !== n) this.select(n, { pan: false })
+  }
+
+  rootClick(f, hit) {
+    if (!this.isFileOpen(f)) return this.openRoot(f, { here: true })
+    if (hit('.doc-head')) return this.closeRoot(f)
+  }
+
+  // The Ranking's choice of domain.
+  changed(e) {
+    const choice = e.target.closest?.('.rank-filter select')
+    if (!choice) return
+    this.rankDomain = choice.value
+    const el = this.els.get(RANKING.id)
+    el.querySelector('.tiers').innerHTML = docs.tiers(this.atlas, this.rankDomain)
+    docs.refresh(el)
   }
 
   background() {
-    this.closeQuiz()
     if (this.selected) this.select(null)
   }
 
@@ -347,31 +569,167 @@ export class AtlasMap {
     const boxes = this.relayout()
     if (had) this.onSelect?.(null)
     this.camera.moveTo(this.camera.fit(boxes.get(n.id), { pad: 36, maxK: Math.max(1, this.camera.k) }))
+    this.onView?.()
   }
 
   collapse(n) {
-    this.open.delete(n.id)
-    for (const d of descendants(n)) this.open.delete(d.id)
+    for (const d of [n, ...descendants(n)]) {
+      this.open.delete(d.id)
+      this.readmes.delete(d.id)
+    }
     // Closing the current topic (or one around it) hands "current" to the topic that held it.
     if (this.current && (this.current === n || isAncestor(n, this.current))) this.current = n.parent
+    // Closing a topic closes everything open inside it, and lets go of whatever was selected in there.
+    const lost = !!this.selected && (this.selected === n || isAncestor(n, this.selected))
+    if (lost) this.selected = null
     const box = this.relayout().get(n.id)
+    if (lost) this.onSelect?.(null)
     if (box && !this.camera.shows(box)) this.camera.moveTo(this.camera.centre(box))
     this.onView?.()
   }
 
-  /** Opens whatever hides `n`, selects it and brings it to the middle of the screen. */
+  /**
+   * Opens a concept where it sits, and selects it. `at`, a part of its entry such as its
+   * exercises, is brought into view.
+   */
+  openFile(n, { at = null, keyboard = false } = {}) {
+    const before = this.boxes.get(n.id)
+    for (const a of ancestors(n)) this.open.add(a.id)
+    this.open.add(n.id)
+    this.selected = n
+    this.relayout()
+    this.onSelect?.(n)
+    this.settle(n.id, before, { read: true, at })
+    if (keyboard) this.els.get(n.id)?.querySelector('.shut')?.focus({ preventScroll: true })
+    this.onView?.()
+  }
+
+  closeFile(n) {
+    const el = this.els.get(n.id)
+    const focused = !!el?.contains(document.activeElement)
+    const before = this.boxes.get(n.id)
+    this.open.delete(n.id)
+    const was = this.selected === n
+    if (was) this.selected = null
+    this.relayout()
+    if (was) this.onSelect?.(null)
+    this.settle(n.id, before)
+    if (focused) this.els.get(n.id)?.focus({ preventScroll: true })
+    this.onView?.()
+  }
+
+  toggleReadme(n) {
+    if (this.hasReadme(n)) return this.closeReadme(n)
+    const before = this.boxes.get(n.id)
+    this.readmes.add(n.id)
+    this.selected = n
+    this.relayout()
+    this.onSelect?.(n)
+    this.settle(n.id, before, { read: true, show: () => this.readmeView(n) })
+    this.onView?.()
+  }
+
+  // An open topic's head and its README, together.
+  readmeView(n) {
+    const frame = this.boxes.get(n.id)
+    const note = this.boxes.get(readmeKey(n))
+    return { x: frame.x, y: frame.y, w: note.w + FRAME_PAD.left + FRAME_PAD.right, h: FRAME_PAD.top + note.h }
+  }
+
+  closeReadme(n) {
+    const before = this.boxes.get(n.id)
+    this.readmes.delete(n.id)
+    const was = this.selected === n
+    if (was) this.selected = null
+    this.relayout()
+    if (was) this.onSelect?.(null)
+    this.settle(n.id, before, { show: b => ({ ...b, w: Math.min(b.w, 480), h: FRAME_PAD.top }) })
+    this.onView?.()
+  }
+
+  /**
+   * Opens the Index or the Ranking. `focus`, a concept, is found and marked in the Ranking; `here`
+   * opens it in place (its card was clicked), where otherwise the map goes to it.
+   */
+  openRoot(f, { focus = null, here = false } = {}) {
+    const before = this.boxes.get(f.id)
+    const wasOpen = this.isFileOpen(f)
+    if (focus && this.rankDomain && domainOf(focus).id !== this.rankDomain) this.rankDomain = ''
+    if (f === RANKING) this.rankFocus = focus
+    this.open.add(f.id)
+    if (wasOpen && focus) this.fill(f, this.els.get(f.id)) // drawn again, unfolding the focus's tier
+    const boxes = this.relayout()
+    const c = this.camera
+    const box = boxes.get(f.id)
+    const el = this.els.get(f.id)
+    const mark = focus && el.querySelector('.is-focus')
+    if (here) this.settle(f.id, before, { read: true })
+    else if (mark) {
+      const top = (mark.getBoundingClientRect().top - el.getBoundingClientRect().top) / c.k
+      c.moveTo(c.frame({ x: box.x, y: box.y + top - 120, w: box.w, h: 240 }, { k: Math.min(1.1, Math.max(c.k, 0.9)) }))
+    } else c.moveTo(c.frame(box, { k: Math.min(1.1, Math.max(c.k, 0.9)) }))
+    this.onView?.()
+  }
+
+  closeRoot(f) {
+    const before = this.boxes.get(f.id)
+    this.open.delete(f.id)
+    this.relayout()
+    this.settle(f.id, before)
+    this.onView?.()
+  }
+
+  /** The Index or Ranking button: goes to that file and opens it, or closes it if it is open in view. */
+  toggleRoot(id) {
+    const f = ROOT.get(id)
+    const box = this.boxes.get(id)
+    if (this.isFileOpen(f) && box && this.camera.sees(box)) return this.closeRoot(f)
+    this.openRoot(f)
+  }
+
+  /** Esc: closes the selected concept, or the selected topic's README, or else lets go of the selection. */
+  escape() {
+    const n = this.selected
+    if (!n) return
+    if (this.isFileOpen(n)) this.closeFile(n)
+    else if (this.hasReadme(n)) this.closeReadme(n)
+    else this.select(null)
+  }
+
+  // After something opens or closes in place, the map shifts so that its top left corner stays
+  // where it was on the screen: the card seems to unfold into its entry, or fold back up. Then
+  // the map moves only as far as it must to show it (or `show`, another box or a part of it),
+  // and, for `read`, comes in close enough to read it when it is far out. `at`: a part of an
+  // open file to show, such as its exercises.
+  settle(key, before, { read = false, show = null, at = null } = {}) {
+    const c = this.camera
+    const box = this.boxes.get(key)
+    if (!box) return
+    if (before) c.set(c.x - (box.x - before.x) * c.k, c.y - (box.y - before.y) * c.k, c.k)
+    let target = typeof show === 'function' ? show(box) : show ? this.boxes.get(show) : box
+    const part = at && this.els.get(key)?.querySelector(at)
+    if (part) target = { x: box.x, y: box.y + part.offsetTop, w: box.w, h: part.offsetHeight }
+    if (!target) return
+    c.moveTo(read && c.k < READABLE ? c.frame(target, { k: 1 }) : c.nudge(target))
+  }
+
+  /**
+   * Goes to `n`: opens whatever hides it, opens it (a concept's entry, or a topic and its
+   * README), selects it, and brings it to the middle of the screen.
+   */
   reveal(n) {
-    let changed = false
-    for (const a of ancestors(n)) {
-      if (this.open.has(a.id)) continue
-      this.open.add(a.id)
-      changed = true
-    }
-    if (n.parent) this.current = n.parent
-    const boxes = changed || n.parent ? this.relayout() : this.boxes
-    this.select(n, { pan: false })
-    const box = boxes.get(n.id)
-    if (box) this.camera.moveTo(this.camera.centre(box, Math.min(1.25, Math.max(this.camera.k, 0.9))))
+    for (const a of ancestors(n)) this.open.add(a.id)
+    this.open.add(n.id)
+    const topic = n.children.length > 0
+    if (topic) this.readmes.add(n.id)
+    this.current = topic ? n : n.parent ?? this.current
+    this.selected = n
+    const boxes = this.relayout()
+    this.onSelect?.(n)
+    const c = this.camera
+    const box = topic ? this.readmeView(n) : boxes.get(n.id)
+    c.moveTo(c.frame(box, { k: Math.min(1.15, Math.max(c.k, 0.9)) }))
+    this.onView?.()
   }
 
   /** Opens topics until `n` and its direct prerequisites (or dependents) show as separate cards, then frames them. */
@@ -385,20 +743,27 @@ export class AtlasMap {
     this.select(n, { pan: false })
     const all = [n, ...others].map(t => boxes.get(t.id)).filter(Boolean)
     this.camera.moveTo(this.camera.fit(union(all), { pad: 60, maxK: 1.1 }))
+    this.onView?.()
   }
 
+  /** Closes everything: every topic, every open file. */
   overview() {
-    this.closeQuiz()
     this.open.clear()
+    this.readmes.clear()
     this.current = null
+    const had = this.selected
+    this.selected = null
     this.relayout()
+    if (had) this.onSelect?.(null)
     this.fitAll()
+    this.onView?.()
   }
 
   openAll() {
     for (const n of this.atlas.nodes.values()) if (n.children.length) this.open.add(n.id)
     this.relayout()
     this.fitAll()
+    this.onView?.()
   }
 
   fitAll() {
@@ -406,48 +771,8 @@ export class AtlasMap {
   }
 
   zoomBy(f) {
-    const c = this.camera
-    const { w, h } = c.size()
-    c.zoomAt(c.inset.left + (w - c.inset.left - c.inset.right) / 2, c.inset.top + (h - c.inset.top - c.inset.bottom) / 2, f)
-  }
-
-  // ---- quizzes inside the map ----
-
-  openQuiz(n) {
-    this.closeQuiz()
-    const pop = document.createElement('div')
-    pop.className = 'quiz-pop'
-    pop.style.setProperty('--c', n.color)
-    pop.innerHTML = `<div class="quiz-pop-head"><span class="quiz-pop-title">${renderInline(n.title)}</span>` +
-      '<button type="button" class="quiz-pop-close" aria-label="Close quiz">×</button></div><div class="quiz-pop-body"></div>'
-    pop.querySelector('.quiz-pop-close').addEventListener('click', () => this.closeQuiz())
-    mountQuiz(pop.querySelector('.quiz-pop-body'), n.quiz, {
-      resolve: id => this.atlas.nodes.get(id),
-      onFinish: (right, total) => { if (right === total) progress.setMastered(n.id, true) },
-    })
-    this.world.append(pop)
-    this.quiz = { node: n, el: pop }
-    this.els.get(n.id)?.classList.add('has-quiz-open')
-    this.placeQuiz()
-    const b = this.boxes.get(n.id)
-    if (b) {
-      const area = { x: b.x - 12, y: b.y - 16, w: b.w + 14 + pop.offsetWidth + 24, h: Math.max(b.h, pop.offsetHeight) + 32 }
-      if (!this.camera.shows(area)) this.camera.moveTo(this.camera.fit(area, { pad: 24, maxK: Math.max(1, this.camera.k) }))
-    }
-  }
-
-  closeQuiz() {
-    if (!this.quiz) return
-    this.quiz.el.remove()
-    this.els.get(this.quiz.node.id)?.classList.remove('has-quiz-open')
-    this.quiz = null
-  }
-
-  placeQuiz() {
-    if (!this.quiz) return
-    const b = this.boxes.get(this.quiz.node.id)
-    if (!b) return this.closeQuiz()
-    this.quiz.el.style.transform = `translate(${r1(b.x + b.w + 14)}px, ${r1(b.y - 6)}px)`
+    const { w, h } = this.camera.size()
+    this.camera.zoomAt(w / 2, h / 2, f)
   }
 
   // ---- progress and camera ----
@@ -460,13 +785,15 @@ export class AtlasMap {
     } else {
       el.classList.toggle('is-mastered', progress.isMastered(n.id))
       el.classList.toggle('is-ready', progress.isReady(n))
+      if (el.classList.contains('doc')) docs.refresh(el, n)
     }
   }
 
   refreshProgress() {
-    for (const [id, el] of this.els) {
-      const n = this.atlas.nodes.get(id)
+    for (const [key, el] of this.els) {
+      const n = this.atlas.nodes.get(key)
       if (n) this.markProgress(n, el)
+      else if (el.classList.contains('doc')) docs.refresh(el, this.atlas.nodes.get(el.dataset.topic))
     }
   }
 
@@ -487,9 +814,17 @@ export class AtlasMap {
 const frameHead = n => `<div class="frame-head">
   <span class="frame-title">${renderInline(n.title)}</span>
   <span class="frame-count">${n.leafCount}</span>
-  <button type="button" class="about" title="About this topic" aria-label="About ${esc(n.plainTitle)}">i</button>
-  <button type="button" class="shut" title="Close this topic" aria-label="Close ${esc(n.plainTitle)}">×</button>
+  <button type="button" class="about" title="About this ${n.depth === 0 ? 'domain' : 'topic'}" aria-label="About ${esc(n.plainTitle)}">i</button>
+  <button type="button" class="shut" title="Close this ${n.depth === 0 ? 'domain' : 'topic'}" aria-label="Close ${esc(n.plainTitle)}">×</button>
 </div>`
+
+// A formula or table too wide for its file widens the file as far as it needs, rather than hide
+// behind a scroll bar: on the map, a drag or the wheel moves the map, not what is inside a file.
+function widen(el) {
+  let extra = el.scrollWidth - el.clientWidth
+  for (const box of el.querySelectorAll('.math-block, .table-wrap, pre')) extra = Math.max(extra, box.scrollWidth - box.clientWidth)
+  if (extra > 0) el.style.width = `${el.offsetWidth + extra}px`
+}
 
 function addTo(map, key, item) {
   const list = map.get(key)

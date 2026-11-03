@@ -16,7 +16,6 @@ export class Camera {
     this.k = 1
     this.minK = 0.04
     this.maxK = 2.5
-    this.inset = { top: 0, right: 0, bottom: 0, left: 0 } // screen space covered by panels
     this.pointers = new Map()
     this.dragged = false
     this.listen()
@@ -80,39 +79,62 @@ export class Camera {
     this.set(px - (px - this.x) * (k / this.k), py - (py - this.y) * (k / this.k), k)
   }
 
-  /** The transform that fits a world-space box into the uncovered part of the screen. */
+  /** The transform that fits a world-space box into the screen. */
   fit(box, { pad = 40, maxK = 1.1, minK = this.minK } = {}) {
     const { w, h } = this.size()
-    const i = this.inset
-    const aw = Math.max(60, w - i.left - i.right - 2 * pad)
-    const ah = Math.max(60, h - i.top - i.bottom - 2 * pad)
+    const aw = Math.max(60, w - 2 * pad)
+    const ah = Math.max(60, h - 2 * pad)
     const k = Math.min(maxK, this.maxK, Math.max(minK, Math.min(aw / box.w, ah / box.h)))
-    return {
-      x: i.left + pad + (aw - box.w * k) / 2 - box.x * k,
-      y: i.top + pad + (ah - box.h * k) / 2 - box.y * k,
-      k,
-    }
+    return { x: pad + (aw - box.w * k) / 2 - box.x * k, y: pad + (ah - box.h * k) / 2 - box.y * k, k }
   }
 
   /** The transform that centres a box at zoom k. */
   centre(box, k = this.k) {
     const { w, h } = this.size()
-    const i = this.inset
+    return { x: w / 2 - (box.x + box.w / 2) * k, y: h / 2 - (box.y + box.h / 2) * k, k }
+  }
+
+  /**
+   * The transform that shows a box for reading, at zoom k or less if it is too wide: centred
+   * across, and centred down as well if it fits, or else with its top near the top of the screen.
+   */
+  frame(box, { k = this.k, pad = 28 } = {}) {
+    const { w, h } = this.size()
+    k = Math.max(this.minK, Math.min(k, this.maxK, (w - 2 * pad) / box.w))
     return {
-      x: i.left + (w - i.left - i.right) / 2 - (box.x + box.w / 2) * k,
-      y: i.top + (h - i.top - i.bottom) / 2 - (box.y + box.h / 2) * k,
+      x: (w - box.w * k) / 2 - box.x * k,
+      y: box.h * k <= h - 2 * pad ? (h - box.h * k) / 2 - box.y * k : pad - box.y * k,
       k,
     }
   }
 
-  /** Whether a box is fully inside the uncovered part of the screen. */
+  /** The least move, at this zoom, that brings a box into view. When it can't all fit, its top left corner wins. */
+  nudge(box, margin = 24) {
+    const { w, h } = this.size()
+    const k = this.k
+    const along = (at, start, length, room) => {
+      const end = at + (start + length) * k
+      if (end > room - margin) at -= end - (room - margin)
+      if (at + start * k < margin) at = margin - start * k
+      return at
+    }
+    return { x: along(this.x, box.x, box.w, w), y: along(this.y, box.y, box.h, h), k }
+  }
+
+  /** Whether a box is fully on screen. */
   shows(box, margin = 16) {
     const { w, h } = this.size()
-    const i = this.inset
     const x0 = this.x + box.x * this.k
     const y0 = this.y + box.y * this.k
-    return x0 >= i.left + margin && y0 >= i.top + margin &&
-      x0 + box.w * this.k <= w - i.right - margin && y0 + box.h * this.k <= h - i.bottom - margin
+    return x0 >= margin && y0 >= margin && x0 + box.w * this.k <= w - margin && y0 + box.h * this.k <= h - margin
+  }
+
+  /** Whether any of a box is on screen. */
+  sees(box) {
+    const { w, h } = this.size()
+    const x0 = this.x + box.x * this.k
+    const y0 = this.y + box.y * this.k
+    return x0 < w && y0 < h && x0 + box.w * this.k > 0 && y0 + box.h * this.k > 0
   }
 
   listen() {
@@ -124,7 +146,8 @@ export class Camera {
 
     vp.addEventListener('pointerdown', e => {
       if (e.pointerType === 'mouse' && e.button !== 0) return
-      if (e.target.closest('input, textarea, select, .quiz-pop .quiz')) return
+      // Answering a quiz on the map never turns into a drag that swallows the answer.
+      if (e.target.closest('input, textarea, select, .quiz')) return
       this.pointers.set(e.pointerId, local(e))
       if (this.pointers.size === 1) {
         this.dragged = false
@@ -171,6 +194,31 @@ export class Camera {
     window.addEventListener('pointerup', end)
     window.addEventListener('pointercancel', end)
 
+    // Tabbing to something off screen, such as a link in an open file, moves the map to show it.
+    // Otherwise the browser would scroll the map's box to show it, which nothing here expects.
+    vp.addEventListener('focusin', e => {
+      if (!this.world.contains(e.target) || !e.target.matches(':focus-visible')) return
+      const r = e.target.getBoundingClientRect()
+      const v = vp.getBoundingClientRect()
+      const m = 24
+      let dx = 0
+      let dy = 0
+      if (r.right > v.right - m) dx = v.right - m - r.right
+      if (r.left + dx < v.left + m) dx = v.left + m - r.left
+      if (r.bottom > v.bottom - m) dy = v.bottom - m - r.bottom
+      if (r.top + dy < v.top + m) dy = v.top + m - r.top
+      if (dx || dy) this.set(this.x + dx, this.y + dy, this.k)
+    })
+    // And whatever scrolls the box all the same (find in page, say) becomes a pan.
+    vp.addEventListener('scroll', () => {
+      const dx = vp.scrollLeft
+      const dy = vp.scrollTop
+      if (!dx && !dy) return
+      vp.scrollLeft = 0
+      vp.scrollTop = 0
+      this.set(this.x - dx, this.y - dy, this.k)
+    })
+
     // A drag ends with a click on whatever is under the pointer; swallow it.
     vp.addEventListener('click', e => {
       if (!this.dragged) return
@@ -180,7 +228,6 @@ export class Camera {
     }, true)
 
     vp.addEventListener('wheel', e => {
-      if (e.target.closest('.quiz-pop')) return
       e.preventDefault()
       const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1
       if (!e.ctrlKey && Math.abs(e.deltaX) > Math.abs(e.deltaY)) {

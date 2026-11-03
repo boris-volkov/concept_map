@@ -23,11 +23,11 @@ prereqs: equivalent-fractions, lcm
 Fractions can only be added when they count pieces of the same size…
 ```
 
-A heading with headings under it is a **topic**: it shows as a card that opens up to reveal what's inside. A heading with nothing under it is a **concept**. You can nest as deep as `######`, so a topic can hold smaller topics.
+A heading with headings under it is a **topic**: it shows as a card that opens up to reveal what's inside. A heading with nothing under it is a **concept**: a card that opens, in its place on the map, into its entry. You can nest as deep as `######`, so a topic can hold smaller topics.
 
-The first paragraph under a heading is its summary, shown on cards and in search results. Everything after that is the explanation, shown in the side panel.
+The first paragraph under a heading is its summary, shown on cards and in search results. Everything after that is the explanation, shown when the concept is opened. A topic's text is its README, which the *i* on its open frame shows at the top of the frame.
 
-The atlas is a reference for tutoring, so entries favour formal statements over casual explanation. For an **axiom**, **theorem**, **definition**, **formula** or **property**, the first paragraph is its formal statement, and the panel sets it in a box: gold for axioms, blue for theorems (with the statement in italics), green for definitions. Each domain keeps all of its axioms together in one topic, `## Axioms`, at the top of its file; a topic that holds nothing but axioms is gilded on the map. Theorems proved from them belong in other topics. Write the statement as one paragraph, a displayed formula included, with no blank line inside it; proofs, examples and remarks follow after a blank line.
+The atlas is a reference for tutoring, so entries favour formal statements over casual explanation. For an **axiom**, **theorem**, **definition**, **formula** or **property**, the first paragraph is its formal statement, and the entry sets it in a box: gold for axioms, blue for theorems (with the statement in italics), green for definitions. Each domain keeps all of its axioms together in one topic, `## Axioms`, at the top of its file; a topic that holds nothing but axioms is gilded on the map. Theorems proved from them belong in other topics. Write the statement as one paragraph, a displayed formula included, with no blank line inside it; proofs, examples and remarks follow after a blank line.
 
 ```markdown
 ### Mean Value Theorem {#mvt}
@@ -77,7 +77,7 @@ Right under a heading, before the summary, these lines describe it. All are opti
 
 ## Prerequisites
 
-List only what a concept **directly** builds on. "Adding Fractions" needs "Least Common Multiple"; it doesn't need to list "Multiplication" too, because LCM already builds on multiplication, and the panel's *Full chain of prerequisites* follows the whole chain back to counting. If you do list one that another prerequisite already leads to, the map leaves its arrow out, and so does the panel's *Prerequisites* list, so an extra prerequisite never adds clutter.
+List only what a concept **directly** builds on. "Adding Fractions" needs "Least Common Multiple"; it doesn't need to list "Multiplication" too, because LCM already builds on multiplication, and the entry's *Full chain of prerequisites* follows the whole chain back to counting. If you do list one that another prerequisite already leads to, the map leaves its arrow out, and so does the entry's *Prerequisites* list, so an extra prerequisite never adds clutter.
 
 A prerequisite can be a whole topic, `prereqs: fractions`, which means everything in it. A prerequisite on a topic applies to everything inside the topic. Use both sparingly: arrows between single concepts say more.
 
@@ -105,7 +105,7 @@ Fractions, roots, powers, Greek letters, `\sin`, `\lim`, `\int`, `\sum`, `\begin
 
 ## Quizzes
 
-A quiz is a fenced block marked `quiz`, anywhere in a concept's explanation. A small **?** appears on the concept's card, and the quiz opens right there on the map, and in the side panel too.
+A quiz is a fenced block marked `quiz`, anywhere in a concept's explanation. It is drawn at the end of the concept's entry, and a small **?** appears on the concept's card, which opens the concept right there, at its quiz.
 
 ````markdown
 ```quiz

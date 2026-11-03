@@ -11,11 +11,12 @@
 // the rest of the map.
 
 export const FRAME_PAD = { top: 54, right: 22, bottom: 22, left: 22 }
+const README_GAP = 22 // between an open topic's README and its contents
 const GAP = {
   right: { layer: 78, wrap: 22, card: 14 }, // layer: between the columns an arrow runs across
   down: { layer: 58, wrap: 26, card: 18 },
 }
-const GAP_FRAME = 26 // beside an open topic
+const GAP_FRAME = 26 // beside an open topic or an open file
 const ASPECT = 1.5 // a crowded layer wraps until its topic is about this wide for its height
 
 /** Which way a topic's contents flow, by its depth: the map (-1) across, domains (0) down, topics (1) across… */
@@ -25,19 +26,27 @@ export const direction = depth => (depth % 2 === 0 ? 'down' : 'right')
 export const flowOf = node => node.flow ?? direction(node.depth)
 
 /**
- * root: the atlas root; isOpen(node); cardSize(node) → {w, h}; headerWidth(node) → minimum frame width.
+ * root: the atlas root; isOpen(node); cardSize(node) → {w, h}, with `file: true` for an open
+ * file; headerWidth(node) → minimum frame width; readmeSize(node) → {w, h} of an open topic's
+ * README, or null when it has none showing.
  * Returns absolute boxes {x, y, w, h} by node id, and the overall size.
  */
-export function computeLayout(root, isOpen, cardSize, headerWidth) {
+export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = () => null) {
   const rel = new Map()
   const open = n => n.children.length > 0 && isOpen(n)
+  // An open topic's contents start under its head, and under its README when that is open.
+  const top = n => {
+    const r = readmeSize(n)
+    return FRAME_PAD.top + (r ? r.h + README_GAP : 0)
+  }
 
   const measure = n => {
     if (!open(n)) return cardSize(n)
     const inner = arrange(n)
+    const r = readmeSize(n)
     return {
-      w: Math.max(inner.w + FRAME_PAD.left + FRAME_PAD.right, headerWidth(n)),
-      h: inner.h + FRAME_PAD.top + FRAME_PAD.bottom,
+      w: Math.max(inner.w + FRAME_PAD.left + FRAME_PAD.right, headerWidth(n), r ? r.w + FRAME_PAD.left + FRAME_PAD.right : 0),
+      h: inner.h + top(n) + FRAME_PAD.bottom,
       frame: true,
     }
   }
@@ -59,7 +68,7 @@ export function computeLayout(root, isOpen, cardSize, headerWidth) {
       const r = rel.get(k)
       const box = { x: ox + r.x, y: oy + r.y, w: r.w, h: r.h }
       boxes.set(k.id, box)
-      if (open(k)) place(k, box.x + FRAME_PAD.left, box.y + FRAME_PAD.top)
+      if (open(k)) place(k, box.x + FRAME_PAD.left, box.y + top(k))
     }
   }
   place(root, 0, 0)
@@ -75,7 +84,8 @@ function placeLayered(size, edges, dir, wrap = 0) {
   const length = k => (across ? size[k].w : size[k].h) // along the flow
   const breadth = k => (across ? size[k].h : size[k].w) // across the flow
   const gap = GAP[dir]
-  const between = (p, q) => (size[p].frame || size[q].frame ? GAP_FRAME : gap.card)
+  const big = k => size[k].frame || size[k].file
+  const between = (p, q) => (big(p) || big(q) ? GAP_FRAME : gap.card)
 
   // Intertwined boxes (a two-way link) go in the same layer, side by side: union them into groups.
   const group = Array.from({ length: n }, (_, i) => i)

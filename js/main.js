@@ -2,7 +2,6 @@
 
 import { loadSources, buildAtlas } from './content.js'
 import { AtlasMap } from './map.js'
-import { Panel } from './panel.js'
 import { Search } from './search.js'
 import { esc } from './markdown.js'
 
@@ -13,7 +12,7 @@ const $ = id => document.getElementById(id)
 // Served from this computer: watch the content files and redraw when one is saved.
 const LOCAL = /^(localhost|127\.0\.0\.1|\[::1\])$|\.localhost$/.test(location.hostname)
 
-let atlas, map, panel, search, sourceKey
+let atlas, map, search, sourceKey
 
 start()
 
@@ -27,8 +26,6 @@ async function start() {
   sourceKey = keyOf(sources)
   atlas = buildAtlas(sources)
   map = new AtlasMap({ viewport: $('viewport'), world: $('world'), svg: $('edges'), grid: $('grid'), atlas, onSelect: selected, onView: saveView })
-  panel = new Panel($('panel'), { onClose: () => map.select(null), onReveal: (n, which) => map.revealAround(n, which), onRanking: showRanking })
-  panel.setAtlas(atlas)
   search = new Search($('search'), $('search-results'), { onPick: n => go(n.id) })
   search.setAtlas(atlas)
   wire()
@@ -36,7 +33,7 @@ async function start() {
   issues()
 
   const view = readView()
-  if (view?.open) map.open = new Set(view.open.filter(id => atlas.nodes.get(id)?.children.length))
+  if (view?.open) map.restore(view)
   map.relayout()
   await map.camera.ready()
   if (view?.camera) map.camera.set(view.camera.x, view.camera.y, view.camera.k)
@@ -48,11 +45,8 @@ async function start() {
   if (LOCAL) watch()
 }
 
-// The map selected something (or nothing): show it in the panel and the address bar.
+// The map selected something (or nothing): show it in the address bar, and the key to its colours.
 function selected(n) {
-  if (n) panel.show(n)
-  else if (panel.mode === 'concept') panel.hide()
-  fitAroundPanel()
   $('key').hidden = !n
   const id = n ? n.id : ''
   if (hashId() !== id) history.replaceState(null, '', id ? `#${encodeURIComponent(id)}` : location.pathname + location.search)
@@ -70,45 +64,14 @@ function hashId() {
   try { return decodeURIComponent(location.hash.slice(1)) } catch { return '' }
 }
 
-// Tell the camera which part of the screen the panel covers, so it centres things in what's left.
-function fitAroundPanel() {
-  const p = $('panel')
-  const inset = { top: 0, right: 0, bottom: 0, left: 0 }
-  document.body.classList.toggle('panel-open', !p.hidden)
-  if (!p.hidden) {
-    const r = p.getBoundingClientRect()
-    if (r.width < window.innerWidth * 0.8) inset.right = window.innerWidth - r.left
-    else inset.bottom = window.innerHeight - r.top
-  }
-  map.camera.inset = inset
-}
-
-// Opens the index, on the tab given or the one shown last, or closes it if that is showing.
-function toggleIndex(tab) {
-  if (panel.mode === 'index' && (!tab || tab === panel.tab)) panel.hide()
-  else {
-    map.select(null)
-    panel.showIndex(tab)
-  }
-  fitAroundPanel()
-}
-
-// From a concept's panel: the ranking, scrolled to that concept.
-function showRanking(n) {
-  map.select(null)
-  panel.showIndex('ranking', n)
-  fitAroundPanel()
-}
-
 function wire() {
-  $('btn-overview').onclick = () => { map.select(null); map.overview() }
+  $('btn-overview').onclick = () => map.overview()
   $('btn-expand').onclick = () => map.openAll()
-  $('btn-index').onclick = () => toggleIndex()
+  $('btn-index').onclick = () => map.toggleRoot('@index')
+  $('btn-ranking').onclick = () => map.toggleRoot('@ranking')
   $('btn-zoom-in').onclick = () => map.zoomBy(1.3)
   $('btn-zoom-out').onclick = () => map.zoomBy(1 / 1.3)
   $('btn-fit').onclick = () => map.fitAll()
-  new ResizeObserver(fitAroundPanel).observe($('panel'))
-  window.addEventListener('resize', fitAroundPanel)
   window.addEventListener('popstate', () => {
     const n = atlas.nodes.get(hashId())
     if (n) map.reveal(n)
@@ -129,17 +92,15 @@ function wire() {
       '/': () => $('search').focus(),
       escape: () => {
         $('issues-list').hidden = true
-        if (map.quiz) map.closeQuiz()
-        else if (panel.mode === 'index') toggleIndex()
-        else map.select(null)
+        map.escape()
       },
       '+': () => map.zoomBy(1.3),
       '=': () => map.zoomBy(1.3),
       '-': () => map.zoomBy(1 / 1.3),
       0: () => map.fitAll(),
-      h: () => { map.select(null); map.overview() },
-      i: () => toggleIndex(),
-      r: () => toggleIndex('ranking'),
+      h: () => map.overview(),
+      i: () => map.toggleRoot('@index'),
+      r: () => map.toggleRoot('@ranking'),
     }
     const action = actions[e.key.toLowerCase()]
     if (!action) return
@@ -189,7 +150,6 @@ function watch() {
       atlas = buildAtlas(sources)
       map.setAtlas(atlas)
       map.relayout()
-      panel.setAtlas(atlas)
       search.setAtlas(atlas)
       titles()
       issues()
@@ -213,13 +173,19 @@ function toast(text) {
 let saveTimer
 function saveView() {
   clearTimeout(saveTimer)
-  saveTimer = setTimeout(() => {
-    try {
-      const { x, y, k } = map.camera
-      localStorage.setItem(VIEW_KEY, JSON.stringify({ open: [...map.open], camera: { x, y, k } }))
-    } catch { /* storage unavailable: the view just isn't remembered */ }
-  }, 300)
+  saveTimer = setTimeout(writeView, 300)
 }
+
+function writeView() {
+  clearTimeout(saveTimer)
+  try {
+    const { x, y, k } = map.camera
+    localStorage.setItem(VIEW_KEY, JSON.stringify({ open: [...map.open], readmes: [...map.readmes], camera: { x, y, k } }))
+  } catch { /* storage unavailable: the view just isn't remembered */ }
+}
+
+// A change made just before the page closes is kept too.
+window.addEventListener('pagehide', () => { if (map) writeView() })
 
 function readView() {
   try { return JSON.parse(localStorage.getItem(VIEW_KEY)) } catch { return null }

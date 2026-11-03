@@ -10,7 +10,7 @@
   <!-- Fetch every script at once, instead of each only after the one that imports it. -->
   <link rel="modulepreload" href="js/content.js">
   <link rel="modulepreload" href="js/map.js">
-  <link rel="modulepreload" href="js/panel.js">
+  <link rel="modulepreload" href="js/docs.js">
   <link rel="modulepreload" href="js/search.js">
   <link rel="modulepreload" href="js/markdown.js">
   <link rel="modulepreload" href="js/tex.js">
@@ -35,8 +35,9 @@
     </div>
     <nav class="tools" aria-label="Map controls">
       <button id="btn-expand" type="button" title="Open every topic">Open all</button>
-      <button id="btn-overview" type="button" title="Close every topic and show the whole map (H)">Close all</button>
-      <button id="btn-index" type="button" title="Every concept as a list (I), or ranked (R)">Index</button>
+      <button id="btn-overview" type="button" title="Close everything and show the whole map (H)">Close all</button>
+      <button id="btn-index" type="button" title="Every concept as a list: a file beside the domains (I)">Index</button>
+      <button id="btn-ranking" type="button" title="Every concept ranked: a file beside the domains (R)">Ranking</button>
     </nav>
   </header>
 
@@ -71,9 +72,7 @@
     <span class="key-post">Required for</span>
   </div>
 
-  <p id="hint">Select a domain or topic to open it · select a concept to see its prerequisites · scroll to zoom, drag to pan</p>
-
-  <aside id="panel" aria-label="Concept details" hidden></aside>
+  <p id="hint">Everything opens where it sits: a domain, a topic, a concept · scroll to zoom, drag to pan</p>
 
   <button id="issues" type="button" hidden></button>
   <div id="issues-list" hidden></div>
