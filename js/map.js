@@ -596,6 +596,7 @@ export class AtlasMap {
     if (!n) return this.background()
     const keyboard = e.type === 'keydown'
     if (n.children.length) {
+      if (hit('.frame-head .open-all')) return this.openInside(n)
       if (hit('.frame-head .about')) return this.toggleReadme(n)
       if (hit('.frame-head .shut')) return this.collapse(n)
       // The head of an open frame, or the frame itself from the keyboard, selects what it holds;
@@ -824,6 +825,17 @@ export class AtlasMap {
     this.onView?.()
   }
 
+  /** The + on an open folder's head: opens every folder inside it, and shows the whole frame. */
+  openInside(n) {
+    for (const d of descendants(n)) if (d.children.length) this.open.add(d.id)
+    this.current = n
+    const boxes = this.relayout()
+    // A domain is shown with the card it floated out from, as when it opened.
+    const box = n.depth === 0 ? union([boxes.get(n.id), this.spine.get(n.id)]) : boxes.get(n.id)
+    this.camera.moveTo(this.camera.fit(box, { pad: 36, maxK: Math.max(1, this.camera.k) }))
+    this.onView?.()
+  }
+
   fitAll() {
     this.camera.moveTo(this.camera.fit(this.bounds, { maxK: 1 }))
   }
@@ -880,9 +892,12 @@ function groupFace(n) {
     </div>`
 }
 
+// An open folder's head: its title, its count, and its buttons. The + is there only when the folder
+// holds folders of its own for it to open.
 const frameHead = n => `<div class="frame-head">
   <span class="frame-title">${renderInline(n.title)}</span>
   <span class="frame-count">${n.leafCount}</span>
+  ${n.children.some(c => c.children.length) ? `<button type="button" class="open-all" title="Open everything inside" aria-label="Open everything inside ${esc(n.plainTitle)}">+</button>` : ''}
   <button type="button" class="about" title="About this ${n.depth === 0 ? 'domain' : 'topic'}" aria-label="About ${esc(n.plainTitle)}">i</button>
   <button type="button" class="shut" title="Close this ${n.depth === 0 ? 'domain' : 'topic'}" aria-label="Close ${esc(n.plainTitle)}">×</button>
 </div>`
