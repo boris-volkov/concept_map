@@ -159,6 +159,11 @@ math { font-family: var(--math); font-size: 1.04em; }
 }
 .tools button:hover, #zoom button:hover { color: var(--ink); border-color: var(--ink-3); background: #fffdf6; }
 /* The Index button while the index is open. */
+/* The flashcards button: two cards, and how many are in the deck. */
+#btn-deck { display: flex; align-items: center; gap: 5px; }
+#btn-deck svg { width: 20px; height: 16px; fill: var(--card); stroke: currentColor; stroke-width: 1.3; }
+#btn-deck .deck-n { font-size: 13px; font-variant-numeric: tabular-nums; }
+#btn-deck .deck-n:empty { display: none; }
 .tools button[aria-expanded="true"] {
   color: var(--rubric);
   background: color-mix(in srgb, var(--rubric) 9%, var(--card));
@@ -639,7 +644,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 /* The whole head closes the file: click again where it opened. */
 .doc-head {
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: 1fr auto auto auto;
   align-items: center;
   gap: 1px 10px;
   padding: 9px 9px 11px 15px;
@@ -679,9 +684,12 @@ math { font-family: var(--math); font-size: 1.04em; }
   line-height: 22px;
   cursor: pointer;
 }
-.doc-head .about { grid-column: 2; font-style: italic; font-weight: bold; font-size: 13px; }
-.doc-head .shut { grid-column: 3; }
-.doc-head button:hover, .doc-head .about.is-on { background: var(--c); color: var(--card); }
+.doc-head .card-add { grid-column: 2; }
+.doc-head .about { grid-column: 3; font-style: italic; font-weight: bold; font-size: 13px; }
+.doc-head .shut { grid-column: 4; }
+.doc-head button:hover, .doc-head .about.is-on, .doc-head .card-add.is-on { background: var(--c); color: var(--card); }
+/* The flashcard button: a card with a +, filled in once the concept is in the deck. */
+.card-add svg { display: block; width: 14px; height: 14px; margin: auto; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; }
 
 .doc-body { padding: 14px 18px 2px; }
 .doc-body > :first-child { margin-top: 0; }
@@ -708,6 +716,8 @@ math { font-family: var(--math); font-size: 1.04em; }
   box-shadow: var(--shadow);
 }
 .readme .doc-head { padding: 7px 9px 7px 15px; }
+.readme .doc-head { grid-template-columns: 1fr auto auto; }
+.readme .doc-head .shut { grid-column: 3; }
 .readme .topic-progress { grid-column: 2; grid-row: 1; font-size: 13px; }
 .readme .doc-foot { justify-content: flex-end; }
 
@@ -864,6 +874,74 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
 .index li > a:hover { text-decoration: underline; }
 .index li:has(> ul) > a { font-variant-caps: small-caps; color: var(--c); letter-spacing: 0.02em; }
 .index-note { font-style: italic; color: var(--ink-3); font-size: 14px; margin: 0 0 12px; }
+
+/* ---------- the deck of flashcards (flashcards.js) ---------- */
+
+/* Over the map, below the top bar, so its button can close it again. No blur: the map is busy enough to redraw. */
+#deck {
+  position: fixed;
+  inset: var(--bar-h) 0 0 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+}
+.deck-box { display: flex; flex-direction: column; gap: 12px; width: min(620px, 100%); max-height: 100%; }
+.deck-head { display: flex; align-items: center; gap: 12px; }
+.deck-head h2 { margin: 0 auto 0 0; font-size: 22px; font-weight: normal; font-variant-caps: small-caps; letter-spacing: 0.04em; color: var(--rubric); }
+.deck-count { font-size: 14px; font-style: italic; color: var(--ink-2); }
+.deck-head .shut {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--card-edge);
+  background: var(--card);
+  color: var(--ink-2);
+  font-size: 16px;
+  cursor: pointer;
+}
+.deck-head button, .deck-foot button {
+  padding: 6px 12px;
+  font-size: 14px;
+  color: var(--ink-2);
+  background: var(--card);
+  border: 1px solid var(--card-edge);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.deck-head button:hover:not(:disabled), .deck-foot button:hover:not(:disabled) { color: var(--ink); border-color: var(--ink-3); background: #fffdf6; }
+.deck-head button:disabled, .deck-foot button:disabled { opacity: 0.45; cursor: default; }
+.deck-foot { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.deck-foot .deck-flip { min-width: 9em; color: var(--card); background: var(--rubric); border-color: var(--rubric); }
+.deck-foot .deck-flip:hover:not(:disabled) { color: var(--card); background: color-mix(in srgb, var(--rubric) 85%, black); }
+.deck-foot .deck-remove { margin-left: auto; font-style: italic; }
+
+/* A card: its domain's colour down the left, as on the map. */
+.deck-card {
+  min-height: 300px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 18px 24px;
+  background: var(--card);
+  border: 1px solid color-mix(in srgb, var(--c, var(--ink-3)) 35%, var(--card-edge));
+  border-left: 5px solid var(--c, var(--ink-3));
+  border-radius: 8px;
+  box-shadow: var(--lift);
+  cursor: pointer;
+}
+.deck-card.is-back { cursor: default; }
+.deck-card.is-empty { display: flex; align-items: center; justify-content: center; text-align: center; font-style: italic; color: var(--ink-2); cursor: default; }
+.card-front { min-height: 262px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.card-title { margin: 6px 0 0; font-size: 32px; font-weight: normal; line-height: 1.2; }
+.card-hint { margin: 18px 0 0; font-size: 13px; font-style: italic; color: var(--ink-3); }
+.card-name { margin: 2px 0 14px; font-size: 20px; font-weight: normal; }
+.kind-axiom .card-title, .kind-axiom .card-name { color: #3d2a06; }
+.kind-theorem .doc-kind { --c: var(--blue); }
+.kind-definition .doc-kind { --c: var(--green); }
+.kind-axiom .doc-kind { --c: var(--gold-ink); }
 
 /* ---------- content problems ---------- */
 

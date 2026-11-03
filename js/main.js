@@ -5,6 +5,7 @@ import { AtlasMap } from './map.js'
 import { Search } from './search.js'
 import { esc } from './markdown.js'
 import { index } from './docs.js'
+import { Flashcards } from './flashcards.js'
 
 const CONTENT = 'content/'
 const VIEW_KEY = 'concept-atlas:view'
@@ -15,7 +16,7 @@ const LOCAL = /^(localhost|127\.0\.0\.1|\[::1\])$|\.localhost$/.test(location.ho
 // A phone, where the index covers the map rather than standing beside it (see the stylesheet).
 const NARROW = matchMedia('(max-width: 760px)')
 
-let atlas, map, search, sourceKey
+let atlas, map, search, cards, sourceKey
 
 start()
 
@@ -34,6 +35,8 @@ async function start() {
   map = new AtlasMap({ viewport: $('viewport'), world: $('world'), svg: $('edges'), grid: $('grid'), atlas, onSelect: selected, onView: saveView })
   search = new Search($('search'), $('search-results'), { onPick: n => go(n.id) })
   search.setAtlas(atlas)
+  cards = new Flashcards($('deck'), $('btn-deck'))
+  cards.setAtlas(atlas)
   wire()
   titles()
   issues()
@@ -63,6 +66,7 @@ function go(id) {
   if (!n) return
   if (hashId() !== id) history.pushState(null, '', `#${encodeURIComponent(id)}`)
   if (NARROW.matches) showIndex(false) // it would hide what it went to
+  cards.close() // a link on the back of a card goes to the map
   map.reveal(n)
 }
 
@@ -75,6 +79,7 @@ function wire() {
   $('btn-expand').onclick = () => map.openAll()
   $('btn-index').onclick = () => showIndex($('panel').hidden)
   $('panel').querySelector('.shut').onclick = () => showIndex(false)
+  $('btn-deck').onclick = () => cards.toggle()
   $('btn-zoom-in').onclick = () => map.zoomBy(1.3)
   $('btn-zoom-out').onclick = () => map.zoomBy(1 / 1.3)
   $('btn-fit').onclick = () => map.fitAll()
@@ -94,6 +99,7 @@ function wire() {
   })
   document.addEventListener('keydown', e => {
     if (e.target.closest?.('input, textarea, select, [contenteditable]') || e.ctrlKey || e.metaKey || e.altKey) return
+    if (cards.key(e)) return e.preventDefault()
     const actions = {
       '/': () => $('search').focus(),
       escape: () => {
@@ -106,6 +112,7 @@ function wire() {
       0: () => map.fitAll(),
       h: () => map.overview(),
       i: () => showIndex($('panel').hidden),
+      f: () => cards.toggle(),
     }
     const action = actions[e.key.toLowerCase()]
     if (!action) return
@@ -173,6 +180,7 @@ function watch() {
       map.setAtlas(atlas)
       map.relayout()
       search.setAtlas(atlas)
+      cards.setAtlas(atlas)
       titles()
       issues()
       if (!$('panel').hidden) showIndex(true)

@@ -16,6 +16,8 @@
   <link rel="modulepreload" href="js/tex.js">
   <link rel="modulepreload" href="js/quiz.js">
   <link rel="modulepreload" href="js/graph.js">
+  <link rel="modulepreload" href="js/deck.js">
+  <link rel="modulepreload" href="js/flashcards.js">
   <link rel="modulepreload" href="js/model.js">
   <link rel="modulepreload" href="js/layout.js">
   <link rel="modulepreload" href="js/camera.js">
@@ -38,6 +40,9 @@
       <button id="btn-expand" type="button" title="Open every topic">Open all</button>
       <button id="btn-overview" type="button" title="Close everything and show the whole map (H)">Close all</button>
       <button id="btn-index" type="button" title="Every concept as a list, beside the map (I)" aria-controls="panel" aria-expanded="false">Index</button>
+      <button id="btn-deck" type="button" title="Flashcards (F)" aria-label="Flashcards" aria-controls="deck" aria-expanded="false">
+        <svg viewBox="0 0 20 16" aria-hidden="true"><rect x="7.5" y="1.5" width="9" height="12" rx="1.5"/><rect x="3.5" y="3" width="9" height="12" rx="1.5"/></svg><span class="deck-n"></span>
+      </button>
     </nav>
   </header>
 
@@ -84,6 +89,25 @@
   </div>
 
   <p id="hint">Click a domain, a topic or a concept to open it · scroll to zoom, drag to pan</p>
+
+  <!-- The deck of flashcards, over the map (flashcards.js). -->
+  <div id="deck" role="dialog" aria-modal="true" aria-labelledby="deck-title" hidden>
+    <div class="deck-box">
+      <header class="deck-head">
+        <h2 id="deck-title">Flashcards</h2>
+        <span class="deck-count"></span>
+        <button type="button" class="deck-shuffle">Shuffle</button>
+        <button type="button" class="shut" title="Close (Esc)" aria-label="Close the flashcards">×</button>
+      </header>
+      <div class="deck-card" tabindex="0" aria-live="polite"></div>
+      <footer class="deck-foot">
+        <button type="button" class="deck-prev" title="Previous card (←)">‹ Previous</button>
+        <button type="button" class="deck-flip" title="Turn the card over (Space)">Turn over</button>
+        <button type="button" class="deck-next" title="Next card (→)">Next ›</button>
+        <button type="button" class="deck-remove">Take out of the deck</button>
+      </footer>
+    </div>
+  </div>
 
   <button id="issues" type="button" hidden></button>
   <div id="issues-list" hidden></div>

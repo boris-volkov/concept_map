@@ -12,14 +12,21 @@ import { renderMarkdown, renderInline, esc } from './markdown.js'
 import { learningPath, externalPrereqs, externalDependents, leaves } from './model.js'
 import { KINDS } from './content.js'
 import * as progress from './progress.js'
+import * as deck from './deck.js'
+
+// A playing card, with a + on it: the button on an open concept's head that adds it to the deck.
+const CARD_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="1.5" width="9" height="13" rx="1.5"/>' +
+  '<path d="M8 5.5v5M5.5 8h5"/></svg>'
 
 /** A concept, open: its content and its exercises. `info`: with the band its "i" opens. */
 export function conceptDoc(n, atlas, { info = false } = {}) {
   const resolve = id => atlas.nodes.get(id)
   const kind = `${KINDS[n.kind] ?? esc(n.kind)}<span class="doc-check" title="Mastered"> ✓</span>`
+  const card = `<button type="button" class="card-add" aria-label="Add ${esc(n.plainTitle)} to the flashcards" ` +
+    `aria-pressed="false">${CARD_ICON}</button>`
   const about = `<button type="button" class="about${info ? ' is-on' : ''}" title="What it builds on, and what builds on it" ` +
     `aria-label="About ${esc(n.plainTitle)}" aria-expanded="${info}">i</button>`
-  return `${head(kind, renderInline(n.title), n.plainTitle, about)}
+  return `${head(kind, renderInline(n.title), n.plainTitle, card + about)}
     ${info ? conceptInfo(n) : ''}
     <div class="doc-body">
       ${entry(n, resolve)}
@@ -84,10 +91,31 @@ export function index(atlas) {
       `<span class="where">${d.leafCount}</span></summary>${tree(d.children)}</details>`).join('')}`
 }
 
-/** Brings the marks of mastery inside an open file up to date. `n`: the file's concept or topic, if any. */
+/** A flashcard's front: what the concept is, and its name. */
+export const cardFront = n => `<div class="card-front">
+    <div class="doc-kind">${KINDS[n.kind] ?? esc(n.kind)}</div>
+    <h3 class="card-title">${renderInline(n.title)}</h3>
+    <p class="card-hint">Click or press Space to turn it over</p>
+  </div>`
+
+/** A flashcard's back: the concept's entry, as it reads on the map, without its exercises. */
+export const cardBack = (n, atlas) => `<div class="card-back">
+    <div class="doc-kind">${KINDS[n.kind] ?? esc(n.kind)}</div>
+    <h3 class="card-name">${renderInline(n.title)}</h3>
+    ${entry(n, id => atlas.nodes.get(id))}
+  </div>`
+
+/** Brings the marks of mastery, and the flashcard button, inside an open file up to date. `n`: the file's concept or topic, if any. */
 export function refresh(el, n = null) {
   el.querySelectorAll('[data-id]').forEach(a => a.classList.toggle('is-mastered', progress.isMastered(a.dataset.id)))
   if (!n) return
+  const card = el.querySelector('.doc-head .card-add')
+  if (card) {
+    const on = deck.has(n.id)
+    card.classList.toggle('is-on', on)
+    card.setAttribute('aria-pressed', on)
+    card.title = on ? 'In your flashcards: click to take it out' : 'Add as a flashcard'
+  }
   const button = el.querySelector('.mastery')
   if (button) {
     const on = progress.isMastered(n.id)

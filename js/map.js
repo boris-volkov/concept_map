@@ -21,6 +21,7 @@ import { KINDS } from './content.js'
 import { Camera } from './camera.js'
 import { mountQuiz } from './quiz.js'
 import * as progress from './progress.js'
+import * as deck from './deck.js'
 import * as docs from './docs.js'
 
 const SVG = 'http://www.w3.org/2000/svg'
@@ -68,6 +69,7 @@ export class AtlasMap {
       }
     })
     progress.onChange(() => this.refreshProgress())
+    deck.onChange(() => this.refreshProgress()) // the flashcard buttons on open concepts
     this.setAtlas(atlas)
   }
 
@@ -608,6 +610,7 @@ export class AtlasMap {
       return this.expand(n)
     }
     if (!this.isFileOpen(n)) return this.openFile(n, { at: hit('.quiz-badge') ? '.practice' : null, keyboard })
+    if (hit('.doc-head .card-add')) return deck.toggle(n.id)
     if (hit('.doc-head .about')) return this.toggleInfo(n)
     if (hit('.doc-head')) return this.closeFile(n)
     if (hit('.mastery')) return progress.setMastered(n.id, !progress.isMastered(n.id))
