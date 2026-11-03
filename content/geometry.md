@@ -324,6 +324,76 @@ When a line crosses two parallel lines, the following hold, and each of them, co
 - alternate interior angles are equal;
 - co-interior angles add to $180^\circ$.
 
+## Lines & Angles {#lines-and-angles}
+
+The first theorems of geometry: what is forced on the angles where lines meet, and on lines that are parallel or perpendicular.
+
+### Linear Pair Theorem
+kind: theorem
+prereqs: angle-pairs
+
+If two angles form a linear pair, sharing a side with their other sides forming a straight line, they are supplementary:
+$$\angle 1 + \angle 2 = 180^\circ.$$
+
+Together they make a straight angle, which measures $180^\circ$.
+
+### Vertical Angles Theorem
+kind: theorem
+prereqs: linear-pair-theorem
+
+When two lines cross, the vertical angles, opposite each other, are equal.
+
+*Proof.* Let the lines form the angles $\angle 1$, $\angle 2$ and $\angle 3$ in turn, so that $\angle 1$ and $\angle 3$ are vertical. Each of them forms a linear pair with $\angle 2$, so
+$$\angle 1 = 180^\circ - \angle 2 = \angle 3. \qquad \square$$
+
+### Congruent Supplements Theorem
+kind: theorem
+prereqs: angle-pairs
+
+Angles supplementary to the same angle, or to equal angles, are equal. Likewise angles complementary to the same angle, or to equal angles, are equal: the Congruent Complements Theorem.
+
+*Proof.* If $\angle 1 + \angle 2 = 180^\circ$ and $\angle 3 + \angle 2 = 180^\circ$, subtracting $\angle 2$ from both gives $\angle 1 = \angle 3$. The same works with $90^\circ$. $\square$
+
+### Perpendicular Transversal Theorem
+kind: theorem
+prereqs: parallel-lines, perpendicular-lines
+
+In a plane, a line perpendicular to one of two parallel lines is perpendicular to the other.
+
+*Proof.* The line is a transversal of the two parallels, so its corresponding angles with them are equal, and one of them is $90^\circ$. $\square$
+
+### Perpendiculars to One Line {#perpendiculars-parallel}
+kind: theorem
+prereqs: parallel-lines, perpendicular-lines
+
+In a plane, two lines perpendicular to the same line are parallel.
+
+*Proof.* Their corresponding angles with that line are both $90^\circ$, so by the converse of the corresponding angles theorem they are parallel. $\square$
+
+### Transitivity of Parallels {#parallel-transitivity}
+kind: theorem
+prereqs: parallel-lines, parallel-postulate, proof-by-contradiction
+
+Two distinct lines parallel to the same line are parallel to each other.
+
+*Proof*, by contradiction. If they met at a point, there would be two lines through that point parallel to the third line, which the [[parallel-postulate|parallel postulate]] forbids. $\square$
+
+### Perpendicular Bisector Theorem
+kind: theorem
+prereqs: triangle-congruence, linear-pair-theorem, iff-proofs
+
+A point lies on the perpendicular bisector of a segment $\overline{AB}$ if and only if it is equally far from $A$ and $B$.
+
+*Proof.* Let $M$ be the midpoint of $\overline{AB}$, and $P$ a point other than $M$. (⇒) If $P$ is on the bisector, the triangles $PMA$ and $PMB$ are congruent by SAS, so $PA = PB$. (⇐) If $PA = PB$, the triangles $PMA$ and $PMB$ are congruent by SSS, so the angles at $M$ are equal; being a linear pair, both are right angles, and $PM$ is the perpendicular bisector. $\square$
+
+### Angle Bisector Theorem {#angle-bisector-equidistance}
+kind: theorem
+prereqs: triangle-congruence, perpendicular-lines, iff-proofs
+
+A point inside an angle lies on its bisector if and only if it is equally far from the angle's two sides, distances being measured along perpendiculars.
+
+*Proof.* Let the angle have vertex $A$, and drop perpendiculars $\overline{PD}$ and $\overline{PE}$ from $P$ to its sides. (⇒) The right triangles $PAD$ and $PAE$ share the hypotenuse $\overline{PA}$ and have equal angles at $A$, so they are congruent by AAS, and $PD = PE$. (⇐) If $PD = PE$, they are congruent by HL, so the angles at $A$ are equal. $\square$
+
 ## Triangles
 
 The simplest polygons, and the ones every other shape breaks into.
@@ -407,6 +477,134 @@ Two triangles worth knowing by heart:
 - the $45^\circ$-$45^\circ$-$90^\circ$ triangle, with sides $1 : 1 : \sqrt{2}$;
 - the $30^\circ$-$60^\circ$-$90^\circ$ triangle, with sides $1 : \sqrt{3} : 2$.
 
+### Third Angles Theorem
+kind: theorem
+prereqs: triangle-angle-sum
+
+If two angles of one triangle are equal to two angles of another, the third angles are equal too.
+
+*Proof.* Each third angle is $180^\circ$ minus the same sum. $\square$
+
+### Acute Angles of a Right Triangle {#right-triangle-acute-angles}
+kind: theorem
+prereqs: triangle-angle-sum
+
+The two acute angles of a right triangle are complementary; and no triangle has more than one right or obtuse angle.
+
+*Proof.* With one angle $90^\circ$, the other two share the remaining $180^\circ - 90^\circ = 90^\circ$. Two angles of $90^\circ$ or more would already add to $180^\circ$ or more. $\square$
+
+### Equilateral Triangle Theorem
+kind: theorem
+prereqs: isosceles-triangle-theorem, triangle-angle-sum
+
+A triangle is equilateral if and only if it is equiangular, and then each of its angles is $60^\circ$.
+
+*Proof.* By the [[isosceles-triangle-theorem|isosceles triangle theorem]], applied to each pair of sides, equal sides go with equal opposite angles, and equal angles with equal opposite sides. Three equal angles share $180^\circ$, so each is $60^\circ$. $\square$
+
+### Exterior Angle Inequality
+kind: theorem
+prereqs: exterior-angle-theorem
+
+An exterior angle of a triangle is greater than either of the two remote interior angles.
+
+It follows from the [[exterior-angle-theorem|exterior angle theorem]], since the exterior angle is the sum of the two, and each is positive. Euclid proved it before using the parallel postulate (*Elements* I.16), so it holds in hyperbolic geometry too.
+
+### Angle–Side Relationships {#triangle-side-angle}
+kind: theorem
+prereqs: isosceles-triangle-theorem, exterior-angle-inequality
+
+In a triangle, the longer of two sides lies opposite the larger angle, and the larger of two angles opposite the longer side: in triangle $ABC$,
+$$BC > AC \iff \angle A > \angle B.$$
+
+*Proof.* (⇒) If $BC > AC$, mark $D$ on $\overline{CB}$ with $CD = CA$. Triangle $ACD$ is isosceles, so $\angle CAD = \angle CDA$. And $\angle CDA$ is an exterior angle of triangle $ADB$, so it is greater than $\angle B$. Hence
+$$\angle A > \angle CAD = \angle CDA > \angle B.$$
+(⇐) If $\angle A > \angle B$ but $BC \le AC$, then either $BC = AC$, making the angles equal, or $BC < AC$, making $\angle A < \angle B$ by the first part: a contradiction either way. $\square$
+
+### Hinge Theorem
+kind: theorem
+prereqs: triangle-side-angle, triangle-congruence
+
+If two sides of one triangle are equal to two sides of another, and the angle between them is larger in the first, then the third side of the first is longer; and conversely, the longer third side goes with the larger included angle.
+
+Also called the SAS inequality: like a door on its hinge, the wider it opens, the further apart its ends. It is Euclid's *Elements* I.24 and I.25.
+
+### Pythagorean Inequalities
+kind: theorem
+prereqs: pythagorean-theorem, hinge-theorem
+
+In a triangle whose longest side is $c$ and whose other sides are $a$ and $b$, the triangle is
+- acute if and only if $c^2 < a^2 + b^2$;
+- right if and only if $c^2 = a^2 + b^2$;
+- obtuse if and only if $c^2 > a^2 + b^2$.
+
+*Proof sketch.* Compare with the right triangle with legs $a$ and $b$, whose hypotenuse is $\sqrt{a^2 + b^2}$. By the [[hinge-theorem|hinge theorem]], the angle opposite $c$ is larger than $90^\circ$ exactly when $c$ is longer than that hypotenuse. $\square$
+
+```quiz
+Q: A triangle has sides 6, 7 and 9. It is:
++ acute
+- right
+- obtuse
+Hint: Compare $9^2$ with $6^2 + 7^2$.
+Why: $81 < 36 + 49 = 85$.
+
+Q: A triangle has sides 5, 6 and 8. It is:
+- acute
+- right
++ obtuse
+Why: $64 > 25 + 36 = 61$.
+```
+
+### Triangle Midsegment Theorem
+kind: theorem
+prereqs: triangle-similarity, parallel-lines
+
+The segment joining the midpoints of two sides of a triangle is parallel to the third side, and half as long.
+
+*Proof.* Let $D$ and $E$ be the midpoints of $\overline{AB}$ and $\overline{AC}$. Triangles $ADE$ and $ABC$ share the angle at $A$, and
+$$\frac{AD}{AB} = \frac{AE}{AC} = \frac{1}{2},$$
+so they are similar by SAS, with scale factor $\frac{1}{2}$. Hence $DE = \frac{1}{2}BC$, and the corresponding angles $\angle ADE$ and $\angle ABC$ are equal, so $\overline{DE} \parallel \overline{BC}$. $\square$
+
+### Centroid Theorem
+kind: theorem
+prereqs: triangle-segments, triangle-midsegment-theorem
+
+The three medians of a triangle meet at one point, the centroid, which lies two thirds of the way along each median from its vertex. In coordinates it is the average of the vertices:
+$$G = \left(\frac{x_1 + x_2 + x_3}{3}, \frac{y_1 + y_2 + y_3}{3}\right).$$
+
+*Proof sketch.* Let the medians $\overline{BE}$ and $\overline{CF}$ meet at $G$. The midsegment $\overline{EF}$ is parallel to $\overline{BC}$ and half as long, so triangles $GEF$ and $GBC$ are similar with ratio $\frac{1}{2}$, and $BG = 2GE$. So any two medians meet at the point two thirds of the way along each, and the third median passes through it too. $\square$
+
+```quiz
+Q: A median of a triangle is 12 cm long. How far is the centroid from the vertex it starts at?
+A: 8
+Why: Two thirds of the way along: $\frac{2}{3} \cdot 12 = 8$ cm.
+```
+
+### Circumcentre Theorem
+kind: theorem
+prereqs: perpendicular-bisector-theorem, triangle-segments
+
+The perpendicular bisectors of the three sides of a triangle meet at one point, the circumcentre, which is equally far from the three vertices: it is the centre of the circle through them, the circumcircle.
+
+*Proof.* The bisectors of $\overline{AB}$ and $\overline{BC}$ meet, since those sides are not parallel, at a point $O$. By the [[perpendicular-bisector-theorem|perpendicular bisector theorem]], $OA = OB$ and $OB = OC$; so $OA = OC$, and $O$ is on the bisector of $\overline{AC}$ as well. $\square$
+
+The circumcentre lies inside an acute triangle, at the midpoint of the hypotenuse of a right triangle, and outside an obtuse one.
+
+### Incentre Theorem
+kind: theorem
+prereqs: angle-bisector-equidistance, triangle-segments
+
+The bisectors of the three angles of a triangle meet at one point, the incentre, which is equally far from the three sides: it is the centre of the circle that touches all three, the incircle.
+
+*Proof.* The bisectors of $\angle A$ and $\angle B$ meet at a point $I$ inside the triangle. By the [[angle-bisector-equidistance|angle bisector theorem]], $I$ is as far from side $\overline{AB}$ as from $\overline{AC}$, and as far from $\overline{AB}$ as from $\overline{BC}$; so it is equally far from $\overline{AC}$ and $\overline{BC}$, and lies on the bisector of $\angle C$. $\square$
+
+### Orthocentre Theorem
+kind: theorem
+prereqs: circumcentre-theorem, parallelogram-properties
+
+The three altitudes of a triangle, extended as lines, meet at one point, the orthocentre.
+
+*Proof.* Through each vertex draw the parallel to the opposite side. They form a larger triangle, made of four copies of the first, whose sides have $A$, $B$ and $C$ as midpoints, by the parallelograms in the figure. Each altitude of the small triangle is perpendicular to a side of the large one at its midpoint, so the altitudes are the large triangle's perpendicular bisectors, which meet by the [[circumcentre-theorem|circumcentre theorem]]. $\square$
+
 ## Congruence & Similarity {#congruence-and-similarity}
 
 When two figures are the same, and when they are the same shape at different sizes.
@@ -465,6 +663,71 @@ prereqs: triangle-similarity, solving-proportions
 Measuring the unreachable. A tree casting a 12 m shadow, beside a 2 m post casting a 3 m shadow, has the same ratio of height to shadow:
 $$\frac{h}{12} = \frac{2}{3} \implies h = 8\text{ m}.$$
 
+### Isosceles Triangle Bisector Theorem {#isosceles-bisector}
+kind: theorem
+prereqs: isosceles-triangle-theorem, cpctc
+
+In an isosceles triangle, the bisector of the angle between the equal sides is the perpendicular bisector of the base; it is also the median and the altitude from that vertex.
+
+*Proof.* The bisector splits the triangle into two triangles that are congruent by SAS. By [[cpctc|CPCTC]], it cuts the base into equal halves, and its two angles with the base are equal; as a linear pair, they are right angles. $\square$
+
+### Side-Splitter Theorem {#triangle-proportionality}
+kind: theorem
+prereqs: triangle-similarity, parallel-lines
+
+A line parallel to one side of a triangle, and crossing the other two sides, divides them in the same ratio: if $D$ is on $\overline{AB}$ and $E$ on $\overline{AC}$ with $\overline{DE} \parallel \overline{BC}$, then
+$$\frac{AD}{DB} = \frac{AE}{EC}.$$
+Conversely, a line that divides two sides in the same ratio is parallel to the third.
+
+*Proof.* The corresponding angles at $D$ and $B$ are equal, so triangles $ADE$ and $ABC$ are similar by AA, and
+$$\frac{AB}{AD} = \frac{AC}{AE}.$$
+Subtracting 1 from both sides gives $\frac{DB}{AD} = \frac{EC}{AE}$; turn both over. $\square$
+
+### Triangle Angle Bisector Theorem {#angle-bisector-proportion}
+kind: theorem
+prereqs: triangle-proportionality, isosceles-triangle-theorem
+
+The bisector of an angle of a triangle divides the opposite side in the ratio of the two sides beside it: if $\overline{AD}$ bisects $\angle A$, with $D$ on $\overline{BC}$, then
+$$\frac{BD}{DC} = \frac{AB}{AC}.$$
+
+*Proof.* Through $C$, draw the parallel to $\overline{AD}$, meeting line $BA$ beyond $A$ at $E$. Then $\angle ACE = \angle CAD$, as alternate angles, and $\angle AEC = \angle BAD$, as corresponding angles; these are equal, since $\overline{AD}$ bisects $\angle A$. So triangle $ACE$ is isosceles, with $AE = AC$. By the [[triangle-proportionality|side-splitter theorem]] in triangle $BCE$,
+$$\frac{BD}{DC} = \frac{BA}{AE} = \frac{AB}{AC}. \qquad \square$$
+
+### Parallels Divide Proportionally {#parallel-proportions}
+kind: theorem
+prereqs: triangle-proportionality
+
+Three or more parallel lines cut every transversal into segments in the same ratio. In particular, if they cut off equal segments on one transversal, they cut off equal segments on every transversal.
+
+*Proof sketch.* Join the ends of two transversals with a diagonal, and apply the [[triangle-proportionality|side-splitter theorem]] in the two triangles it makes: both ratios equal the ratio along the diagonal. $\square$
+
+### Right Triangle Altitude Theorem {#altitude-similarity}
+kind: theorem
+prereqs: triangle-similarity, right-triangle-acute-angles
+
+The altitude to the hypotenuse of a right triangle divides it into two triangles, each similar to it and to each other.
+
+*Proof.* Each small triangle has a right angle, and shares an acute angle with the whole triangle; so each is similar to it by AA, and so to each other. $\square$
+
+### Geometric Mean Theorems {#geometric-mean-theorems}
+kind: theorem
+prereqs: altitude-similarity, solving-proportions
+
+In a right triangle with legs $a$ and $b$ and hypotenuse $c$, let the altitude $h$ to the hypotenuse divide it into $p$, next to $a$, and $q$, next to $b$. Then
+$$\begin{aligned} h^2 &= pq, \\ a^2 &= pc, \\ b^2 &= qc. \end{aligned}$$
+The altitude is the geometric mean of the two pieces, and each leg the geometric mean of the hypotenuse and the piece beside it.
+
+*Proof.* Each equation is a proportion between [[altitude-similarity|similar triangles]]: $\frac{p}{h} = \frac{h}{q}$, $\frac{p}{a} = \frac{a}{c}$ and $\frac{q}{b} = \frac{b}{c}$. $\square$
+
+Adding the last two gives $a^2 + b^2 = (p + q)c = c^2$: another proof of the [[pythagorean-theorem|Pythagorean theorem]].
+
+```quiz
+Q: The altitude to the hypotenuse of a right triangle cuts the hypotenuse into pieces 4 and 9 long. How long is the altitude?
+A: 6
+Hint: The altitude is the geometric mean of the two pieces.
+Why: $h^2 = 4 \cdot 9 = 36$, so $h = 6$.
+```
+
 ## Transformations {#geometric-transformations}
 
 Moving and resizing figures in the plane.
@@ -512,6 +775,37 @@ A figure has symmetry when some motion maps it onto itself:
 - reflection symmetry, about a mirror line;
 - rotational symmetry, about a centre by an angle.
 
+### Properties of Dilations {#dilation-properties}
+kind: theorem
+prereqs: dilations, triangle-proportionality
+
+A dilation with centre $O$ and scale factor $k$
+- maps a line through $O$ to itself, and every other line to a parallel line;
+- multiplies every length by $|k|$;
+- keeps every angle the same.
+
+So it maps every figure to a similar one, which is how [[similarity|similarity]] is defined by transformations.
+
+### Two Reflections in Parallel Lines {#reflections-parallel}
+kind: theorem
+prereqs: reflections, translations
+
+Reflecting in a line, and then in a parallel line a distance $d$ away, is a translation by $2d$, perpendicular to the lines, in the direction from the first line to the second.
+
+### Two Reflections in Crossing Lines {#reflections-crossing}
+kind: theorem
+prereqs: reflections, rotations
+
+Reflecting in a line, and then in a second line that crosses it at $P$ at an angle $\theta$, is a rotation about $P$ by $2\theta$, in the direction from the first line to the second.
+
+### Three Reflections Theorem
+kind: theorem
+prereqs: reflections-parallel, reflections-crossing, rigid-motions
+
+Every rigid motion of the plane is a composition of at most three reflections: one or none for a reflection or the identity, two for a translation or rotation, three for a glide reflection.
+
+So reflections are the building blocks of all the rigid motions.
+
 ## Polygons
 
 Closed figures made of straight sides.
@@ -550,6 +844,70 @@ In a parallelogram the following hold, and any one of them, conversely, proves a
 - opposite sides are equal;
 - opposite angles are equal;
 - the diagonals bisect each other.
+
+### Parallelogram Test {#parallelogram-one-pair}
+kind: theorem
+prereqs: parallelogram-properties, triangle-congruence
+
+A quadrilateral with one pair of opposite sides both equal and parallel is a parallelogram.
+
+*Proof.* Let $\overline{AB}$ and $\overline{DC}$ be equal and parallel. The diagonal $\overline{AC}$ makes equal alternate angles $\angle BAC$ and $\angle DCA$, so triangles $ABC$ and $CDA$ are congruent by SAS. Hence $BC = DA$ too, and with both pairs of opposite sides equal, $ABCD$ is a [[parallelogram-properties|parallelogram]]. $\square$
+
+### Rectangle Diagonals Theorem
+kind: theorem
+prereqs: parallelogram-properties, triangle-congruence
+
+A parallelogram is a rectangle if and only if its diagonals are equal.
+
+*Proof.* In parallelogram $ABCD$, triangles $ABC$ and $BAD$ share $\overline{AB}$ and have $BC = AD$. (⇒) In a rectangle the angles at $A$ and $B$ are right, so the triangles are congruent by SAS, and $AC = BD$. (⇐) If $AC = BD$, they are congruent by SSS, so $\angle A = \angle B$; and since these two are co-interior angles, they add to $180^\circ$, so each is $90^\circ$. $\square$
+
+### Rhombus Diagonals Theorem
+kind: theorem
+prereqs: parallelogram-properties, perpendicular-bisector-theorem
+
+A parallelogram is a rhombus if and only if its diagonals are perpendicular, and if and only if each diagonal bisects the angles at its ends.
+
+*Proof sketch.* The diagonals of a parallelogram bisect each other. If two neighbouring sides are equal, the four triangles the diagonals make are congruent by SSS, which makes the angles at the centre right angles and the angles at the corners halved; and each of these, conversely, makes two neighbouring sides equal. $\square$
+
+### Isosceles Trapezoid Theorem
+kind: theorem
+prereqs: quadrilaterals, triangle-congruence
+
+In a trapezoid with exactly one pair of parallel sides, the following are equivalent:
+- its legs, the other two sides, are equal;
+- the two angles at either base are equal;
+- its diagonals are equal.
+
+Such a trapezoid is isosceles, and has a line of symmetry through the midpoints of its bases.
+
+### Trapezoid Midsegment Theorem
+kind: theorem
+prereqs: triangle-midsegment-theorem, quadrilaterals
+
+The segment joining the midpoints of the legs of a trapezoid is parallel to its bases $a$ and $b$, and its length is their average:
+$$m = \frac{a + b}{2}.$$
+
+*Proof.* A diagonal splits the trapezoid into two triangles. The midpoint of the diagonal, with the midpoints of the legs, gives a [[triangle-midsegment-theorem|midsegment]] of each, parallel to the bases and $\frac{a}{2}$ and $\frac{b}{2}$ long, on one line. $\square$
+
+So the area of a trapezoid, $\frac{1}{2}(a + b)h$, is its midsegment times its height.
+
+### Kite Theorem
+kind: theorem
+prereqs: perpendicular-bisector-theorem, triangle-congruence
+
+In a kite $ABCD$, with $AB = AD$ and $CB = CD$:
+- the diagonals are perpendicular, and $\overline{AC}$ bisects $\overline{BD}$;
+- the angles at $B$ and $D$, between unequal sides, are equal.
+
+*Proof.* $A$ and $C$ are each equally far from $B$ and $D$, so both lie on the [[perpendicular-bisector-theorem|perpendicular bisector]] of $\overline{BD}$, which is therefore the line $AC$. Triangles $ABC$ and $ADC$ are congruent by SSS, which gives the equal angles. $\square$
+
+### Varignon's Theorem
+kind: theorem
+prereqs: triangle-midsegment-theorem, parallelogram-properties
+
+The midpoints of the four sides of any quadrilateral are the corners of a parallelogram.
+
+*Proof.* Each diagonal of the quadrilateral splits it into two triangles, in which two opposite sides of the inner quadrilateral are [[triangle-midsegment-theorem|midsegments]]: both parallel to that diagonal and half as long. So both pairs of opposite sides are parallel. $\square$
 
 ## Circles
 
@@ -610,6 +968,114 @@ Two facts about tangents:
 - a tangent is perpendicular to the radius at the point where it touches;
 - the two tangents from an outside point are equally long.
 
+### Chords & Arcs {#chords-and-arcs}
+kind: theorem
+prereqs: arcs-and-central-angles, triangle-congruence
+
+In one circle, or in equal circles, equal chords cut off equal arcs and stand on equal central angles; and conversely.
+
+*Proof.* A chord and the two radii to its ends make a triangle. Equal chords make triangles congruent by SSS, since all radii are equal, so the central angles are equal, and with them the arcs. $\square$
+
+### Chords & the Centre {#chord-perpendicular}
+kind: theorem
+prereqs: perpendicular-bisector-theorem, circle-parts
+
+The line through the centre of a circle perpendicular to a chord bisects the chord and its arc; and the perpendicular bisector of every chord passes through the centre.
+
+*Proof.* The centre is equally far from the two ends of the chord, so by the [[perpendicular-bisector-theorem|perpendicular bisector theorem]] it lies on the chord's perpendicular bisector. $\square$
+
+So the centre of a circle can be found from any two chords that are not parallel: it is where their perpendicular bisectors cross.
+
+### Equal Chords Theorem {#chord-distance}
+kind: theorem
+prereqs: chord-perpendicular, pythagorean-theorem
+
+Two chords of a circle are equal if and only if they are equally far from the centre.
+
+*Proof.* The perpendicular from the centre to a chord bisects it, so a chord of length $2l$ at distance $d$ from the centre of a circle of radius $r$ has
+$$l^2 = r^2 - d^2,$$
+and $l$ is fixed by $d$, and $d$ by $l$. $\square$
+
+### Inscribed Angles on One Arc {#inscribed-angles-same-arc}
+kind: theorem
+prereqs: inscribed-angle-theorem
+
+Inscribed angles that cut off the same arc are equal.
+
+*Proof.* Each is half the central angle on that arc. $\square$
+
+### Thales' Theorem
+kind: theorem
+prereqs: inscribed-angle-theorem, circumcentre-theorem
+
+An angle inscribed in a semicircle is a right angle. Conversely, the hypotenuse of a right triangle is a diameter of the circle through its corners.
+
+*Proof.* The arc cut off is a semicircle, with central angle $180^\circ$, so the inscribed angle is $90^\circ$. Conversely, by the [[circumcentre-theorem|circumcentre theorem]], the circumcentre of a right triangle is the midpoint of its hypotenuse. $\square$
+
+The oldest theorem with a name, credited to Thales of Miletus, about 600 BC.
+
+### Cyclic Quadrilateral Theorem
+kind: theorem
+prereqs: inscribed-angle-theorem
+
+The opposite angles of a quadrilateral inscribed in a circle add to $180^\circ$. Conversely, a quadrilateral whose opposite angles add to $180^\circ$ can be inscribed in a circle.
+
+*Proof.* Two opposite angles cut off the two arcs between their other corners, which together make the whole circle, $360^\circ$; each angle is half its arc, so together they make $180^\circ$. $\square$
+
+### Tangent–Chord Angle Theorem
+kind: theorem
+prereqs: circle-tangents, inscribed-angle-theorem
+
+The angle between a tangent and a chord through the point of contact is half the arc it cuts off: it equals any inscribed angle on that arc from the other side.
+
+*Proof sketch.* With the chord a diameter, the angle is $90^\circ$, by the [[circle-tangents|tangent–radius theorem]], and the arc a semicircle. Any other chord differs from the diameter by an inscribed angle, which adds or takes away half its arc. $\square$
+
+### Angles Between Chords {#chord-chord-angle}
+kind: theorem
+prereqs: inscribed-angle-theorem, exterior-angle-theorem
+
+When two chords cross inside a circle, each angle they make is half the sum of the arc it cuts off and the arc its vertical angle cuts off.
+
+*Proof.* Let chords $\overline{AB}$ and $\overline{CD}$ cross at $P$, and draw $\overline{AD}$. The angle $\angle APC$ is an exterior angle of triangle $APD$, so
+$$\angle APC = \angle PAD + \angle PDA.$$
+These two are inscribed angles on the arcs $BD$ and $AC$, so each is half its arc. $\square$
+
+### Angles From Outside a Circle {#outside-angle}
+kind: theorem
+prereqs: chord-chord-angle, tangent-chord-angle-theorem
+
+An angle whose vertex is outside a circle, made by two secants, a secant and a tangent, or two tangents, is half the difference of the far arc and the near arc that it cuts off.
+
+*Proof*, for two secants. Let $P$ be outside the circle, with secants meeting it at $A$ then $B$, and at $C$ then $D$; draw $\overline{AD}$. The inscribed angle $\angle BAD$ is an exterior angle of triangle $PAD$, so
+$$\angle P = \angle BAD - \angle ADC,$$
+which is half the far arc $BD$ less half the near arc $AC$. A tangent works the same way, by the [[tangent-chord-angle-theorem|tangent–chord angle theorem]]. $\square$
+
+### Intersecting Chords Theorem
+kind: theorem
+prereqs: inscribed-angles-same-arc, triangle-similarity
+
+If two chords $\overline{AB}$ and $\overline{CD}$ of a circle cross at $P$, then
+$$PA \cdot PB = PC \cdot PD.$$
+
+*Proof.* Triangles $PAC$ and $PDB$ have equal vertical angles at $P$, and the inscribed angles $\angle CAB$ and $\angle CDB$ on the same arc. So they are similar by AA, and $\frac{PA}{PD} = \frac{PC}{PB}$. $\square$
+
+### Power of a Point
+kind: theorem
+prereqs: intersecting-chords-theorem, tangent-chord-angle-theorem
+
+From a point $P$ outside a circle, if two secants meet it at $A$ and $B$ and at $C$ and $D$, and a tangent touches it at $T$, then
+$$PA \cdot PB = PC \cdot PD = PT^2.$$
+With the [[intersecting-chords-theorem|intersecting chords theorem]] inside: through any point, the product of the two distances to the circle along a line is the same for every line, the power of the point.
+
+*Proof sketch.* Triangles $PAD$ and $PCB$ share the angle at $P$, and have equal inscribed angles at $D$ and $B$; similar by AA, they give $\frac{PA}{PC} = \frac{PD}{PB}$. For the tangent, triangles $PTA$ and $PBT$ are similar by the [[tangent-chord-angle-theorem|tangent–chord angle theorem]]. $\square$
+
+```quiz
+Q: From a point $P$, a secant meets a circle at $A$ and $B$, with $PA = 4$ and $PB = 9$. How long is the tangent from $P$ to the circle?
+A: 6
+Hint: The square of the tangent is $PA \cdot PB$.
+Why: $PT^2 = 4 \cdot 9 = 36$, so $PT = 6$.
+```
+
 ## Measurement
 
 How much space a shape covers, encloses or fills.
@@ -667,6 +1133,53 @@ Enlarge a shape by a factor $k$ and its
 - volumes grow by $k^3$.
 
 Double a cube's edge and it takes four times the paint to cover and eight times the water to fill.
+
+### Heron's Formula
+kind: formula
+prereqs: area-basic, pythagorean-theorem, square-roots
+
+A triangle with sides $a$, $b$ and $c$, and semiperimeter $s = \frac{a + b + c}{2}$, has area
+$$A = \sqrt{s(s - a)(s - b)(s - c)}.$$
+
+**Example.** For sides 13, 14 and 15, $s = 21$, and
+$$A = \sqrt{21 \cdot 8 \cdot 7 \cdot 6} = \sqrt{7056} = 84.$$
+
+Found by Heron of Alexandria, in the first century: the area from the three sides alone, with no height needed.
+
+### Area of a Regular Polygon {#regular-polygon-area}
+kind: formula
+prereqs: area-basic, polygon-basics
+
+A regular polygon with perimeter $P$ and apothem $a$, the distance from its centre to each side, has area
+$$A = \frac{1}{2}aP.$$
+
+*Proof.* Lines from the centre to the corners cut an $n$-gon of side $s$ into $n$ triangles of base $s$ and height $a$, with total area $n \cdot \frac{1}{2}sa = \frac{1}{2}a \cdot ns$. $\square$
+
+### Area of a Rhombus or Kite {#rhombus-kite-area}
+kind: formula
+prereqs: area-basic, kite-theorem
+
+A quadrilateral with perpendicular diagonals $d_1$ and $d_2$, such as a rhombus, a kite or a square, has area
+$$A = \frac{1}{2}d_1 d_2.$$
+
+*Proof.* One diagonal cuts it into two triangles whose base is that diagonal and whose heights add to the other. $\square$
+
+### Cavalieri's Principle
+kind: theorem
+prereqs: volume-prisms
+
+If two solids have cross-sections of equal area at every height, they have equal volumes.
+
+It is why a slanted prism has the same volume, $V = Bh$, as an upright one: a stack of coins pushed sideways still holds the same metal. Archimedes found the volume of a sphere the same way, as a cylinder less a cone.
+
+### Euler's Polyhedron Formula
+kind: theorem
+prereqs: polygon-basics
+
+A convex polyhedron with $V$ vertices, $E$ edges and $F$ faces has
+$$V - E + F = 2.$$
+
+**Example.** A cube has $8 - 12 + 6 = 2$; a square pyramid $5 - 8 + 5 = 2$.
 
 ## Coordinate Geometry
 
