@@ -151,6 +151,7 @@ Every non-empty set of real numbers that is bounded above has a least upper boun
 The rationals lack this: $\{q \in \mathbb{Q} : q^2 < 2\}$ has no least upper bound in $\mathbb{Q}$. Completeness is what makes limits, the [[ivt|Intermediate Value Theorem]] and the [[evt|Extreme Value Theorem]] work.
 
 ## Consequences of the Axioms {#first-theorems}
+prereqs: proof
 
 Theorems proved from the axioms of the real numbers, each with its proof.
 

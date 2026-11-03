@@ -141,6 +141,7 @@ The axioms of probability, from which every rule of chance is derived.
 
 ### Kolmogorov Axioms {#kolmogorov-axioms}
 kind: axiom
+prereqs: set-operations
 
 A probability $P$ on a sample space $\Omega$ satisfies:
 1. $P(A) \ge 0$ for every event $A$;
