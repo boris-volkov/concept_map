@@ -25,7 +25,6 @@ import * as docs from './docs.js'
 
 const SVG = 'http://www.w3.org/2000/svg'
 const GRID_MARGIN = 4000 // how far the survey grid runs past the edges of the map
-const READABLE = 0.7 // a file opened from further out than this brings the map in close enough to read it
 const readmeKey = n => 'readme:' + n.id
 const stubKey = n => 'spine:' + n.id // an open domain's card, left in its place among the domains
 const tetherKey = n => 'tether:' + n.id // the line from it to its frame
@@ -629,6 +628,7 @@ export class AtlasMap {
   }
 
   expand(n) {
+    const before = this.boxes.get(n.id)
     this.open.add(n.id)
     this.current = n
     // Opening a topic takes the focus: whatever was selected before lets go.
@@ -636,15 +636,23 @@ export class AtlasMap {
     this.selected = null
     const boxes = this.relayout()
     if (had) this.onSelect?.(null)
-    // A domain is shown with the card it floated out from.
-    const box = n.depth === 0 ? union([boxes.get(n.id), this.spine.get(n.id)]) : boxes.get(n.id)
-    this.camera.moveTo(this.camera.fit(box, { pad: 36, maxK: Math.max(1, this.camera.k) }))
+    // The card stays where it was on the screen. A topic's frame grows out of it; a domain's
+    // floats out beside the domains, and only if its head would be out of sight does the map
+    // move, as little as it can, to show it.
+    this.settle(n.depth === 0 ? stubKey(n) : n.id, before)
+    if (n.depth === 0) {
+      const frame = boxes.get(n.id)
+      this.camera.moveTo(this.camera.nudge({ ...frame, w: Math.min(frame.w, 300), h: FRAME_PAD.top }))
+    }
     this.onView?.()
   }
 
   collapse(n) {
     // Closed with the keyboard, from its frame or from its card: the focus goes to its card.
     const focused = [n.id, stubKey(n)].some(key => this.els.get(key)?.contains(document.activeElement))
+    // Where its card will be: an open domain's card stands in for it; a topic folds up into the
+    // corner of its frame.
+    const before = this.boxes.get(n.depth === 0 ? stubKey(n) : n.id)
     for (const d of [n, ...descendants(n)]) {
       this.open.delete(d.id)
       this.readmes.delete(d.id)
@@ -654,9 +662,9 @@ export class AtlasMap {
     // Closing a topic closes everything open inside it, and lets go of whatever was selected in there.
     const lost = !!this.selected && (this.selected === n || isAncestor(n, this.selected))
     if (lost) this.selected = null
-    const box = this.relayout().get(n.id)
+    this.relayout()
     if (lost) this.onSelect?.(null)
-    if (box && !this.camera.shows(box)) this.camera.moveTo(this.camera.centre(box))
+    this.settle(n.id, before)
     if (focused) this.els.get(n.id)?.focus({ preventScroll: true })
     this.onView?.()
   }
@@ -672,7 +680,7 @@ export class AtlasMap {
     this.selected = n
     this.relayout()
     this.onSelect?.(n)
-    this.settle(n.id, before, { read: true, at })
+    this.settle(n.id, before, { at })
     if (keyboard) this.els.get(n.id)?.querySelector('.shut')?.focus({ preventScroll: true })
     this.onView?.()
   }
@@ -709,7 +717,7 @@ export class AtlasMap {
     this.selected = n
     this.relayout()
     this.onSelect?.(n)
-    this.settle(n.id, before, { at: on ? '.doc-info' : '.doc-head' })
+    this.settle(n.id, before)
     this.onView?.()
   }
 
@@ -720,7 +728,7 @@ export class AtlasMap {
     this.selected = n
     this.relayout()
     this.onSelect?.(n)
-    this.settle(n.id, before, { read: true, show: () => this.readmeView(n) })
+    this.settle(n.id, before)
     this.onView?.()
   }
 
@@ -738,7 +746,7 @@ export class AtlasMap {
     if (was) this.selected = null
     this.relayout()
     if (was) this.onSelect?.(null)
-    this.settle(n.id, before, { show: b => ({ ...b, w: Math.min(b.w, 480), h: FRAME_PAD.top }) })
+    this.settle(n.id, before)
     this.onView?.()
   }
 
@@ -756,20 +764,16 @@ export class AtlasMap {
   }
 
   // After something opens or closes in place, the map shifts so that its top left corner stays
-  // where it was on the screen: the card seems to unfold into its entry, or fold back up. Then
-  // the map moves only as far as it must to show it (or `show`, another box or a part of it),
-  // and, for `read`, comes in close enough to read it when it is far out. `at`: a part of an
-  // open file to show, such as its exercises.
-  settle(key, before, { read = false, show = null, at = null } = {}) {
+  // where it was on the screen: the card seems to unfold into its entry, or fold back up, and the
+  // view goes nowhere else. `at`: a part of an open file to bring into view, as the "?" on a
+  // card asks for its exercises.
+  settle(key, before, { at = null } = {}) {
     const c = this.camera
     const box = this.boxes.get(key)
     if (!box) return
     if (before) c.set(c.x - (box.x - before.x) * c.k, c.y - (box.y - before.y) * c.k, c.k)
-    let target = typeof show === 'function' ? show(box) : show ? this.boxes.get(show) : box
     const part = at && this.els.get(key)?.querySelector(at)
-    if (part) target = { x: box.x, y: box.y + part.offsetTop, w: box.w, h: part.offsetHeight }
-    if (!target) return
-    c.moveTo(read && c.k < READABLE ? c.frame(target, { k: 1 }) : c.nudge(target))
+    if (part) c.moveTo(c.nudge({ x: box.x, y: box.y + part.offsetTop, w: box.w, h: part.offsetHeight }))
   }
 
   /**
@@ -827,15 +831,14 @@ export class AtlasMap {
 
   /**
    * The + on an open folder's head: opens everything inside it, every folder and every concept's
-   * entry, and shows the whole frame.
+   * entry. The frame's head stays where it is on the screen while the frame grows.
    */
   openInside(n) {
+    const before = this.boxes.get(n.id)
     for (const d of descendants(n)) this.open.add(d.id)
     this.current = n
-    const boxes = this.relayout()
-    // A domain is shown with the card it floated out from, as when it opened.
-    const box = n.depth === 0 ? union([boxes.get(n.id), this.spine.get(n.id)]) : boxes.get(n.id)
-    this.camera.moveTo(this.camera.fit(box, { pad: 36, maxK: Math.max(1, this.camera.k) }))
+    this.relayout()
+    this.settle(n.id, before)
     this.onView?.()
   }
 
