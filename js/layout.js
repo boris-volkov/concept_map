@@ -29,6 +29,7 @@ const GAP = {
 }
 const GAP_FRAME = 26 // beside an open topic or an open file
 const ASPECT = 1.5 // a crowded layer wraps until its topic is about this wide for its height
+const TALL = 1600 // a column of boxes taller than this, as one of open files soon is, wraps into another beside it
 
 /** Which way a topic's contents flow, by its depth: domains (0) down, topics (1) across… (the domains themselves: see layoutDomains). */
 export const direction = depth => (depth % 2 === 0 ? 'down' : 'right')
@@ -300,23 +301,33 @@ function placeLayered(size, edges, dir, wrap = 0) {
   const stack = list => list.reduce((s, v, i) => s + breadth(v) + (i ? between(list[i - 1], v) : 0), 0)
   const area = size.reduce((s, z) => s + (z.w + gap.wrap) * (z.h + gap.card), 0)
   const limit = Math.max(across ? Math.sqrt(area / ASPECT) : Math.sqrt(area * ASPECT), ...size.map((_, k) => breadth(k)))
-  const lanes = [] // a layer's boxes, split into one or more lanes side by side
-  layers.forEach((list, l) => {
-    // A topic's "wrap: n" fixes the length of a line, keeping its authors' order (CANI / CANI / D).
-    const parts = wrap ? Math.ceil(list.length / wrap) : Math.max(1, Math.round(stack(list) / limit))
+  // Splits boxes, in order, into `parts` lanes of about equal length.
+  const split = (list, parts) => {
     const share = stack(list) / parts
+    const out = []
     let lane = []
-    let made = 0
     for (const v of list) {
-      const full = wrap ? lane.length >= wrap : stack([...lane, v]) > share * 1.08
-      if (lane.length && made < parts - 1 && full) {
-        lanes.push({ layer: l, nodes: lane })
+      if (lane.length && out.length < parts - 1 && stack([...lane, v]) > share * 1.08) {
+        out.push(lane)
         lane = []
-        made++
       }
       lane.push(v)
     }
-    lanes.push({ layer: l, nodes: lane })
+    out.push(lane)
+    return out
+  }
+  const lanes = [] // a layer's boxes, split into one or more lanes side by side
+  layers.forEach((list, l) => {
+    // A topic's "wrap: n" fixes the length of a line, keeping its authors' order (CANI / CANI / D).
+    const lines = []
+    if (wrap) for (let i = 0; i < list.length; i += wrap) lines.push(list.slice(i, i + wrap))
+    else lines.push(...split(list, Math.max(1, Math.round(stack(list) / limit))))
+    // A line down the page that has grown too tall, as a column of open files soon does, wraps
+    // again into columns side by side, still in order. Lines across the page are left to use the width.
+    for (const line of lines) {
+      const parts = across ? Math.ceil(stack(line) / TALL) : 1
+      for (const nodes of parts > 1 ? split(line, parts) : [line]) lanes.push({ layer: l, nodes })
+    }
   })
 
   // 5. Coordinates: lanes one after another along the flow, the boxes of each lined up at its
