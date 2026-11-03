@@ -36,17 +36,43 @@ export function prepare(atlas) {
   }
   for (const n of all) for (const r of n.requires) r.requiredBy.push(n)
 
-  // For the layout: each topic's prerequisite arrows, lifted to the children of the
-  // topic they run within, so it can order its children before laying them out.
+  // The most direct prerequisites: those not already reached through another one. "Addition"
+  // lists Counting and Place Value, but Place Value rests on Counting, so only the arrow from
+  // Place Value is drawn. The full chain is unchanged; only the arrows are fewer.
+  const reach = new Map()
+  const reachOf = n => {
+    let out = reach.get(n)
+    if (out) return out
+    out = new Set()
+    reach.set(n, out)
+    const todo = [...n.requires]
+    while (todo.length) {
+      const r = todo.pop()
+      if (out.has(r)) continue
+      out.add(r)
+      todo.push(...r.requires)
+    }
+    return out
+  }
+  for (const n of all) {
+    n.directPrereqs = n.prereqs.filter(p => !n.prereqs.some(q => q !== p && reachOf(q).has(p)))
+    n.directDependents = []
+  }
+  for (const n of all) for (const p of n.directPrereqs) p.directDependents.push(n)
+
+  // Each topic's prerequisite arrows, lifted to the children of the topic they run within:
+  // LCM → Adding Fractions, inside Arithmetic, becomes Factors & Multiples → Fractions. The
+  // layout orders a topic's children by these, and these are the arrows the map draws.
   for (const n of [atlas.root, ...all]) n.localEdges = new Map()
   for (const c of all) {
-    for (const p of c.prereqs) {
+    for (const p of c.directPrereqs) {
       const lifted = liftToSiblings(p, c, atlas.root)
       if (!lifted) continue
       const [from, to, within] = lifted
       const key = from.id + '>' + to.id
-      const e = within.localEdges.get(key) ?? { from, to, weight: 0 }
+      const e = within.localEdges.get(key) ?? { key, from, to, within: within.isRoot ? null : within, weight: 0, pairs: [] }
       e.weight++
+      e.pairs.push([p, c])
       within.localEdges.set(key, e)
     }
   }
@@ -124,19 +150,19 @@ export function dependentsOf(n) {
   return out
 }
 
-/** For a topic: the prerequisites of anything inside it that come from outside it. */
+/** For a topic: the direct prerequisites of anything inside it that come from outside it. */
 export function externalPrereqs(topic) {
   const inside = new Set([topic, ...descendants(topic)])
   const out = new Set()
-  for (const d of inside) for (const p of d.prereqs) if (!inside.has(p)) out.add(p)
+  for (const d of inside) for (const p of d.directPrereqs) if (!inside.has(p)) out.add(p)
   return out
 }
 
-/** For a topic: whatever outside it lists something inside it as a prerequisite. */
+/** For a topic: whatever outside it builds directly on something inside it. */
 export function externalDependents(topic) {
   const inside = new Set([topic, ...descendants(topic)])
   const out = new Set()
-  for (const d of inside) for (const c of d.dependents) if (!inside.has(c)) out.add(c)
+  for (const d of inside) for (const c of d.directDependents) if (!inside.has(c)) out.add(c)
   return out
 }
 
@@ -162,19 +188,31 @@ export function visibleRep(n, isOpen) {
   return n
 }
 
-/** The arrows to draw: every prerequisite, merged where closed topics hide its ends. */
-export function visibleEdges(atlas, isOpen) {
+/**
+ * The arrows to draw. Arrows only join neighbours: the children of each open topic, and the
+ * domains themselves. A prerequisite in another topic shows as one arrow between the two topics,
+ * whose weight is how many prerequisites it carries, so no arrow ever crosses a topic's border.
+ * `focus`, a selected concept, also gets its own direct links drawn, wherever they lead.
+ */
+export function visibleEdges(atlas, isOpen, focus = null) {
   const edges = new Map()
-  for (const c of atlas.nodes.values()) {
-    for (const p of c.prereqs) {
+  const add = e => edges.set(e.key, e)
+  const walk = container => {
+    container.localEdges.forEach(add)
+    for (const k of container.children) if (isOpen(k)) walk(k)
+  }
+  walk(atlas.root)
+  if (focus) {
+    const link = (p, c) => {
       const from = visibleRep(p, isOpen)
       const to = visibleRep(c, isOpen)
-      if (from === to || isAncestor(from, to) || isAncestor(to, from)) continue
+      if (from === to || isAncestor(from, to) || isAncestor(to, from)) return
       const key = from.id + '>' + to.id
-      let e = edges.get(key)
-      if (!e) edges.set(key, (e = { key, from, to, within: commonContainer(from, to), pairs: [] }))
-      e.pairs.push([p, c])
+      if (edges.has(key)) return // an arrow between neighbours already carries it
+      add({ key: 'focus:' + key, from, to, within: commonContainer(from, to), pairs: [[p, c]], focus: true })
     }
+    for (const p of focus.directPrereqs) link(p, focus)
+    for (const c of focus.directDependents) link(focus, c)
   }
   return edges
 }

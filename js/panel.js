@@ -40,8 +40,8 @@ export class Panel {
     this.mode = 'concept'
     const resolve = id => this.atlas.nodes.get(id)
     const topic = n.children.length > 0
-    const pre = topic ? [...externalPrereqs(n)] : n.prereqs
-    const post = topic ? [...externalDependents(n)] : n.dependents
+    const pre = topic ? [...externalPrereqs(n)] : n.directPrereqs
+    const post = topic ? [...externalDependents(n)] : n.directDependents
     const path = learningPath(n)
     const crumbs = ancestors(n).reverse()
       .map(a => `<a href="#${esc(a.id)}" style="--c:${a.color}">${renderInline(a.title)}</a>`).join('<span aria-hidden="true">›</span>')

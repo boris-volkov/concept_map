@@ -166,7 +166,6 @@ export class AtlasMap {
     g.transform = `translate(${-GRID_MARGIN}px, ${-GRID_MARGIN}px)`
     g.width = `${Math.ceil(layout.width) + 2 * GRID_MARGIN}px`
     g.height = `${Math.ceil(layout.height) + 2 * GRID_MARGIN}px`
-    this.edges = visibleEdges(this.atlas, n => this.isOpen(n))
     this.drawEdges()
     this.highlight()
     this.placeQuiz()
@@ -176,6 +175,7 @@ export class AtlasMap {
   // ---- arrows ----
 
   drawEdges() {
+    this.edges = visibleEdges(this.atlas, n => this.isOpen(n), this.selected)
     const outs = new Map()
     const ins = new Map()
     const live = []
@@ -210,6 +210,7 @@ export class AtlasMap {
     p.classList.add('edge')
     // Arrows between cards in different topics run across other cards and frames; draw them lighter.
     if (e.from.parent !== e.to.parent) p.classList.add('cross')
+    if (e.focus) p.classList.add('focus')
     p.style.setProperty('--c', e.from.color)
     p.style.setProperty('--w', (1.2 + Math.min(2.6, Math.log2(e.pairs.length) * 0.65)).toFixed(2))
     this.svg.append(p)
@@ -221,6 +222,7 @@ export class AtlasMap {
 
   select(n, { pan = true } = {}) {
     this.selected = n
+    this.drawEdges() // the selection brings its own links to other topics
     this.highlight()
     this.onSelect?.(n)
     if (n && pan) {
@@ -241,8 +243,8 @@ export class AtlasMap {
         pre: prerequisitesOf(sel),
         post: dependentsOf(sel),
         selRep: visibleRep(sel, isOpen),
-        preDirect: reps(sel.children.length ? externalPrereqs(sel) : sel.prereqs),
-        postDirect: reps(sel.children.length ? externalDependents(sel) : sel.dependents),
+        preDirect: reps(sel.children.length ? externalPrereqs(sel) : sel.directPrereqs),
+        postDirect: reps(sel.children.length ? externalDependents(sel) : sel.directDependents),
       }
       this.hl.preRep = reps(this.hl.pre)
       this.hl.postRep = reps(this.hl.post)
@@ -347,8 +349,8 @@ export class AtlasMap {
   revealAround(n, which = 'pre') {
     const group = n.children.length > 0
     const others = which === 'pre'
-      ? [...(group ? externalPrereqs(n) : n.prereqs)]
-      : [...(group ? externalDependents(n) : n.dependents)]
+      ? [...(group ? externalPrereqs(n) : n.directPrereqs)]
+      : [...(group ? externalDependents(n) : n.directDependents)]
     for (const t of [n, ...others]) for (const a of ancestors(t)) this.open.add(a.id)
     const boxes = this.relayout()
     this.select(n, { pan: false })
