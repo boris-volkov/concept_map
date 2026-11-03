@@ -95,6 +95,26 @@ prereqs: radians, trig-ratios, special-angle-values
 For any real $\theta$, let $(x, y)$ be the point of the unit circle $x^2 + y^2 = 1$ at angle $\theta$ from the positive $x$-axis. Then
 $$\begin{aligned} \cos\theta &:= x, \\ \sin\theta &:= y, \\ \tan\theta &:= \frac{y}{x} \quad (x \ne 0). \end{aligned}$$
 
+The point at angle $\theta$, with the four points where the circle crosses the axes:
+```graph
+x: -1.5, 1.5
+y: -1.35, 1.35
+grid: 0.5, 0.5
+circle: 0, 0, 1
+segment: 0, 0, cos(0.9), 0
+segment: cos(0.9), 0, cos(0.9), sin(0.9) | dashed
+segment: 0, 0, cos(0.9), sin(0.9)
+arc: 0, 0, 0.25, 0, 0.9
+point: cos(0.9), sin(0.9) "(cos θ, sin θ)" above-right
+point: 1, 0 "(1, 0)" below-right
+point: 0, 1 "(0, 1)" above-right
+point: -1, 0 "(−1, 0)" below-left
+point: 0, -1 "(0, −1)" below-right
+label: 0.33cos(0.45), 0.33sin(0.45) "θ" right
+label: cos(0.9)/2, 0 "cos θ" below
+label: cos(0.9), sin(0.9)/2 "sin θ" right
+```
+
 ### Trig Functions of Any Angle {#trig-functions-any-angle}
 prereqs: unit-circle, standard-position
 
@@ -118,6 +138,28 @@ prereqs: trig-functions-any-angle, periodic-functions
 
 Unrolling the unit circle: the height of the point traces a wave between $-1$ and $1$ with period $2\pi$. The cosine wave is the sine wave shifted left by $\frac{\pi}{2}$.
 
+The parent sine function, $y = \sin x$:
+```graph
+y = sin(x)
+x: -0.6, 6.9
+y: -1.6, 1.6
+grid: pi/2, 1
+point: 0, 0 below-right
+point: pi/2, 1 above
+point: 3pi/2, -1 below
+```
+
+The parent cosine function, $y = \cos x$:
+```graph
+y = cos(x)
+x: -0.6, 6.9
+y: -1.7, 1.9
+grid: pi/2, 1
+point: 0, 1 above-right
+point: pi/2, 0 below-left
+point: pi, -1 below
+```
+
 ### Amplitude, Period & Phase Shift {#sinusoids}
 prereqs: sine-cosine-graphs, graph-transformations
 
@@ -135,10 +177,60 @@ The function
 $$\tan x = \frac{\sin x}{\cos x}$$
 repeats every $\pi$ and has vertical asymptotes wherever $\cos x = 0$.
 
+The parent tangent function, $y = \tan x$, between the asymptotes $x = \pm\frac{\pi}{2}$:
+```graph
+y = tan(x)
+x: -pi, pi
+y: -3, 3
+grid: pi/2, 1
+asymptote: x = -pi/2
+asymptote: x = pi/2
+point: -pi/4, -1 below-right
+point: 0, 0 below-right
+point: pi/4, 1 below-right
+```
+
 ### Inverse Trig Functions {#inverse-trig-functions}
 prereqs: inverse-functions, sine-cosine-graphs, inverse-trig-ratios
 
 $\arcsin$, $\arccos$ and $\arctan$ undo sine, cosine and tangent on carefully restricted domains, so that each answer is a single angle.
+
+Each graph is part of the graph of sine, cosine or tangent, reflected in the line $y = x$.
+
+$y = \arcsin x$, for $-1 \le x \le 1$:
+```graph
+y = arcsin(x)
+x: -1.8, 1.8
+y: -2, 2
+grid: 1, pi/2
+point: -1, -pi/2 right
+point: 0, 0 below-right
+point: 1, pi/2 left
+```
+
+$y = \arccos x$, for $-1 \le x \le 1$:
+```graph
+y = arccos(x)
+x: -1.8, 1.8
+y: -0.6, 3.6
+grid: 1, pi/2
+point: -1, pi right
+point: 0, pi/2 above-right
+point: 1, 0 left
+```
+
+$y = \arctan x$, for every $x$, between the asymptotes $y = \pm\frac{\pi}{2}$:
+```graph
+y = arctan(x)
+x: -4, 4
+y: -2, 2
+grid: 1, pi/2
+asymptote: y = -pi/2
+asymptote: y = pi/2
+point: -1, -pi/4 above-left
+point: 0, 0 below-right
+point: 1, pi/4 below-right
+```
 
 ## Identities & Equations {#trig-identities}
 

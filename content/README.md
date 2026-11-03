@@ -119,6 +119,34 @@ Or set a proof out as a table, with a *Statement* and a *Reason* column. Inside 
 <iframe src="https://www.desmos.com/calculator/abcdef1234?embed"></iframe>
 ```
 
+## Graphs
+
+A small graph is a fenced block marked `graph`, drawn where it stands in the explanation:
+
+````markdown
+The parent quadratic function, $y = x^2$:
+```graph
+y = x^2
+x: -2.5, 2.5
+y: -1, 4
+point: -1, 1 below-left
+point: 0, 0 below-right
+point: 1, 1 below-right
+```
+````
+
+| Line | Meaning |
+| --- | --- |
+| `y = x^2` | A curve. Write `2*x` or `2x`, `x^2`, and `sqrt`, `cbrt`, `abs`, `exp`, `ln`, `log` (base 10), `log2`, `sin`, `cos`, `tan`, `arcsin`, `arccos`, `arctan`, with `pi` and `e`. Several curves can share a graph; add `\| faint` or `\| dashed` to draw one lighter. The first is drawn on top. |
+| `x: -2.5, 2.5` and `y: -1, 4` | The window. Both are needed. |
+| `point: 1, 1 below-right` | A dot, labelled with its coordinates, or with a label of your own in quotes: `point: 2, 1/2 "(2, ½)" above-right`. The label goes `right` (the default), `left`, `above`, `below`, `above-right`, `above-left`, `below-right` or `below-left` of the dot. |
+| `asymptote: x = 0` | A dashed line, `x = …` upright or `y = …` level. |
+| `grid: pi/2, 1` | The spacing of the grid lines across and up; `grid: none` leaves them out. |
+| `size: 280, 200` | The size in pixels. Without it the graph is 280 wide, and as tall as keeps the two scales equal, within limits. |
+| `circle: 0, 0, 1`, `segment: 0, 0, 1, 1`, `arc: 0, 0, 0.25, 0, 0.9`, `label: 0.5, 0 "cos θ" below` | For diagrams such as the unit circle: a circle by centre and radius, a line between two points (`\| dashed` too), an arc by centre, radius and the angles it runs between in radians, and a piece of text. |
+
+Any number can be an expression, like `pi/2` or `cos(0.9)`. A graph that can't be read shows up in **content problems**, like a broken quiz.
+
 ## Quizzes
 
 A quiz is a fenced block marked `quiz`, anywhere in a concept's explanation. It is drawn at the end of the concept's entry, and a small **?** appears on the concept's card, which opens the concept right there, at its quiz.

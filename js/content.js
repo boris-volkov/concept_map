@@ -10,6 +10,7 @@
 
 import { parseQuiz } from './quiz.js'
 import { plainText } from './markdown.js'
+import { graphError } from './graph.js'
 import { prepare } from './model.js'
 
 export const KINDS = {
@@ -140,7 +141,11 @@ export function buildAtlas({ index, files }) {
     }
     n.kind = n.children.length ? 'topic' : kind || 'concept'
 
-    const { body, quizzes } = splitBody(n.bodyLines)
+    const { body, quizzes, graphs } = splitBody(n.bodyLines)
+    for (const g of graphs) {
+      const problem = graphError(g.src)
+      if (problem) report('error', n.file, g.line ?? n.line, `Graph in “${n.title}”: ${problem}`, n.id)
+    }
     n.body = body
     n.quiz = quizzes.flatMap(lines => parseQuiz(lines, (line, msg) => report('error', n.file, line, `Quiz in “${n.title}”: ${msg}`, n.id)))
     n.summary = n.meta.summary?.value.trim() || firstParagraph(body)
@@ -255,14 +260,28 @@ function parseOutline(file, text, out) {
 function splitBody(lines) {
   const kept = []
   const quizzes = []
+  const graphs = []
   for (let i = 0; i < lines.length; i++) {
+    const g = /^\s*(`{3,}|~{3,})\s*graph\s*$/i.exec(lines[i].text)
+    if (g) {
+      // A graph stays in the text, where markdown.js draws it; here it is only set aside to be checked.
+      const block = []
+      kept.push(lines[i].text)
+      for (i++; i < lines.length && !lines[i].text.trim().startsWith(g[1]); i++) {
+        block.push(lines[i])
+        kept.push(lines[i].text)
+      }
+      if (i < lines.length) kept.push(lines[i].text)
+      graphs.push({ line: block[0]?.line, src: block.map(l => l.text).join('\n') })
+      continue
+    }
     const m = /^\s*(`{3,}|~{3,})\s*quiz\s*$/i.exec(lines[i].text)
     if (!m) { kept.push(lines[i].text); continue }
     const block = []
     for (i++; i < lines.length && !lines[i].text.trim().startsWith(m[1]); i++) block.push(lines[i])
     quizzes.push(block)
   }
-  return { body: kept.join('\n').trim(), quizzes }
+  return { body: kept.join('\n').trim(), quizzes, graphs }
 }
 
 function firstParagraph(body) {

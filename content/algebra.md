@@ -695,6 +695,16 @@ Functions defined by different rules on different parts of the domain, like the 
 
 $$|x| = \begin{cases} x & \text{if } x \ge 0 \\ -x & \text{if } x < 0 \end{cases}$$
 
+The parent absolute value function, $y = |x|$:
+```graph
+y = abs(x)
+x: -2.5, 2.5
+y: -1, 3
+point: -1, 1 below-left
+point: 0, 0 below-right
+point: 1, 1 below-right
+```
+
 #### Even & Odd Functions {#even-odd-functions}
 prereqs: graph-transformations
 
@@ -746,6 +756,16 @@ prereqs: slope, function-notation, linear-equations
 
 The line with slope $m$ and $y$-intercept $b$ is
 $$y = mx + b.$$
+
+The parent linear function is $y = x$, with slope $1$ and $y$-intercept $0$:
+```graph
+y = x
+x: -2.5, 2.5
+y: -2.5, 2.5
+point: -1, -1 below-right
+point: 0, 0 below-right
+point: 1, 1 below-right
+```
 
 #### Point-Slope Form {#point-slope}
 kind: formula
@@ -983,6 +1003,16 @@ prereqs: polynomial-basics, function-graphs
 
 Polynomial graphs are smooth and unbroken. Far out, the leading term wins: $-2x^3 + 100x$ eventually falls to the right and rises to the left, like $-2x^3$.
 
+The parent cubic function, $y = x^3$:
+```graph
+y = x^3
+x: -2, 2
+y: -3, 3
+point: -1, -1 above-left
+point: 0, 0 below-right
+point: 1, 1 below-right
+```
+
 #### Zeros & Multiplicity
 prereqs: factor-theorem, polynomial-functions
 
@@ -1010,6 +1040,16 @@ prereqs: polynomial-basics, function-graphs
 A function of the form
 $$f(x) = ax^2 + bx + c, \quad a \ne 0.$$
 Its graph is a parabola, opening up when $a > 0$ and down when $a < 0$.
+
+The parent quadratic function, $y = x^2$, with its vertex at the origin:
+```graph
+y = x^2
+x: -2.5, 2.5
+y: -1, 4
+point: -1, 1 below-left
+point: 0, 0 below-right
+point: 1, 1 below-right
+```
 
 #### Vertex Form
 kind: formula
@@ -1133,6 +1173,18 @@ Functions
 $$f(x) = \frac{p(x)}{q(x)}$$
 with polynomials $p$ and $q$. The domain is everything except the zeros of $q$, and that is where the interesting behaviour is.
 
+The parent rational function, $y = \frac{1}{x}$, with both axes as asymptotes:
+```graph
+y = 1/x
+x: -3, 3
+y: -3, 3
+asymptote: x = 0
+asymptote: y = 0
+point: -1, -1 below-left
+point: 1, 1 above-right
+point: 2, 1/2 "(2, ½)" above-right
+```
+
 #### Asymptotes & Holes {#asymptotes}
 prereqs: rational-functions, polynomial-functions, simplifying-rational-expressions
 
@@ -1165,10 +1217,30 @@ The function
 $$f(x) = \sqrt{x}$$
 is half a sideways parabola, starting at the origin and rising ever more slowly. Its domain is $x \ge 0$.
 
+The parent square root function, $y = \sqrt{x}$:
+```graph
+y = sqrt(x)
+x: -1, 5
+y: -1, 3
+point: 0, 0 below-right
+point: 1, 1 below-right
+point: 4, 2 below-right
+```
+
 #### Radical Functions
 prereqs: square-root-function, nth-roots, graph-transformations
 
 Functions such as $\sqrt{x - 2} + 1$ or $\sqrt[3]{x}$: root functions moved and stretched. Even roots need a non-negative inside; odd roots accept anything.
+
+The parent cube root function, $y = \sqrt[3]{x}$, defined for every $x$:
+```graph
+y = cbrt(x)
+x: -3, 3
+y: -2, 2
+point: -1, -1 above-left
+point: 0, 0 below-right
+point: 1, 1 below-right
+```
 
 #### Solving Radical Equations
 kind: skill
@@ -1200,6 +1272,17 @@ prereqs: rational-exponents, function-graphs
 The function
 $$f(x) = a \cdot b^x$$
 multiplies by $b$ for each step in $x$, rather than adding a fixed amount. With $b > 1$ it grows; with $0 < b < 1$ it decays toward 0.
+
+The parent exponential function, $y = 2^x$, with the $x$-axis as asymptote:
+```graph
+y = 2^x
+x: -3, 3
+y: -1, 5
+asymptote: y = 0
+point: -1, 1/2 "(−1, ½)" above-left
+point: 0, 1 above-left
+point: 1, 2 above-left
+```
 
 #### Exponential Growth & Decay {#exponential-growth}
 prereqs: exponential-functions, percent-change
@@ -1239,6 +1322,17 @@ prereqs: logarithms, number-e
 The logarithm to base $e$, and the one calculus prefers:
 $$\ln x = \log_e x.$$
 
+Its graph, $y = \ln x$, with the $y$-axis as asymptote:
+```graph
+y = ln(x)
+x: -0.8, 4.2
+y: -2.5, 2
+asymptote: x = 0
+point: 1/e, -1 "(1/e, −1)" below-right
+point: 1, 0 below-right
+point: e, 1 below-right
+```
+
 #### Change of Base
 kind: formula
 prereqs: log-laws
@@ -1257,6 +1351,19 @@ $$\begin{aligned} 3^x &= 20 \\ x \ln 3 &= \ln 20 \\ x &= \frac{\ln 20}{\ln 3} \a
 prereqs: logarithms, graph-transformations
 
 The exponential graph reflected in $y = x$: it rises without bound but ever more slowly, and has a vertical asymptote at $x = 0$.
+
+The parent logarithm $y = \log_2 x$, the reflection of $y = 2^x$ (faint) in the line $y = x$ (dashed):
+```graph
+y = log2(x)
+y = 2^x | faint
+y = x | dashed
+x: -1.5, 4.5
+y: -2.5, 3.5
+asymptote: x = 0
+point: 1/2, -1 "(½, −1)" below-right
+point: 1, 0 below-right
+point: 2, 1 below-right
+```
 
 ## Systems of Equations {#systems}
 

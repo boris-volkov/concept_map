@@ -1,11 +1,13 @@
 // A small Markdown renderer for concept descriptions.
 //
 // It handles what explanations need: paragraphs, **bold**, *italic*, `code`,
-// [links](url), [[concept-id]] links, images, lists, > quotes, tables, and math
-// between $...$ or $$...$$. Raw HTML such as an <iframe> passes through, so a
-// Desmos graph or a video can sit inside a concept's description.
+// [links](url), [[concept-id]] links, images, lists, > quotes, tables, math
+// between $...$ or $$...$$, and small graphs in ```graph blocks (see graph.js).
+// Raw HTML such as an <iframe> passes through, so a Desmos graph or a video can
+// sit inside a concept's description.
 
 import { texToMathML } from './tex.js'
+import { graph } from './graph.js'
 
 const MATH = '\u0000' // brackets the index of a stashed formula
 const HELD = '\u0001' // brackets the index of a stashed inline fragment
@@ -117,7 +119,7 @@ function blocks(lines, opts) {
       const body = []
       for (i++; i < lines.length && !lines[i].trim().startsWith(m[1]); i++) body.push(lines[i])
       i++
-      html += `<pre><code>${esc(body.join('\n'))}</code></pre>`
+      html += /^\s*graph\s*$/i.test(m[2]) ? graph(body.join('\n')) : `<pre><code>${esc(body.join('\n'))}</code></pre>`
     } else if (RULE.test(line)) {
       html += '<hr>'
       i++
