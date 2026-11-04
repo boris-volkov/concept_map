@@ -47,7 +47,7 @@ Non-zero vectors $\mathbf{u}$ and $\mathbf{v}$ are perpendicular if and only if 
 
 ### Vectors {#vector-basics}
 kind: definition
-prereqs: coordinate-plane, translations
+prereqs: coordinate-plane
 
 An arrow with a length and a direction, like a displacement or a force, written in components as $\langle 3, 4 \rangle$. Where it starts doesn't matter.
 
@@ -146,7 +146,7 @@ A $2 \times 2$ matrix $A$ multiplies every area by $|\det A|$, and $A$ has an in
 
 ### Matrices {#matrix-basics}
 kind: definition
-prereqs: linear-systems
+prereqs: counting
 
 A rectangular array of numbers. A system of linear equations can be stored as the matrix of its coefficients.
 
@@ -183,7 +183,7 @@ $$\begin{bmatrix} a & b \\ c & d \end{bmatrix}^{-1} = \frac{1}{ad - bc}\begin{bm
 
 ### Matrix Arithmetic {#matrix-operations}
 kind: skill
-prereqs: matrix-basics
+prereqs: matrix-basics, integer-multiplication
 
 Two operations:
 - add matrices entry by entry;

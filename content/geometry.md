@@ -330,7 +330,7 @@ Lines that meet at a right angle, written $\ell \perp m$. The shortest path from
 
 ### Writing a Proof {#writing-proofs}
 kind: skill
-prereqs: points-lines-planes
+prereqs: two-column-proofs
 
 Write a proof in four steps:
 1. state what is given and what is to be proved, and draw a figure;
@@ -456,7 +456,7 @@ $$\begin{aligned} a + b &> c, \\ b + c &> a, \\ a + c &> b. \end{aligned}$$
 
 ### Pythagorean Theorem
 kind: theorem
-prereqs: triangle-types, square-roots, area-basic
+prereqs: triangle-types, exponents, area-basic
 
 In a right triangle with legs $a, b$ and hypotenuse $c$:
 $$a^2 + b^2 = c^2$$
@@ -641,7 +641,7 @@ Special lines in a triangle, each family meeting at a single point:
 
 ### Using the Pythagorean Theorem {#using-pythagoras}
 kind: skill
-prereqs: pythagorean-theorem
+prereqs: pythagorean-theorem, square-roots
 
 Label the hypotenuse $c$, opposite the right angle, substitute, and solve. Look for the triples 3-4-5, 5-12-13, 8-15-17 and their multiples.
 
@@ -684,7 +684,7 @@ In a triangle, two sides are equal if and only if the angles opposite them are e
 
 ### Corresponding Parts (CPCTC) {#cpctc}
 kind: theorem
-prereqs: triangle-congruence, two-column-proofs
+prereqs: triangle-congruence
 
 Corresponding parts of congruent triangles are congruent: once two triangles are proved congruent, every matching side and angle may be used as equal.
 
@@ -1201,7 +1201,7 @@ An angle at the centre cuts off an arc, and the arc is measured by that angle: a
 
 ### Circumference and Pi {#circumference}
 kind: formula
-prereqs: circle-parts, decimal-arithmetic
+prereqs: circle-parts, ratio
 
 A circle of radius $r$ and diameter $d$ has circumference
 $$C = 2\pi r = \pi d,$$
@@ -1406,7 +1406,7 @@ A coordinate proof uses these criteria to show that sides are parallel or perpen
 
 ### Distance Formula
 kind: formula
-prereqs: pythagorean-theorem, coordinate-plane
+prereqs: pythagorean-theorem, coordinate-plane, square-roots
 
 The distance between $(x_1, y_1)$ and $(x_2, y_2)$ is
 $$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$$
@@ -1420,7 +1420,7 @@ $$M = \left(\frac{x_1 + x_2}{2}, \frac{y_1 + y_2}{2}\right).$$
 
 ### Equation of a Circle {#circle-equation}
 kind: formula
-prereqs: distance-formula, circle-parts, completing-the-square
+prereqs: distance-formula, circle-parts
 
 The circle with centre $(h, k)$ and radius $r$ is
 $$(x - h)^2 + (y - k)^2 = r^2.$$

@@ -29,7 +29,7 @@ In right triangles with one equal acute angle, the ratios of corresponding sides
 
 ### Sine, Cosine & Tangent {#trig-ratios}
 kind: definition
-prereqs: triangle-similarity, ratio, pythagorean-theorem
+prereqs: triangle-similarity, ratio
 
 For an acute angle $\theta$ of a right triangle, with hypotenuse $h$, side $o$ opposite $\theta$ and side $a$ adjacent to it:
 $$\begin{aligned} \sin\theta &= \frac{o}{h}, \\ \cos\theta &= \frac{a}{h}, \\ \tan\theta &= \frac{o}{a}. \end{aligned}$$
@@ -64,7 +64,7 @@ $$\begin{aligned} \sec\theta &= \frac{1}{\cos\theta}, \\ \csc\theta &= \frac{1}{
 
 ### Angles of Elevation & Depression {#elevation-depression}
 kind: definition
-prereqs: solving-right-triangles
+prereqs: angles
 
 Angles measured up or down from the horizontal: how tall a building is from the angle to its top and your distance from it.
 
@@ -125,7 +125,7 @@ and calculus works only in them.
 
 ### The Unit Circle
 kind: definition
-prereqs: radians, trig-ratios, special-angle-values
+prereqs: standard-position, trig-ratios
 
 For any real $\theta$, let $(x, y)$ be the point of the unit circle $x^2 + y^2 = 1$ at angle $\theta$ from the positive $x$-axis. Then
 $$\begin{aligned} \cos\theta &:= x, \\ \sin\theta &:= y, \\ \tan\theta &:= \frac{y}{x} \quad (x \ne 0). \end{aligned}$$
@@ -267,7 +267,7 @@ point: 1, pi/4 below-right
 
 ### Graphs of Sine & Cosine {#sine-cosine-graphs}
 kind: property
-prereqs: trig-functions-any-angle, periodic-functions
+prereqs: trig-functions-any-angle, periodic-functions, radians
 
 Unrolling the unit circle: the height of the point traces a wave between $-1$ and $1$ with period $2\pi$. The cosine wave is the sine wave shifted left by $\frac{\pi}{2}$.
 
@@ -531,7 +531,7 @@ $$(\cos\theta + i\sin\theta)^n = \cos n\theta + i \sin n\theta$$
 
 ### Polar Coordinates
 kind: definition
-prereqs: unit-circle
+prereqs: standard-position
 
 Locating a point by its distance $r$ from the origin and its angle $\theta$, instead of by $x$ and $y$.
 

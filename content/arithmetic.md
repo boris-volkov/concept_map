@@ -220,7 +220,7 @@ Parts of a whole, and the arithmetic of parts.
 
 ### What a Fraction Is {#fraction-concept}
 kind: definition
-prereqs: division, number-line
+prereqs: number-line
 
 $\frac{a}{b}$ means $a$ pieces of size $\frac{1}{b}$, when the whole is cut into $b$ equal pieces. It is also a division, $a \div b$, and a point on the number line.
 
@@ -340,12 +340,12 @@ Divide the top by the bottom to get a decimal, which either
 A decimal that stops is a fraction over a power of ten.
 
 ### Percents
-prereqs: fractions-to-decimals
+prereqs: multiplying-fractions
 
 Percent means per hundred:
 $$35\% = \frac{35}{100} = 0.35.$$
 So 35% of 80 is
-$$0.35 \times 80 = 28.$$
+$$\frac{35}{100} \times 80 = 28.$$
 
 ### Percent Change
 kind: skill
@@ -367,7 +367,7 @@ Comparing quantities by dividing them.
 
 ### Ratios {#ratio}
 kind: definition
-prereqs: fraction-concept, multiplication
+prereqs: multiplication
 
 A ratio compares two amounts: 3 cups of flour to 2 of sugar is $3 : 2$. Scaling both parts by the same number keeps the ratio the same.
 
@@ -395,7 +395,7 @@ The whole numbers and their negatives.
 
 ### Negative Numbers
 kind: definition
-prereqs: number-line, subtraction
+prereqs: number-line
 
 Numbers below zero: the number line continued to the left. $-3$ is three steps left of 0, like a temperature below freezing or a debt.
 
@@ -408,7 +408,7 @@ $$|-5| = |5| = 5.$$
 
 ### Adding & Subtracting Integers {#integer-addition}
 kind: skill
-prereqs: negative-numbers, absolute-value
+prereqs: negative-numbers, absolute-value, subtraction
 
 On the number line:
 - adding a negative moves left: $5 + (-2) = 3$;
@@ -436,12 +436,12 @@ Squares and cubes are exponents 2 and 3.
 
 ### Square Roots
 kind: definition
-prereqs: exponents
+prereqs: multiplication
 
-$\sqrt{n}$ is the non-negative number whose square is $n$.
+$\sqrt{n}$ is the non-negative number that, multiplied by itself, gives $n$.
 
 For example,
-$$\sqrt{49} = 7.$$
+$$\sqrt{49} = 7 \quad\text{because}\quad 7 \times 7 = 49.$$
 Perfect squares have whole-number roots; others, like $\sqrt{2}$, do not.
 
 

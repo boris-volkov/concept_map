@@ -35,7 +35,7 @@ kind: theorem
 prereqs: rolles-theorem
 
 If $f$ is continuous on $[a, b]$ and differentiable on $(a, b)$, then for some $c \in (a, b)$:
-$$f'(c) = rac{f(b) - f(a)}{b - a}$$
+$$f'(c) = \frac{f(b) - f(a)}{b - a}$$
 
 Geometrically: some tangent is parallel to the secant.
 ```
@@ -77,6 +77,8 @@ Right under a heading, before the summary, these lines describe it. All are opti
 | `parent: algebra` | Only on a file's `#` heading: put this file's contents inside another topic (see *Splitting a big domain*). |
 
 ## Prerequisites
+
+A prerequisite is something a concept **cannot be stated, done or proved without**, not something usually taught first or merely related to it. A square root needs multiplication, not exponents: $\sqrt{9} = 3$ because $3 \times 3 = 9$, and a student can do that before ever seeing $3^2$. Ask the test of each one. For a skill, could a student do it without this? For a definition, could it be stated without this? For a theorem, does its proof use this? So a skill does not list the axioms behind it, a definition does not list what its examples happen to use, and what only some uses of a concept need goes on those uses: graphing belongs on *Solving by Graphing*, not on *Systems of Linear Equations*.
 
 List only what a concept **directly** builds on. "Adding Fractions" needs "Least Common Multiple"; it doesn't need to list "Multiplication" too, because LCM already builds on multiplication, and the *Full chain of prerequisites*, under the *i* on an open concept, follows the whole chain back to counting. If you do list one that another prerequisite already leads to, the map leaves its arrow out, and so does the *Prerequisites* list under the *i*, so an extra prerequisite never adds clutter.
 

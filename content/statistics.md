@@ -34,7 +34,7 @@ Pictures of data:
 
 ### Mean, Median & Mode {#measures-of-center}
 kind: definition
-prereqs: data-displays, division, decimal-arithmetic
+prereqs: data-types, division, comparing-numbers
 
 Three meanings of "typical":
 - the mean shares the total out equally;
@@ -68,7 +68,7 @@ Quick to compare across groups, but blind to the shape inside each quarter.
 
 ### Standard Deviation
 kind: definition
-prereqs: measures-of-center, square-roots
+prereqs: measures-of-center, exponents, square-roots
 
 The typical distance of the values from their mean, in three steps:
 1. square the deviations from the mean;
@@ -375,7 +375,7 @@ $$P(A) = P(A \mid B)P(B) + P(A \mid B^c)P(B^c).$$
 
 ### Probability of an Event {#probability-basics}
 kind: definition
-prereqs: fraction-concept, percents
+prereqs: fraction-concept
 
 With equally likely outcomes, the probability of an event is
 $$P(A) = \frac{\text{favourable outcomes}}{\text{total outcomes}}.$$
@@ -390,7 +390,7 @@ The list of every possible outcome, often drawn as a table or a tree: two coins 
 
 ### Conditional Probability
 kind: definition
-prereqs: independent-events, dividing-fractions
+prereqs: sample-spaces, dividing-fractions
 
 The probability of $A$ given that $B$ happened:
 $$P(A \mid B) = \frac{P(A \text{ and } B)}{P(B)}.$$
@@ -606,13 +606,13 @@ A randomized experiment assigns treatments to subjects by chance, with a control
 
 ### Sampling Distributions {#sampling-distributions}
 kind: property
-prereqs: random-sampling, clt
+prereqs: random-sampling, standard-deviation
 
 The value of a statistic varies from sample to sample. The distribution of those values is its sampling distribution, and larger samples make it narrower, by a factor of $\frac{1}{\sqrt{n}}$.
 
 ### Margin of Error Formula {#margin-of-error}
 kind: formula
-prereqs: sampling-distributions
+prereqs: sampling-distributions, clt
 
 At 95% confidence, a sample proportion $\hat{p}$ and a sample mean $\bar{x}$ have margins of error
 $$E = 1.96\sqrt{\frac{\hat{p}(1 - \hat{p})}{n}}, \qquad E = 1.96\frac{s}{\sqrt{n}}.$$

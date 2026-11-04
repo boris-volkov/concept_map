@@ -524,13 +524,13 @@ Letters standing for numbers, and the rules for rewriting them.
 
 ### Variables
 kind: definition
-prereqs: order-of-operations
+prereqs: multiplication
 
 A letter that stands for a number we don't know yet, or for any number at all. $3n$ means "three times whatever $n$ is".
 
 ### Algebraic Expressions
 kind: definition
-prereqs: variables
+prereqs: variables, order-of-operations
 
 A combination of numbers, variables and operations, like $2x^2 - 5x + 1$, made of terms joined by $+$ and $-$. An expression has a value; it doesn't say anything is equal.
 
@@ -613,7 +613,7 @@ Multiplying by $0$, or by an expression that can be $0$, can add solutions. So c
 
 ### Equations & Solutions {#equations-and-solutions}
 kind: definition
-prereqs: algebraic-expressions, equality-properties
+prereqs: algebraic-expressions
 
 An equation says two expressions are equal. A solution is a value of the variable that makes it true: $x = 4$ solves
 $$2x + 1 = 9.$$
@@ -641,7 +641,7 @@ Why: It reduces to $2 = 3$, which is never true.
 
 ### One-Step Equations
 kind: skill
-prereqs: equations-and-solutions, add-inverse, mul-inverse
+prereqs: equations-and-solutions, division
 
 Undo the one operation on the variable by doing its inverse to both sides:
 $$x + 7 = 12 \implies x = 5,$$
@@ -754,7 +754,7 @@ A curve in the plane is the graph of a function of $x$ if and only if no vertica
 
 #### Horizontal Line Test
 kind: theorem
-prereqs: inverse-functions, vertical-line-test
+prereqs: inverse-functions, function-graphs
 
 A function has an inverse function if and only if no horizontal line meets its graph more than once, that is, if and only if it is one-to-one.
 
@@ -786,7 +786,7 @@ It is not $f$ times $x$.
 
 #### Interval Notation
 kind: definition
-prereqs: linear-inequalities
+prereqs: comparing-numbers, variables
 
 A compact way to write a stretch of the number line:
 $$[2, 5) = \{x : 2 \le x < 5\},$$
@@ -794,7 +794,7 @@ a square bracket including its end and a round one leaving it out.
 
 #### Domain & Range {#domain-and-range}
 kind: definition
-prereqs: function-notation, interval-notation
+prereqs: function-notation
 
 The domain is every input a function accepts; the range is every output it produces. The function
 $$f(x) = \sqrt{x}$$
@@ -843,7 +843,7 @@ point: 1, 1 below-right
 
 #### Even & Odd Functions {#even-odd-functions}
 kind: definition
-prereqs: graph-transformations
+prereqs: function-graphs
 
 Two kinds of symmetry a graph can have:
 - Even functions are mirror images across the $y$-axis, like $x^2$:
@@ -1073,7 +1073,7 @@ the slope of the secant line joining them. A linear function's average rate of c
 
 #### Direct Variation
 kind: definition
-prereqs: slope-intercept, proportions
+prereqs: proportions, variables
 
 A quantity $y$ varies directly with $x$ if, for a constant $k \ne 0$,
 $$y = kx.$$
@@ -1115,14 +1115,14 @@ point: 1, 1 below-right
 
 #### Point-Slope Form {#point-slope}
 kind: form
-prereqs: slope-intercept
+prereqs: slope
 
 The line with slope $m$ through $(x_1, y_1)$ is
 $$y - y_1 = m(x - x_1).$$
 
 #### Standard Form of a Line {#line-standard-form}
 kind: form
-prereqs: slope-intercept
+prereqs: slope
 
 $$Ax + By = C, \quad A, B \text{ not both } 0.$$
 
@@ -1253,7 +1253,7 @@ $$p(x) = a_n(x - z_1)(x - z_2)\cdots(x - z_n).$$
 
 #### Binomial Theorem
 kind: theorem
-prereqs: special-products, combinations
+prereqs: polynomial-multiplication, combinations
 
 For all $a, b$ and every integer $n \ge 0$:
 $$(a + b)^n = \sum_{k=0}^{n} \binom{n}{k} a^{n-k} b^k,$$
@@ -1288,7 +1288,7 @@ This is the [[ivt|intermediate value theorem]], and polynomials are continuous. 
 
 #### Polynomials and Their Parts {#polynomial-basics}
 kind: definition
-prereqs: algebraic-expressions, exponent-laws
+prereqs: algebraic-expressions, exponents
 
 A sum of terms $a x^n$ with whole-number powers, like
 $$4x^3 - x + 7.$$
@@ -1396,7 +1396,7 @@ $$(x^2 + 3x) + (2x^2 - x + 5) = 3x^2 + 2x + 5.$$
 
 #### Multiplying Polynomials {#polynomial-multiplication}
 kind: skill
-prereqs: polynomial-addition, expanding-brackets
+prereqs: expanding-brackets, exponent-laws, polynomial-basics
 
 Multiply every term of one by every term of the other, then collect:
 $$(x + 2)(x + 3) = x^2 + 3x + 2x + 6 = x^2 + 5x + 6.$$
@@ -1573,7 +1573,7 @@ Degree-two polynomials and their parabolas: the theorems, the properties, the fo
 
 #### The Quadratic Formula {#quadratic-formula}
 kind: theorem
-prereqs: completing-the-square, simplifying-radicals
+prereqs: completing-the-square, radical-rules
 
 For $a \ne 0$, the solutions of $ax^2 + bx + c = 0$ are
 $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
@@ -1655,7 +1655,7 @@ Let $f(x) = a(x - h)^2 + k$ with $a \ne 0$. If $a > 0$, then $k$ is the minimum 
 
 #### Constant Second Differences {#second-differences}
 kind: theorem
-prereqs: odd-number-pattern, quadratic-standard-form
+prereqs: quadratic-standard-form
 
 Let $y_0, y_1, y_2, \dots$ be the values of a function at equally spaced inputs, a step $d$ apart. They are the values of a quadratic $ax^2 + bx + c$ if and only if their second differences are a constant other than $0$, and that constant is
 $$2ad^2.$$
@@ -1930,7 +1930,7 @@ so $x = -3$ or $x = 2$.
 
 #### Solving by Square Roots {#quadratics-by-square-roots}
 kind: skill
-prereqs: square-roots, one-step-equations
+prereqs: square-roots, exponents, one-step-equations
 
 When there is no $x$ term, isolate the square and take both roots:
 $$x^2 = 25 \implies x = \pm 5.$$
@@ -1945,7 +1945,7 @@ It is also how vertex form is found.
 
 #### Solving with the Formula {#solving-with-the-quadratic-formula}
 kind: skill
-prereqs: quadratic-formula
+prereqs: quadratic-formula, simplifying-radicals
 
 Solve with the [[quadratic-formula|quadratic formula]] in four steps:
 1. write the equation as $ax^2 + bx + c = 0$;
@@ -2447,7 +2447,7 @@ what \$1 grows to in a year at 100% interest compounded continuously. It is the 
 
 #### Logarithms
 kind: definition
-prereqs: exponential-functions, inverse-functions
+prereqs: exponents
 
 For $b > 0$, $b \ne 1$ and $x > 0$, $\log_b x$ is the unique real number $y$ with
 $$b^y = x.$$
@@ -2503,7 +2503,7 @@ For $f(x) = ab^x$ with $a > 0$, $b > 0$, $b \ne 1$:
 
 #### Properties of Logarithmic Functions {#log-properties}
 kind: property
-prereqs: logarithms
+prereqs: logarithms, exponential-functions
 
 For $f(x) = \log_b x$ with $b > 0$, $b \ne 1$:
 - the domain is $(0, \infty)$ and the range is $\mathbb{R}$;
@@ -2646,7 +2646,7 @@ Two linear equations in two unknowns have
 
 ### Systems of Linear Equations {#linear-systems}
 kind: definition
-prereqs: graphing-lines, linear-equations
+prereqs: linear-equations
 
 Two or more linear equations in the same variables. A solution satisfies all of them at once: for two lines, it is where they cross.
 
@@ -2667,7 +2667,7 @@ The coefficients, unknowns and constants are written apart, ready for [[matrix-i
 
 ### Solving by Graphing {#systems-by-graphing}
 kind: skill
-prereqs: linear-systems
+prereqs: linear-systems, graphing-lines
 
 Graph both lines and read off the crossing point. Two lines that
 - cross meet in one solution;
@@ -2761,7 +2761,7 @@ There is no such rule for sums: $\sqrt{9 + 16} \ne \sqrt{9} + \sqrt{16}$.
 
 ### Irrationality of the Square Root of 2 {#sqrt-2-irrational}
 kind: theorem
-prereqs: fundamental-theorem-of-arithmetic, square-roots
+prereqs: square-roots, proof-by-contradiction
 
 $\sqrt{2}$ is not a rational number.
 
@@ -2810,7 +2810,7 @@ The denominator is the root and the numerator the power. Exponent form is the on
 
 ### Simplifying Radicals
 kind: skill
-prereqs: nth-roots, prime-factorization
+prereqs: radical-rules, factors
 
 Pull perfect powers out from under the root:
 $$\sqrt{50} = \sqrt{25 \cdot 2} = 5\sqrt{2}.$$
@@ -2871,19 +2871,19 @@ A ray from the focus of a parabola reflects parallel to its axis. A ray from one
 
 ### Conic Sections {#conics}
 kind: definition
-prereqs: circle-equation
+prereqs: coordinate-plane, polynomial-basics
 
 Every second-degree equation in $x$ and $y$ draws a circle, an ellipse, a parabola or a hyperbola, and completing the square shows which.
 
 ### Parabolas
 kind: definition
-prereqs: conics, distance-formula, vertex-form
+prereqs: conics, distance-formula
 
 The points equally far from a fixed point, the focus, and a fixed line, the directrix. Satellite dishes and headlights are parabolas because of their focus.
 
 ### Ellipses
 kind: definition
-prereqs: conics, completing-the-square
+prereqs: conics, distance-formula
 
 The points whose distances to two foci add up to a constant. Centred at the origin:
 $$\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1.$$
@@ -2891,7 +2891,7 @@ Planets orbit in ellipses with the sun at one focus.
 
 ### Hyperbolas
 kind: definition
-prereqs: ellipses, asymptotes
+prereqs: conics, distance-formula, asymptotes
 
 The points whose distances to two foci differ by a constant: two branches,
 $$\frac{x^2}{a^2} - \frac{y^2}{b^2} = 1,$$
@@ -2999,7 +2999,7 @@ So every non-zero complex number has a reciprocal, $\frac{1}{z} = \frac{\bar{z}}
 
 ### The Imaginary Unit {#imaginary-unit}
 kind: definition
-prereqs: square-roots, integer-multiplication
+prereqs: square-roots, negative-numbers
 
 $i$ is a number with
 $$i^2 = -1.$$
@@ -3028,7 +3028,7 @@ $$|z| = \sqrt{a^2 + b^2}.$$
 
 ### Powers of i {#powers-of-i}
 kind: property
-prereqs: imaginary-unit
+prereqs: imaginary-unit, exponents
 
 The powers of $i$ repeat with period 4:
 $$i^1 = i, \quad i^2 = -1, \quad i^3 = -i, \quad i^4 = 1.$$
@@ -3067,7 +3067,7 @@ For [[polar-complex|polar form]], $r(\cos\theta + i\sin\theta)$, see Trigonometr
 
 ### Complex Arithmetic
 kind: skill
-prereqs: complex-numbers, polynomial-multiplication
+prereqs: complex-numbers, expanding-brackets
 
 Add like terms and multiply like binomials, replacing $i^2$ with $-1$:
 $$(2 + i)(3 - i) = 6 + i - i^2 = 7 + i.$$
@@ -3103,7 +3103,7 @@ Lists of numbers that follow a rule, and what you get by adding them up.
 
 ### Arithmetic Series
 kind: theorem
-prereqs: arithmetic-sequences, sigma-notation
+prereqs: arithmetic-sequences
 
 For an arithmetic sequence with first term $a_1$ and $n$-th term $a_n$:
 $$\sum_{k=1}^{n} a_k = \frac{n(a_1 + a_n)}{2}.$$
@@ -3112,7 +3112,7 @@ $$\sum_{k=1}^{n} k = \frac{n(n + 1)}{2}.$$
 
 ### Geometric Series
 kind: theorem
-prereqs: geometric-sequences, sigma-notation
+prereqs: geometric-sequences
 
 For $r \ne 1$:
 $$\sum_{k=0}^{n-1} a r^k = a\,\frac{1 - r^n}{1 - r}$$
@@ -3127,7 +3127,7 @@ if $|r| \ge 1$ and $a \ne 0$, the series diverges.
 
 ### Sequences
 kind: definition
-prereqs: function-notation
+prereqs: variables
 
 An ordered list $a_1, a_2, a_3, \ldots$, which is a function whose inputs are the counting numbers. Given by a formula for $a_n$ or by a rule linking each term to the last.
 

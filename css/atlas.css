@@ -664,7 +664,6 @@ math { font-family: var(--math); font-size: 1.04em; }
   background: color-mix(in srgb, var(--c) 6%, var(--card));
   border-bottom: 1px solid color-mix(in srgb, var(--c) 20%, var(--card-edge));
   border-radius: 2px 5px 0 0;
-  cursor: pointer;
 }
 .kind-theorem > .doc-head { --c: var(--blue); background: var(--blue-fill); border-bottom-color: var(--blue-edge); }
 .kind-skill > .doc-head { --c: var(--red); background: var(--red-fill); border-bottom-color: var(--red-edge); }
