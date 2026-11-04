@@ -281,7 +281,15 @@ class TexParser {
         this.skipSpace()
         const index = this.lookingAt('[') ? subParse(this.readBalanced('[', ']')) : null
         const arg = this.parseArg()
-        return { ml: index ? `<mroot>${arg}${index}</mroot>` : `<msqrt>${arg}</msqrt>`, kind: 'ord' }
+        // Not <msqrt>: the browser draws its bar apart from the font's check mark, snapped to the
+        // pixel, so the two rarely meet. The stylesheet draws both as one shape (see .tex-radical).
+        const root = `<mrow class="tex-radical">${arg}</mrow>`
+        return {
+          ml: index
+            ? `<mrow><mpadded lspace="0.2em" width="0.17em" voffset="0.5em"><mstyle scriptlevel="2">${index}</mstyle></mpadded>${root}</mrow>`
+            : root,
+          kind: 'ord',
+        }
       }
       case 'overline':
         return { ml: `<mrow class="tex-overline">${this.parseArg()}</mrow>`, kind: 'ord' }

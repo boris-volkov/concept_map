@@ -132,7 +132,7 @@ A distribution may be
 Skew pulls the mean toward the long tail, away from the median.
 
 ### Outlier Rule {#outlier-rule}
-kind: property
+kind: heuristic
 prereqs: quartiles
 
 A value is an outlier, by convention, if it lies more than $1.5 \times \text{IQR}$ below $Q_1$ or above $Q_3$. The median and IQR resist outliers, and the mean and standard deviation do not.
@@ -148,6 +148,14 @@ kind: property
 prereqs: correlation
 
 A strong correlation does not show that one variable causes the other. A third variable may drive both. Only a [[randomized-experiments|randomized experiment]] supports a cause.
+
+### The Mean Follows the Tail {#mean-follows-tail}
+kind: heuristic
+prereqs: measures-of-center, distribution-shape
+
+In a skewed distribution, the mean usually lies further along the tail than the median: above it when skewed right, and below it when skewed left.
+
+So a mean well above the median suggests a long right tail, as with incomes. There are exceptions, especially in distributions with several peaks, so check the shape as well.
 
 ### Regression Line Form {#regression-form}
 kind: form
@@ -420,7 +428,10 @@ about 1 in 2.6 million.
 kind: skill
 prereqs: multiplication-rule
 
-Draw a branch for each outcome at each stage, labelled with its probability given what came before. Multiply along a path, and add across paths.
+1. draw a branch for each outcome at each stage;
+2. label each with its probability, given what came before;
+3. multiply along each path;
+4. add across the paths you want.
 
 ```quiz
 Q: A bag has 3 red and 2 blue marbles. Two are drawn without replacement. What is the probability that both are red?
@@ -450,13 +461,15 @@ wrap: 6
 Random quantities, and the shapes their values take.
 
 ### The 68–95–99.7 Rule {#empirical-rule}
-kind: theorem
+kind: heuristic
 prereqs: normal-distribution, z-scores
 
 In a normal distribution, about
 - 68% of values lie within one standard deviation of the mean;
 - 95% within two;
 - 99.7% within three.
+
+On an exact normal curve the figures are 68.27%, 95.45% and 99.73%. On real data they hold only as far as the data are roughly bell-shaped.
 
 ### Mean and Variance of a Binomial {#binomial-mean}
 kind: theorem
@@ -520,6 +533,30 @@ How many standard deviations a value sits from the mean:
 $$z = \frac{x - \mu}{\sigma}.$$
 It puts different scales on a common footing.
 
+### Normal Approximation to the Binomial {#normal-approximation}
+kind: heuristic
+prereqs: binomial-distribution, normal-distribution
+
+A binomial with $n$ trials and success probability $p$ is close to a normal curve, with $\mu = np$ and $\sigma = \sqrt{np(1 - p)}$, when
+$$np \ge 10 \quad\text{and}\quad n(1 - p) \ge 10.$$
+
+The cutoff of 10 is a convention; some books use 5. The closer $p$ is to $\frac{1}{2}$, the sooner the shape turns normal.
+
+```quiz
+Q: A binomial has $n = 100$ and $p = 0.05$. Does it pass the rule? Answer yes or no.
+A: no
+Why: $np = 5$, which is under 10.
+```
+
+### The Sample Size of 30 {#sample-size-30}
+kind: heuristic
+prereqs: clt
+
+A sample mean is usually close enough to normal once
+$$n \ge 30.$$
+
+There is nothing special about 30. Symmetric populations need fewer, and heavily skewed ones can need far more.
+
 ### Binomial Probability Form {#binomial-form}
 kind: form
 prereqs: binomial-distribution, combinations
@@ -538,7 +575,10 @@ Needs a fixed number of independent trials, each with the same probability $p$.
 kind: skill
 prereqs: z-scores, normal-distribution
 
-Convert to a $z$-score, then read the area from a table or calculator, sketching the curve to see which side is wanted.
+1. sketch the curve, and shade the area wanted;
+2. convert to a $z$-score;
+3. read the area from a table or calculator;
+4. subtract from 1 if the shaded area is on the other side.
 
 **Example.** With $\mu = 100$ and $\sigma = 15$, the value $130$ has $z = 2$, and about 97.7% of values lie below it.
 
@@ -567,8 +607,6 @@ prereqs: expected-value
 Find the expected payoff of each option, as the sum of value times probability, and compare.
 
 **Example.** A \$2 ticket with a 1 in 500 chance of \$500 has expected gain $\frac{500}{500} - 2 = -\$1$.
-
-
 
 ## Sampling & Inference
 flow: down
@@ -613,6 +651,21 @@ prereqs: random-sampling, standard-deviation
 
 The value of a statistic varies from sample to sample. The distribution of those values is its sampling distribution, and larger samples make it narrower, by a factor of $\frac{1}{\sqrt{n}}$.
 
+### Quick Margin of Error {#quick-margin}
+kind: heuristic
+prereqs: sampling-distributions
+
+For a poll of $n$ people, the 95% margin of error on a proportion is about
+$$\frac{1}{\sqrt{n}}.$$
+
+It is largest at 50%, where the exact figure is $\frac{0.98}{\sqrt{n}}$, so this is slightly cautious anywhere else. A poll of 1000 has a margin of about 3%. To halve the margin, quadruple the sample.
+
+```quiz
+Q: About what percent is the margin of error for a poll of 2500?
+A: 2
+Why: $\frac{1}{\sqrt{2500}} = \frac{1}{50}$.
+```
+
 ### Margin of Error Formula {#margin-of-error}
 kind: formula
 prereqs: sampling-distributions, clt
@@ -642,7 +695,10 @@ Ask how the data were collected, who was left out, how large the sample is, and 
 kind: skill
 prereqs: margin-of-error
 
-Compute the statistic, compute the margin, and report the interval in context.
+1. compute the statistic from the sample;
+2. compute the margin of error;
+3. form statistic $\pm$ margin;
+4. report the interval in context.
 
 ```quiz
 Q: A poll of 400 finds 50% in favour. To the nearest percent, what is the 95% margin of error?
@@ -654,4 +710,9 @@ Why: $1.96\sqrt{\frac{0.25}{400}} \approx 0.049$.
 kind: skill
 prereqs: randomized-experiments, simulation
 
-To judge a difference between groups, shuffle the group labels at random many times and see how often chance alone gives a difference as large. If it is rare, the difference is called significant.
+1. compute the difference between the two groups;
+2. shuffle the group labels at random, and compute the difference again;
+3. repeat many times;
+4. find how often chance alone gives a difference at least as large;
+5. call the difference significant if that is rare.
+

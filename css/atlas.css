@@ -10,7 +10,7 @@
   --ink-2: #5a4936;
   --ink-3: #8a775f;
   --rule: #cbb68e;
-  --lit: #f5b700; /* highlighted arrows */
+  --lit: #ffcf1a; /* highlighted arrows */
   --gold: #b8862b;
   --gold-ink: #8a5f0e;
   --gold-fill: #fbeab8;
@@ -20,6 +20,9 @@
   --blue: #2b4c84;
   --blue-edge: #a9b9d6;
   --blue-fill: #eef2f9;
+  --violet: #66478f;
+  --violet-edge: #c6b8da;
+  --violet-fill: #f4f0f9;
   --red: #a12a2a;
   --red-edge: #dcaeaa;
   --red-fill: #fbeeec;
@@ -271,12 +274,12 @@ math { font-family: var(--math); font-size: 1.04em; }
 .edge.twin { marker-start: url(#head); }
 .has-selection .edge.dim { opacity: 0.06; }
 .has-selection .edge.dim.lit { opacity: 0.6; }
-/* Lit arrows (hovered, or the selected concept's) are bold gold with a dark edge, so they stand
+/* Lit arrows (hovered, or the selected concept's) are bright gold with a dark edge, so they stand
    out from the paper. The edge is a drop-shadow, which costs little on the handful of lit arrows. */
 .edge.lit, .edge.pre, .edge.post {
   stroke: var(--lit);
   opacity: 1;
-  stroke-width: calc(var(--w) * 1px + 2.6px);
+  stroke-width: calc(var(--w) * 1px + 0.8px);
   filter: drop-shadow(0 0 1px rgba(60, 38, 0, 0.95));
   marker-end: url(#head-lit);
 }
@@ -341,6 +344,15 @@ math { font-family: var(--math); font-size: 1.04em; }
 }
 .node.kind-skill .kind { color: var(--red); font-weight: bold; }
 .node.kind-skill .quiz-badge { --c: var(--red); }
+
+/* Heuristics are violet boxes: rules of thumb, not facts. */
+.node.kind-heuristic {
+  background: var(--violet-fill);
+  border: 1px solid var(--violet-edge);
+  border-left: 4px solid var(--violet);
+}
+.node.kind-heuristic .kind { color: var(--violet); font-weight: bold; }
+.node.kind-heuristic .quiz-badge { --c: var(--violet); }
 
 /* Definitions are green boxes, the same way. */
 .node.kind-definition {
@@ -651,6 +663,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 }
 .node.leaf.doc.kind-theorem { border-color: var(--blue-edge); border-left-color: var(--blue); }
 .node.leaf.doc.kind-skill { border-color: var(--red-edge); border-left-color: var(--red); }
+.node.leaf.doc.kind-heuristic { border-color: var(--violet-edge); border-left-color: var(--violet); }
 .node.leaf.doc.kind-definition { border-color: var(--green-edge); border-left-color: var(--green); }
 .node.leaf.doc.kind-axiom { border-color: var(--gold); }
 
@@ -667,6 +680,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 }
 .kind-theorem > .doc-head { --c: var(--blue); background: var(--blue-fill); border-bottom-color: var(--blue-edge); }
 .kind-skill > .doc-head { --c: var(--red); background: var(--red-fill); border-bottom-color: var(--red-edge); }
+.kind-heuristic > .doc-head { --c: var(--violet); background: var(--violet-fill); border-bottom-color: var(--violet-edge); }
 .kind-definition > .doc-head { --c: var(--green); background: var(--green-fill); border-bottom-color: var(--green-edge); }
 .kind-axiom > .doc-head {
   --c: var(--gold-ink);
@@ -675,7 +689,7 @@ math { font-family: var(--math); font-size: 1.04em; }
   box-shadow: inset 0 0 0 2px #fff8e2, inset 0 0 0 3px rgba(176, 128, 32, 0.55);
 }
 .doc-kind { font-size: 12.5px; line-height: 1.3; color: var(--c); font-variant-caps: all-small-caps; letter-spacing: 0.1em; }
-:is(.kind-theorem, .kind-skill, .kind-definition, .kind-axiom) > .doc-head .doc-kind { font-weight: bold; }
+:is(.kind-theorem, .kind-skill, .kind-heuristic, .kind-definition, .kind-axiom) > .doc-head .doc-kind { font-weight: bold; }
 .kind-axiom > .doc-head .doc-kind { letter-spacing: 0.14em; }
 .kind-axiom > .doc-head .doc-kind::before { content: "✦ "; }
 .doc-title { grid-column: 1 / -1; margin: 0; font-size: 24px; line-height: 1.18; font-weight: normal; overflow-wrap: anywhere; }
@@ -766,6 +780,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 }
 .statement-theorem { background: var(--blue-fill); border-color: var(--blue-edge); border-left-color: var(--blue); }
 .statement-skill { background: var(--red-fill); border-color: var(--red-edge); border-left-color: var(--red); }
+.statement-heuristic { background: var(--violet-fill); border-color: var(--violet-edge); border-left-color: var(--violet); }
 .statement-definition { background: var(--green-fill); border-color: var(--green-edge); border-left-color: var(--green); }
 .statement-axiom {
   padding: 12px 16px 6px;
@@ -778,6 +793,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 .statement-label { font-weight: bold; font-size: 15px; letter-spacing: 0.02em; margin-bottom: 2px; }
 .statement-theorem .statement-label { color: var(--blue); }
 .statement-skill .statement-label { color: var(--red); }
+.statement-heuristic .statement-label { color: var(--violet); }
 .statement-definition .statement-label { color: var(--green); }
 .statement-axiom .statement-label { color: var(--gold-ink); font-size: 17px; letter-spacing: 0.1em; font-variant-caps: all-small-caps; }
 .statement-axiom .statement-label::before { content: "✦ "; }
@@ -960,6 +976,7 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
 .kind-axiom .card-title, .kind-axiom .card-name { color: #3d2a06; }
 .kind-theorem .doc-kind { --c: var(--blue); }
 .kind-skill .doc-kind { --c: var(--red); }
+.kind-heuristic .doc-kind { --c: var(--violet); }
 .kind-definition .doc-kind { --c: var(--green); }
 .kind-axiom .doc-kind { --c: var(--gold-ink); }
 
@@ -1007,6 +1024,19 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
 
 /* ---------- MathML details the browser leaves to the page ---------- */
 
+/* A root's check mark and bar, drawn so that they always meet, at any size or zoom. The two strokes
+   are filled shapes on one foot, as thick as the bar, and the bar overlaps the top of the long one. */
+math .tex-radical {
+  padding: 0.16em 0.08em 0.04em 0.58em;
+  margin-left: 0.03em;
+  background-repeat: no-repeat;
+  background-image:
+    linear-gradient(currentColor, currentColor),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 58 100' preserveAspectRatio='none'%3E%3Cpath fill='%232b2118' d='M16.4 100 L22 100 L58 0 L52.4 0 Z'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 40' preserveAspectRatio='none'%3E%3Cpath fill='%232b2118' d='M2 0 L7.6 0 L22 40 L16.4 40 Z'/%3E%3C/svg%3E");
+  background-size: calc(100% - 0.55em) 0.052em, 0.58em 100%, 0.22em 0.4em;
+  background-position: 100% 0, 0 0, 0 100%;
+}
 math .tex-overline { border-top: 0.06em solid currentColor; padding-top: 0.08em; }
 math .tex-underline { border-bottom: 0.06em solid currentColor; padding-bottom: 0.06em; }
 math .tex-boxed { border: 1px solid currentColor; padding: 0.15em 0.3em; }

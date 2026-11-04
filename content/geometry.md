@@ -801,6 +801,11 @@ Figures with the same shape but possibly different sizes:
 kind: skill
 prereqs: triangle-similarity, solving-proportions
 
+1. show that the triangles are similar;
+2. match the vertices in order;
+3. write a proportion of corresponding sides;
+4. solve it.
+
 Measuring the unreachable. A tree casting a 12 m shadow, beside a 2 m post casting a 3 m shadow, has the same ratio of height to shadow:
 $$\frac{h}{12} = \frac{2}{3} \implies h = 8\text{ m}.$$
 
@@ -808,7 +813,13 @@ $$\frac{h}{12} = \frac{2}{3} \implies h = 8\text{ m}.$$
 kind: skill
 prereqs: triangle-congruence, cpctc, writing-proofs
 
-Find three matching pairs that fit SSS, SAS, ASA, AAS or HL. Look for shared sides, vertical angles and angles from parallel lines, and use [[cpctc]] to reach the other parts.
+1. mark the given facts on the figure;
+2. add what is implied: shared sides, vertical angles, angles from parallel lines;
+3. name the criterion, from SSS, SAS, ASA, AAS or HL;
+4. state the congruence, with matching vertices in order;
+5. use [[cpctc]] for any other parts.
+
+> **!** SSA and AAA do not prove congruence.
 
 ### Proving Triangles Similar {#proving-similarity}
 kind: skill
@@ -1493,8 +1504,6 @@ Complete the square in $x$ and in $y$:
 $$\begin{aligned} x^2 + y^2 + 4x - 2y &= 4 \\ (x + 2)^2 + (y - 1)^2 &= 9 \end{aligned}$$
 so the centre is $(-2, 1)$ and the radius is 3.
 
-
-
 ## Constructions
 flow: down
 rows: kinds
@@ -1512,25 +1521,39 @@ To copy a segment, set the compass to its length and mark it off. To copy an ang
 kind: skill
 prereqs: perpendicular-bisector-theorem
 
-Draw arcs of the same radius, over half the segment, from each end. The line through their two crossings is the perpendicular bisector.
+1. set the compass to more than half the segment;
+2. draw an arc above and below it, from one end;
+3. do the same from the other end, at the same radius;
+4. draw the line through the two crossings.
+
+The line is the perpendicular bisector.
 
 ### Bisecting an Angle {#bisecting-angle}
 kind: skill
 prereqs: angle-bisector-equidistance
 
-Draw an arc crossing both sides. From those crossings, draw equal arcs that meet. The ray from the vertex through the meeting point is the bisector.
+1. draw an arc from the vertex, crossing both sides;
+2. from each crossing, draw an arc at the same radius, so that they meet;
+3. draw the ray from the vertex through where they meet.
 
 ### Perpendicular Through a Point {#perpendicular-construction}
 kind: skill
 prereqs: bisecting-segment
 
-Draw an arc from the point that crosses the line twice. Then bisect the segment between the crossings.
+1. draw an arc from the point, crossing the line twice;
+2. from each crossing, draw an arc at the same radius, so that they meet;
+3. draw the line through the point and where they meet.
 
 ### Parallel Through a Point {#parallel-construction}
 kind: skill
 prereqs: copying-constructions, parallel-lines
 
-Draw a transversal through the point, and copy the angle it makes with the line, as a corresponding angle at the point.
+1. draw a transversal through the point;
+2. draw an arc from where it crosses the line, and the same arc from the point;
+3. step off the width of the angle at the crossing, along the arc at the point;
+4. draw the line through the point and the mark.
+
+This copies the angle as a corresponding angle.
 
 ### Equilateral Triangle & Regular Hexagon {#polygon-constructions}
 kind: skill
@@ -1554,4 +1577,9 @@ For the circumscribed circle, bisect two sides perpendicularly: the lines meet a
 kind: skill
 prereqs: bisecting-segment, thales-theorem, circle-tangents
 
-Bisect the segment from the point to the centre, and draw the circle on that segment as diameter. Where it meets the given circle are the points of tangency, by [[thales-theorem|Thales' theorem]].
+1. join the point to the centre;
+2. bisect that segment;
+3. draw the circle on it as diameter;
+4. join the point to where the two circles meet.
+
+The lines are tangents by [[thales-theorem|Thales' theorem]].

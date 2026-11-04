@@ -193,6 +193,12 @@ Two operations:
 kind: technique
 prereqs: matrix-basics, elimination-method
 
+1. write the system as an augmented matrix;
+2. use row operations to get a leading 1 in the first row;
+3. clear everything below it;
+4. repeat with the next row and column;
+5. solve from the bottom row up.
+
 The elimination method carried out on a system's matrix. Repeat three row operations until the solution can be read straight off:
 - swap two rows;
 - scale a row;
@@ -215,7 +221,12 @@ Why: $1 \cdot 3 + 2 \cdot 4$.
 kind: skill
 prereqs: two-by-two-inverse, system-matrix-form
 
-Write the system as $A\mathbf{x} = \mathbf{b}$, and multiply both sides by $A^{-1}$ on the left:
+1. write the system as $A\mathbf{x} = \mathbf{b}$;
+2. check that $\det A \ne 0$;
+3. find $A^{-1}$;
+4. multiply on the left: $\mathbf{x} = A^{-1}\mathbf{b}$.
+
+Multiplying both sides on the left by $A^{-1}$ leaves
 $$\mathbf{x} = A^{-1}\mathbf{b}.$$
 
 ### Transforming Points with a Matrix {#transforming-with-matrix}

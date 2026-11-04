@@ -44,7 +44,12 @@ Then, with every limit taken as $x \to a$:
 kind: skill
 prereqs: limit-laws, factoring-trinomials, rationalizing-denominators
 
-Try substituting first. If that gives $\frac{0}{0}$, rewrite the expression and substitute again. The usual rewrites:
+1. substitute the value;
+2. if that gives a number, it is the limit;
+3. if it gives $\frac{0}{0}$, rewrite the expression and substitute again;
+4. if it gives a non-zero number over $0$, compare the one-sided limits.
+
+The usual rewrites:
 - factor and cancel;
 - rationalise;
 - combine fractions.
@@ -194,6 +199,10 @@ The function $|x|$ shows that the converse fails: it is continuous at $0$ but no
 kind: skill
 prereqs: derivative-definition, point-slope
 
+1. find the point, $(a, f(a))$;
+2. find the slope, $f'(a)$;
+3. put both into [[point-slope|point-slope form]].
+
 The tangent to $y = f(x)$ at $x = a$ is
 $$y - f(a) = f'(a)(x - a):$$
 a point from $f$, a slope from $f'$.
@@ -274,6 +283,13 @@ $$\begin{aligned} \frac{d}{dx} e^x &= e^x \\ \frac{d}{dx} a^x &= a^x \ln a \\ \f
 kind: technique
 prereqs: chain-rule
 
+1. differentiate both sides with respect to $x$;
+2. apply the chain rule to every term in $y$, which gives a factor of $y'$;
+3. gather the terms holding $y'$ on one side;
+4. factor out $y'$ and solve for it.
+
+> **!** The derivative of $y^2$ with respect to $x$ is $2y\,y'$, not $2y$.
+
 Differentiating an equation like
 $$x^2 + y^2 = 25$$
 without solving for $y$: treat $y$ as a function of $x$ and use the chain rule, so
@@ -319,9 +335,21 @@ What slopes are good for: rates, approximations, and finding the best.
 kind: technique
 prereqs: implicit-differentiation
 
+1. identify which rate you know, and which one you need;
+2. connect the two with an equation;
+3. differentiate implicitly, usually with respect to time;
+4. plug in for everything except what you are solving for.
+
+> **!** Do not plug in for variables before differentiating. A quantity that changes must stay a variable until step 3 is done.
+
 When quantities are linked by an equation, their rates are linked by its derivative: how fast a ladder's top slides down a wall as its foot slides out.
 
+**Example.** A 10 m ladder leans on a wall, its foot sliding out at 1 m/s. When the foot is 6 m out, the top is 8 m up. From $x^2 + y^2 = 100$:
+$$\begin{aligned} 2x\frac{dx}{dt} + 2y\frac{dy}{dt} &= 0 \\ 2(6)(1) + 2(8)\frac{dy}{dt} &= 0 \\ \frac{dy}{dt} &= -\frac{3}{4} \end{aligned}$$
+so the top slides down at $\frac{3}{4}$ m/s.
+
 ### Linear Approximation
+kind: heuristic
 prereqs: tangent-lines
 
 Near a point a curve looks like its tangent line, so
@@ -354,6 +382,23 @@ prereqs: rolles-theorem
 
 If $f$ is continuous on $[a, b]$ and differentiable on $(a, b)$, then for some $c \in (a, b)$:
 $$f'(c) = \frac{f(b) - f(a)}{b - a}$$
+
+### Closed Interval Method {#closed-interval-method}
+kind: skill
+prereqs: critical-points, evt
+
+1. find $f'$;
+2. find the critical points inside $[a, b]$;
+3. evaluate $f$ at those points and at $a$ and $b$;
+4. take the largest value as the maximum and the smallest as the minimum.
+
+> **!** Evaluate $f$, not $f'$, and don't leave out the endpoints.
+
+```quiz
+Q: What is the greatest value of $f(x) = x^3 - 3x$ on $[0, 3]$?
+A: 18
+Why: The critical point $x = 1$ gives $-2$, and the ends give $0$ and $18$.
+```
 
 ### First Derivative Test
 kind: theorem
@@ -403,6 +448,8 @@ Finding the best, in three steps:
 2. find its critical points;
 3. check them and the endpoints.
 
+> **!** Check the ends of the interval as well as the critical points, and check that the answer makes sense in the problem.
+
 ### L'Hôpital's Rule {#lhopital}
 kind: theorem
 prereqs: mvt, limits-at-infinity
@@ -413,8 +460,8 @@ $$\lim \frac{f(x)}{g(x)} = \lim \frac{f'(x)}{g'(x)}.$$
 ### Position, Velocity & Acceleration {#motion}
 prereqs: higher-derivatives
 
-Velocity is the derivative of position, and acceleration the derivative of velocity. A ball thrown upward has
-$$\begin{aligned} s(t) &= -4.9t^2 + v_0 t, \\ v(t) &= s'(t) = -9.8t + v_0, \\ a(t) &= v'(t) = -9.8. \end{aligned}$$
+Velocity is the derivative of position, and acceleration the derivative of velocity. A ball thrown upward from height $s_0$ with speed $v_0$, in metres and seconds, has
+$$\begin{aligned} s(t) &= -4.9t^2 + v_0 t + s_0, \\ v(t) &= s'(t) = -9.8t + v_0, \\ a(t) &= v'(t) = -9.8. \end{aligned}$$
 
 ## Integrals
 
@@ -504,6 +551,14 @@ Why: $x^2$ from 1 to 3: $9 - 1$.
 kind: technique
 prereqs: ftc, chain-rule
 
+1. choose $u$, an inside function whose derivative is also present;
+2. find $du$;
+3. rewrite the whole integral in terms of $u$;
+4. integrate;
+5. substitute back.
+
+> **!** In a definite integral, either change the limits to values of $u$, or substitute back before evaluating. Don't mix the two.
+
 The chain rule in reverse: spot an inside function $u$ whose derivative is also present. With $u = x^2$,
 $$\int 2x\cos(x^2)\,dx = \int \cos u\,du = \sin(x^2) + C.$$
 
@@ -511,13 +566,23 @@ $$\int 2x\cos(x^2)\,dx = \int \cos u\,du = \sin(x^2) + C.$$
 kind: technique
 prereqs: u-substitution, product-rule
 
-The product rule in reverse:
+1. choose $u$, taking the first of these present: logarithm, inverse trig, algebraic, trig, exponential;
+2. take the rest as $dv$, and find $du$ and $v$;
+3. substitute into $\int u\,dv = uv - \int v\,du$;
+4. evaluate the remaining integral.
+
+It is the product rule in reverse:
 $$\int u\,dv = uv - \int v\,du.$$
 Good for $\int x e^x\,dx$ and $\int \ln x\,dx$.
 
 ### Trig Substitution
 kind: technique
 prereqs: u-substitution, pythagorean-identity
+
+1. match the root, and substitute: $\sqrt{a^2 - x^2}$ takes $x = a\sin\theta$; $\sqrt{a^2 + x^2}$ takes $x = a\tan\theta$; $\sqrt{x^2 - a^2}$ takes $x = a\sec\theta$;
+2. replace $dx$, and simplify the root with a Pythagorean identity;
+3. integrate in $\theta$;
+4. return to $x$ with a right triangle.
 
 Replacing $x$ with a trig function so a root simplifies. With $x = \sin\theta$,
 $$\sqrt{1 - x^2} = \sqrt{1 - \sin^2\theta} = \cos\theta.$$
@@ -526,7 +591,13 @@ $$\sqrt{1 - x^2} = \sqrt{1 - \sin^2\theta} = \cos\theta.$$
 kind: technique
 prereqs: u-substitution, adding-rational-expressions, linear-systems
 
-Splitting a rational function into simple pieces, adding fractions in reverse:
+1. if the top's degree is at least the bottom's, divide first;
+2. factor the bottom;
+3. write one fraction for each factor, with unknown constants on top;
+4. multiply through by the bottom, and solve for the constants;
+5. integrate each piece.
+
+This is adding fractions in reverse:
 $$\frac{1}{x(x + 1)} = \frac{1}{x} - \frac{1}{x + 1}.$$
 
 ### Improper Integrals
@@ -563,14 +634,26 @@ $$\bar{f} = \frac{1}{b - a}\int_a^b f(x)\,dx,$$
 the height of the rectangle with the same area.
 
 ### Area Between Curves
+kind: skill
 prereqs: ftc, linear-systems
+
+1. find where the curves meet, for the limits;
+2. decide which curve is on top;
+3. integrate top minus bottom;
+4. if they cross inside the interval, split the integral there.
 
 The area between two curves is
 $$\int_a^b \big(\text{top} - \text{bottom}\big)\,dx,$$
 with the limits where the curves cross.
 
 ### Volumes of Revolution {#volumes-of-revolution}
+kind: skill
 prereqs: area-between-curves, circle-area, volume-prisms
+
+1. sketch the region and the axis;
+2. slice at right angles to the axis;
+3. find the outer radius $R$ and the inner radius $r$ of a slice;
+4. integrate $\pi(R^2 - r^2)$ along the axis.
 
 Spin a region around an axis and slice the solid into discs or washers:
 $$V = \int \pi r(x)^2\,dx.$$
@@ -603,7 +686,15 @@ Drawing a short tangent segment at each point, as the equation dictates, to see 
 kind: technique
 prereqs: diffeq-basics, u-substitution, natural-log
 
-Gather the $y$s with $dy$ and the $x$s with $dx$, then integrate both sides:
+1. gather the $y$s with $dy$ and the $x$s with $dx$;
+2. integrate both sides;
+3. add one constant $C$;
+4. solve for $y$;
+5. find $C$ from any initial condition.
+
+> **!** Add the constant as you integrate, not after solving for $y$.
+
+**Example.**
 $$\frac{dy}{dx} = ky \implies \int \frac{dy}{y} = \int k\,dx.$$
 
 ### Exponential Growth Models {#exponential-models}
@@ -618,6 +709,11 @@ so anything growing at a rate proportional to its size grows exponentially.
 ### Euler's Method
 kind: technique
 prereqs: slope-fields, linear-approximation
+
+1. start at the initial point $(x_0, y_0)$, and choose a step $\Delta x$;
+2. find the slope $f(x_n, y_n)$ there;
+3. step along it: $y_{n+1} = y_n + f(x_n, y_n)\,\Delta x$ and $x_{n+1} = x_n + \Delta x$;
+4. repeat until you reach the $x$ you want.
 
 Approximating a solution by walking along tangent lines in small steps:
 $$y_{n+1} = y_n + f(x_n, y_n)\,\Delta x.$$
@@ -688,6 +784,19 @@ prereqs: series-convergence
 
 Terms alternating in sign and shrinking steadily to 0 make a convergent series, as in
 $$1 - \frac{1}{2} + \frac{1}{3} - \cdots = \ln 2.$$
+
+### Choosing a Series Test {#choosing-a-series-test}
+kind: skill
+prereqs: nth-term-test, comparison-tests, ratio-test
+
+Try these in order:
+1. the [[nth-term-test|nth-term test]]: if the terms don't tend to 0, the series diverges;
+2. recognise a geometric series or a $p$-series;
+3. the [[ratio-test|ratio test]], for factorials and $n$th powers;
+4. the [[comparison-tests|comparison tests]], for series that look like a known one;
+5. the alternating series test, for alternating signs.
+
+> **!** Terms tending to 0 does not show that a series converges.
 
 ### Power Series
 kind: definition

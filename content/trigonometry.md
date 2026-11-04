@@ -82,6 +82,11 @@ prereqs: trig-ratios, special-right-triangles
 kind: skill
 prereqs: trig-ratios, literal-equations
 
+1. draw the triangle, and label the angle and the sides;
+2. choose the ratio that links the known side and the wanted one;
+3. solve for the unknown;
+4. find any remaining angle from the $90^\circ$ total of the acute angles.
+
 Finding missing sides from one side and one angle. If the hypotenuse is 10 and $\theta = 30^\circ$, the opposite side is
 $$o = 10\sin 30^\circ = 5.$$
 
@@ -198,7 +203,11 @@ Why: $\frac{180}{9} = 20$.
 kind: skill
 prereqs: trig-signs, special-angle-values
 
-To find a trig value at any angle, find the acute angle to the $x$-axis, take the value there, and attach the sign of the quadrant:
+1. find the acute angle to the $x$-axis;
+2. take the trig value there;
+3. attach the sign of the quadrant.
+
+**Example.**
 $$\sin 210^\circ = -\sin 30^\circ = -\frac{1}{2}.$$
 
 ```quiz
@@ -337,6 +346,21 @@ prereqs: sine-cosine-graphs, tangent-graph
 | symmetry | odd | even | odd |
 | zeros | $k\pi$ | $\frac{\pi}{2} + k\pi$ | $k\pi$ |
 
+### Small-Angle Approximation {#small-angle-approximation}
+kind: heuristic
+prereqs: radians, sine-cosine-graphs
+
+For small $x$, in radians:
+$$\sin x \approx x, \qquad \tan x \approx x, \qquad \cos x \approx 1 - \frac{x^2}{2}.$$
+
+These are good to about 1 to 2% up to $x = 0.25$, which is about $14^\circ$. In degrees, one degree is about $\frac{1}{60}$ of a radian, so a slope of 1 in 60 is about $1^\circ$.
+
+```quiz
+Q: Using $\sin x \approx x$, what is $\sin 0.1$, to one decimal place?
+A: 0.1
+Why: The exact value is 0.0998.
+```
+
 ### Sinusoid Form {#sinusoid-form}
 kind: form
 prereqs: sinusoids
@@ -355,7 +379,13 @@ $$y = A\sin\big(B(x - C)\big) + D.$$
 kind: skill
 prereqs: sinusoid-form
 
-Draw the midline, mark one period starting at $x = C$, split it in four, and plot the pattern midline, maximum, midline, minimum, midline. For $A < 0$ the maximum and minimum swap. For cosine, the pattern starts at the maximum.
+1. draw the midline $y = D$;
+2. mark one period, starting at $x = C$;
+3. split it in four;
+4. plot midline, maximum, midline, minimum, midline;
+5. join them in a smooth wave.
+
+For $A < 0$ the maximum and minimum swap. For cosine, the pattern starts at the maximum.
 
 ```quiz
 Q: What is the period of $y = 3\sin(4x)$, as a multiple of $\pi$?
@@ -449,7 +479,15 @@ $$\begin{aligned} x &= \frac{\pi}{6} + 2\pi k \quad\text{or} \\ x &= \frac{5\pi}
 kind: skill
 prereqs: fundamental-identities
 
-Work on one side until it becomes the other, using only known identities. Write everything in sines and cosines, combine fractions, and look for $\sin^2 x + \cos^2 x$. Do not move terms across the equals sign, since that assumes what is to be proved.
+1. start from the more complicated side;
+2. write everything in sines and cosines;
+3. combine fractions;
+4. look for $\sin^2 x + \cos^2 x$, and other known identities;
+5. continue until it becomes the other side.
+
+> **!** Work on one side only. Moving terms across the equals sign assumes what is to be proved.
+
+**Example.**
 $$\tan x \cos x = \frac{\sin x}{\cos x}\cos x = \sin x.$$
 
 ## Oblique Triangles

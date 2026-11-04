@@ -27,7 +27,7 @@ A heading with headings under it is a **topic**: it shows as a card that opens u
 
 The first paragraph under a heading is its summary, shown on cards and in search results. Everything after that is the explanation, shown when the concept is opened. A topic's text is its README, which the *i* on its open frame shows at the top of the frame.
 
-The atlas is a reference for tutoring, so entries favour formal statements over casual explanation. For an **axiom**, **theorem**, **definition**, **formula**, **form**, **property** or **rule**, the first paragraph is its formal statement, and for a **skill** its method, and the entry sets it in a box: gold for axioms, blue for theorems (with the statement in italics), green for definitions, red for skills. Each domain keeps all of its axioms together in one topic, `## Axioms`, at the top of its file; a topic that holds nothing but axioms is gilded on the map. Where a subject can be founded in more than one way, give each axiom system a topic of its own inside `## Axioms`, side by side, as Geometry does with Euclid's, Hilbert's and others. Theorems proved from them belong in other topics. Write the statement with no blank line inside it: it may include displayed formulas, and it may end with a list, such as numbered axioms. Proofs, examples and remarks follow after a blank line.
+The atlas is a reference for tutoring, so entries favour formal statements over casual explanation. For an **axiom**, **theorem**, **definition**, **formula**, **form**, **property**, **heuristic** or **rule**, the first paragraph is its formal statement, and for a **skill** its method, and the entry sets it in a box: gold for axioms, blue for theorems (with the statement in italics), green for definitions, red for skills, violet for heuristics. Each domain keeps all of its axioms together in one topic, `## Axioms`, at the top of its file; a topic that holds nothing but axioms is gilded on the map. Where a subject can be founded in more than one way, give each axiom system a topic of its own inside `## Axioms`, side by side, as Geometry does with Euclid's, Hilbert's and others. Theorems proved from them belong in other topics. Write the statement with no blank line inside it: it may include displayed formulas, and it may end with a list, such as numbered axioms. Proofs, examples and remarks follow after a blank line.
 
 ```markdown
 ### Mean Value Theorem {#mvt}
@@ -66,7 +66,7 @@ Right under a heading, before the summary, these lines describe it. All are opti
 | Line | Meaning |
 | --- | --- |
 | `prereqs: lcm, equivalent-fractions` | What this builds on, by id. The map draws these as arrows. |
-| `kind: theorem` | A label on the card: `definition`, `axiom`, `property`, `theorem`, `formula`, `form` (a way of writing something, and what it shows), `rule` (of inference), `skill` or `technique`. Leave it out for a plain concept. |
+| `kind: theorem` | A label on the card: `definition`, `axiom`, `property`, `theorem`, `formula`, `form` (a way of writing something, and what it shows), `heuristic` (a rule of thumb: useful and approximate, or a convention, rather than a fact), `rule` (of inference), `skill` or `technique`. Leave it out for a plain concept. |
 | `color: #8f2d2d` | The colour of this domain or topic and everything inside it. Usually only on the `#` heading. |
 | `summary: …` | A summary, when the first paragraph won't do. |
 | `tags: grade-6, exam` | Extra words for the search box to find. |
@@ -105,6 +105,19 @@ $$\begin{aligned} 3(x - 2) &= x + 4 \\ 3x - 6 &= x + 4 \\ x &= 5 \end{aligned}$$
 ```
 
 Anything that is a list is written as one: `1.` for steps and numbered axioms, `-` for the rest.
+
+**Methods** with a standard procedure state it as numbered steps, as the first thing in the entry, so that it is set in the box. A warning goes straight after, as a quote starting with `**!**`, and an example after that:
+
+```markdown
+1. identify which rate you know, and which one you need;
+2. connect the two with an equation;
+3. differentiate implicitly, usually with respect to time;
+4. plug in for everything except what you are solving for.
+
+> **!** Do not plug in for variables before differentiating.
+
+**Example.** ...
+```
 
 **Proofs** start with `*Proof.*` and end with `$\square$`. To give the reason for each step beside it, add a column after `&&` in an `aligned` block:
 

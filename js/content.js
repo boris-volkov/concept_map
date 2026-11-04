@@ -15,7 +15,7 @@ import { prepare } from './model.js'
 
 export const KINDS = {
   concept: 'Concept', definition: 'Definition', axiom: 'Axiom', property: 'Property',
-  theorem: 'Theorem', formula: 'Formula', form: 'Form', rule: 'Rule', skill: 'Skill', technique: 'Technique', topic: 'Topic',
+  theorem: 'Theorem', formula: 'Formula', form: 'Form', heuristic: 'Heuristic', rule: 'Rule', skill: 'Skill', technique: 'Technique', topic: 'Topic',
 }
 
 const KEYS = {

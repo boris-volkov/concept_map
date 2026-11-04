@@ -651,7 +651,13 @@ $$3x = 12 \implies x = 4.$$
 kind: skill
 prereqs: one-step-equations, like-terms, expanding-brackets
 
-Simplify each side, gather the variable terms on one side, then undo operations in reverse order:
+1. simplify each side, clearing brackets and fractions;
+2. gather the variable terms on one side;
+3. gather the numbers on the other;
+4. divide by the coefficient;
+5. check the answer in the original equation.
+
+**Example.**
 
 $$\begin{aligned} 3(x - 2) &= x + 4 \\ 3x - 6 &= x + 4 \\ 2x &= 10 \\ x &= 5 \end{aligned}$$
 
@@ -679,11 +685,20 @@ Solved like equations, except that multiplying or dividing by a negative flips t
 $$-2x < 6 \implies x > -3.$$
 The solutions form a ray on the number line.
 
+> **!** Solve as for an equation, but flip the inequality whenever you multiply or divide by a negative number.
+
 ### Absolute Value Equations
 kind: skill
 prereqs: linear-equations, absolute-value
 
-An absolute value equation splits in two:
+1. isolate the absolute value;
+2. split into two equations, one for each sign;
+3. solve both;
+4. check both in the original equation.
+
+> **!** If the isolated absolute value equals a negative number, there is no solution.
+
+**Example.**
 $$|x - 3| = 5 \iff x - 3 = 5 \text{ or } x - 3 = -5,$$
 so $x = 8$ or $x = -2$: the two points 5 away from 3.
 
@@ -1483,6 +1498,12 @@ The long division algorithm with powers of $x$ in place of place values, repeati
 kind: skill
 prereqs: polynomial-division
 
+1. to divide by $x - a$, write $a$ and then the coefficients, with a 0 for each missing power;
+2. bring down the first coefficient;
+3. multiply it by $a$, and write the result under the next coefficient;
+4. add, and repeat to the end;
+5. read off the last number as the remainder, and the others as the quotient's coefficients.
+
 A shortcut for dividing by $(x - a)$ using only the coefficients. The last number it produces is the remainder.
 
 #### Factoring by Grouping {#factoring-by-grouping}
@@ -1544,7 +1565,10 @@ point: 2, 0 below
 kind: skill
 prereqs: polynomial-factored-form, interval-notation
 
-Factor, mark the zeros on a number line, find the sign on each interval from a test point, and keep the intervals that fit. The ends count for $\le$ and $\ge$.
+1. get 0 on one side and factor;
+2. mark the zeros on a number line;
+3. find the sign on each interval from a test point;
+4. keep the intervals that fit, with the ends included for $\le$ and $\ge$.
 
 **Example.** $x(x - 2)(x + 3) > 0$ has solution $(-3, 0) \cup (2, \infty)$.
 
@@ -1924,7 +1948,14 @@ Every point of the curve is as far from the focus as from the directrix: see [[p
 kind: skill
 prereqs: factoring-trinomials, zero-product-property, equations-and-solutions
 
-Get 0 on one side, factor, and set each factor to 0:
+1. get 0 on one side;
+2. factor;
+3. set each factor to 0;
+4. solve each.
+
+> **!** Never divide both sides by the variable: that loses the solution $x = 0$.
+
+**Example.**
 $$\begin{aligned} x^2 + x - 6 &= 0 \\ (x + 3)(x - 2) &= 0 \end{aligned}$$
 so $x = -3$ or $x = 2$.
 
@@ -1939,7 +1970,13 @@ $$x^2 = 25 \implies x = \pm 5.$$
 kind: skill
 prereqs: special-products, quadratics-by-square-roots
 
-Add the number that makes a perfect square:
+1. write the equation as $x^2 + bx = c$, dividing by the leading coefficient if it isn't 1;
+2. add $\left(\frac{b}{2}\right)^2$ to both sides;
+3. write the left side as $\left(x + \frac{b}{2}\right)^2$;
+4. take the square root of both sides, with $\pm$;
+5. solve for $x$.
+
+**Example.**
 $$\begin{aligned} x^2 + 6x + 2 &= 0 \\ x^2 + 6x + 9 &= 7 \\ (x + 3)^2 &= 7 \\ x &= -3 \pm \sqrt{7} \end{aligned}$$
 It is also how vertex form is found.
 
@@ -2220,7 +2257,13 @@ Exactly as with fractions: multiply across, or multiply by the reciprocal, and f
 kind: skill
 prereqs: simplifying-rational-expressions, adding-fractions
 
-Exactly as with fractions: find the least common denominator by factoring, rewrite, then combine the numerators.
+1. factor each denominator;
+2. find the least common denominator;
+3. rewrite each fraction over it;
+4. combine the numerators;
+5. simplify.
+
+**Example.**
 
 $$\frac{1}{x} + \frac{1}{x + 1} = \frac{x + 1}{x(x + 1)} + \frac{x}{x(x + 1)} = \frac{2x + 1}{x(x + 1)}$$
 
@@ -2253,7 +2296,12 @@ $$\frac{1 + \frac{1}{x}}{1 - \frac{1}{x^2}} \cdot \frac{x^2}{x^2} = \frac{x^2 + 
 kind: skill
 prereqs: rational-functions, polynomial-inequalities
 
-Get 0 on one side as a single fraction. Mark the zeros of the top and of the bottom on a number line, test each interval, and leave out every zero of the bottom. Do not multiply through by an expression whose sign is unknown.
+1. get 0 on one side as a single fraction;
+2. mark the zeros of the top and of the bottom on a number line;
+3. test each interval;
+4. keep the intervals that fit, leaving out every zero of the bottom.
+
+> **!** Do not multiply through by an expression whose sign is unknown.
 
 **Example.** $\frac{x - 1}{x + 2} \le 0$ has solution $(-2, 1]$.
 
@@ -2365,7 +2413,12 @@ $$y = a\sqrt[n]{x - h} + k.$$
 kind: skill
 prereqs: nth-roots, quadratics-by-factoring
 
-Isolate the radical, then raise both sides to the power that undoes it. Squaring can create **extraneous** solutions that do not satisfy the original equation, so always check.
+1. isolate the radical;
+2. raise both sides to the power that undoes it;
+3. solve;
+4. check every answer in the original equation.
+
+Squaring can create **extraneous** solutions that do not satisfy the original equation, so always check.
 
 $$\begin{aligned} \sqrt{x + 2} &= x \\ x + 2 &= x^2 \\ 0 &= x^2 - x - 2 = (x - 2)(x + 1) \end{aligned}$$
 
@@ -2526,6 +2579,50 @@ prereqs: log-laws
 For $a, b > 0$ with $a, b \ne 1$, and $x > 0$:
 $$\log_b x = \frac{\log_a x}{\log_a b} = \frac{\ln x}{\ln b}$$
 
+#### Rule of 72 {#rule-of-72}
+kind: heuristic
+prereqs: exponential-growth
+
+At $r$ percent growth per period, an amount doubles in about
+$$\frac{72}{r} \text{ periods}.$$
+
+At 6% a year, money doubles in about 12 years; the exact figure is 11.9. The same rule gives a halving time for decay. Exactly, the time is $\frac{\ln 2}{\ln(1 + r)}$, and since $\ln 2 \approx 0.693$ and $\ln(1 + r) \approx r$ for small $r$, the true constant is nearer 69. The number 72 is used because it divides easily by 2, 3, 4, 6, 8, 9 and 12, and it is most accurate near 8%. Above about 20% the rule starts to run short.
+
+```quiz
+Q: By the rule of 72, about how many years does money take to double at 9% a year?
+A: 8
+Why: $\frac{72}{9} = 8$.
+
+Q: A town grows 3% a year. About how many years until it doubles?
+A: 24
+Why: $\frac{72}{3} = 24$.
+```
+
+#### Small Rates Add {#small-rates-add}
+kind: heuristic
+prereqs: exponential-growth
+
+When $nr$ is small,
+$$(1 + r)^n \approx 1 + nr.$$
+
+Five years at 2% is about 10%; the exact figure is 10.4%. Each extra period adds interest on interest, a smaller term that can be ignored while $nr$ is under about 0.1. Beyond that, compounding shows, so use the [[rule-of-72|rule of 72]].
+
+#### Ten Doublings Make a Thousand {#ten-doublings}
+kind: heuristic
+prereqs: exponents
+
+$$2^{10} = 1024 \approx 10^3.$$
+
+So 20 doublings make about a million, and 30 about a billion, which means $\log_{10} 2 \approx 0.3$. A sheet of paper folded 30 times would be about a billion sheets thick.
+
+```quiz
+Q: About how many times larger is $2^{40}$ than 1? Answer as a power of 10.
+- $10^{9}$
++ $10^{12}$
+- $10^{16}$
+Why: $2^{40} = (2^{10})^4 \approx (10^3)^4$.
+```
+
 #### Exponential Function Form {#exponential-form}
 kind: form
 prereqs: exponential-functions
@@ -2574,14 +2671,24 @@ The two sides say the same thing: the logarithm is the exponent.
 kind: skill
 prereqs: log-laws, linear-equations
 
-Take a logarithm of both sides to bring the variable down from the exponent:
+1. isolate the exponential;
+2. take a logarithm of both sides;
+3. bring the exponent down;
+4. solve.
+
+**Example.**
 $$\begin{aligned} 3^x &= 20 \\ x \ln 3 &= \ln 20 \\ x &= \frac{\ln 20}{\ln 3} \approx 2.73 \end{aligned}$$
 
 #### Solving Logarithmic Equations {#solving-log-equations}
 kind: skill
 prereqs: log-laws, log-exponential-forms, extraneous-solutions
 
-Combine the logarithms into one, write it in exponential form, solve, and reject any solution that puts a non-positive number inside a logarithm:
+1. combine the logarithms into one;
+2. write it in exponential form;
+3. solve;
+4. reject any answer that puts a non-positive number inside a logarithm.
+
+**Example.**
 $$\begin{aligned} \log_2 x + \log_2(x - 2) &= 3 \\ x(x - 2) &= 8 \\ x &= 4 \text{ or } x = -2 \end{aligned}$$
 so $x = 4$.
 
@@ -2678,7 +2785,13 @@ Graph both lines and read off the crossing point. Two lines that
 kind: skill
 prereqs: linear-systems, literal-equations
 
-Solve one equation for one variable and substitute into the other. In the system
+1. solve one equation for one variable;
+2. substitute into the other equation;
+3. solve for the remaining variable;
+4. substitute back to find the first;
+5. check the pair in both equations.
+
+**Example.** In the system
 $$\begin{aligned} y &= 2x \\ x + y &= 9 \end{aligned}$$
 putting the first into the second gives
 $$\begin{aligned} x + 2x &= 9 \\ 3x &= 9 \\ x &= 3, \end{aligned}$$
@@ -2688,7 +2801,13 @@ and so $y = 6$.
 kind: skill
 prereqs: linear-systems
 
-Add or subtract multiples of the equations so one variable cancels. In the system
+1. line up the variables;
+2. multiply one or both equations so that one variable's coefficients match or are opposite;
+3. add or subtract the equations to eliminate it;
+4. solve for the remaining variable;
+5. substitute back to find the other.
+
+**Example.** In the system
 $$\begin{aligned} x + y &= 10 \\ x - y &= 4 \end{aligned}$$
 subtracting the second equation from the first cancels $x$:
 $$2y = 6,$$
@@ -2718,11 +2837,20 @@ Why: $x^2 - 2x + 1 = (x - 1)^2 = 0$: the line is a tangent.
 kind: skill
 prereqs: elimination-method
 
-Use one pair of equations, and then another, to eliminate the same variable. This leaves two equations in two unknowns. Solve them, then substitute back.
+1. use one pair of equations to eliminate a variable;
+2. use another pair to eliminate the same variable;
+3. solve the two equations left;
+4. substitute back to find the third.
 
 ### Linear Programming {#linear-programming}
 kind: skill
 prereqs: systems-of-inequalities
+
+1. name the variables, and write the objective;
+2. write the constraints as inequalities;
+3. graph the feasible region;
+4. find its corners;
+5. evaluate the objective at each corner.
 
 Graph the constraints as a [[systems-of-inequalities|system of inequalities]]. The greatest and least values of a linear objective occur at corners of the region, so evaluate it at each corner.
 
@@ -2954,7 +3082,11 @@ $$\begin{aligned} \sqrt{x^2 + (y - p)^2} &= |y + p| \\ x^2 + y^2 - 2py + p^2 &= 
 kind: skill
 prereqs: completing-the-square, conic-standard-forms
 
-Group the $x$ terms and the $y$ terms, complete the square in each, and divide to get 1 on the right:
+1. group the $x$ terms and the $y$ terms;
+2. complete the square in each;
+3. divide to get 1 on the right.
+
+**Example.**
 $$\begin{aligned} x^2 + 4y^2 - 2x - 3 &= 0 \\ (x - 1)^2 + 4y^2 &= 4 \\ \frac{(x - 1)^2}{4} + y^2 &= 1 \end{aligned}$$
 This is an ellipse with centre $(1, 0)$ and semi-axes 2 and 1.
 

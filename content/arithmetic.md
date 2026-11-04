@@ -57,6 +57,14 @@ Replacing a number with a nearby friendlier one, like
 $$347 \approx 350,$$
 to estimate an answer before working it out, and to check it after.
 
+### Order-of-Magnitude Estimates {#order-of-magnitude}
+kind: heuristic
+prereqs: rounding
+
+Round each number to one significant figure, or to the nearest power of 10, and calculate with those. The answer gives the size, not the digits.
+
+So $48 \times 212 \approx 50 \times 200 = 10000$; the exact answer is 10176. Use this to check a calculation, or to estimate what can't be measured, such as how many piano tuners a city has.
+
 ## Operations
 
 The four operations, how they undo each other, and the order to do them in.
@@ -347,6 +355,14 @@ $$35\% = \frac{35}{100} = 0.35.$$
 So 35% of 80 is
 $$\frac{35}{100} \times 80 = 28.$$
 
+### Benchmark Percents {#benchmark-percents}
+kind: heuristic
+prereqs: percents
+
+Build any percent in your head from 10%, 5% and 1%: 10% moves the decimal point one place, 5% is half of that, and 1% moves it two places.
+
+For 15% of \$48, take 10%, which is \$4.80, and half of that, \$2.40, to get \$7.20.
+
 ### Percent Change
 kind: skill
 prereqs: percents
@@ -444,6 +460,15 @@ For example,
 $$\sqrt{49} = 7 \quad\text{because}\quad 7 \times 7 = 49.$$
 Perfect squares have whole-number roots; others, like $\sqrt{2}$, do not.
 
+
+### Estimating Square Roots {#estimating-square-roots}
+kind: heuristic
+prereqs: square-roots
+
+If $a^2$ is the perfect square nearest to $n$, then
+$$\sqrt{n} \approx a + \frac{n - a^2}{2a}.$$
+
+For instance, $\sqrt{10} \approx 3 + \frac{1}{6} \approx 3.17$; the exact value is 3.162. It always comes out slightly high, and works best when $n$ is close to $a^2$.
 
 ## Number Systems
 kind: definition

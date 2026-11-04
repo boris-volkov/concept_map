@@ -138,7 +138,7 @@ const head = (label, title, name, extra) => `<header class="doc-head">
 
 const source = n => `<span class="source" title="Where this is written">${esc(n.file)} · line ${n.line}</span>`
 
-const STATED = { axiom: 'Axiom', theorem: 'Theorem', definition: 'Definition', formula: 'Formula', form: 'Form', property: 'Property', rule: 'Rule', skill: 'Skill' }
+const STATED = { axiom: 'Axiom', theorem: 'Theorem', definition: 'Definition', formula: 'Formula', form: 'Form', property: 'Property', heuristic: 'Heuristic', rule: 'Rule', skill: 'Skill', technique: 'Technique' }
 
 // The entry text. For an axiom, theorem, definition, formula or the like the first paragraph is its
 // formal statement, and for a skill its method, set apart in a box the way a textbook would; any
