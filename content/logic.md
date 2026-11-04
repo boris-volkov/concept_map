@@ -30,7 +30,6 @@ The rules, and their names elsewhere in this domain:
 Classical logic adds one more rule, from $\neg\neg p$ infer $p$ ([[double-negation]]). Without it the system is intuitionistic logic, in which a statement is proved only by a construction.
 
 ### Łukasiewicz's Axioms {#lukasiewicz-axioms}
-flow: across
 
 A Hilbert-style system for $\to$ and $\neg$: three axioms and one rule of inference, [[modus-ponens|modus ponens]].
 

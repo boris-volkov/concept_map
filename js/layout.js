@@ -27,19 +27,24 @@ const GAP = {
   right: { layer: 78, wrap: 22, card: 14 }, // layer: between the columns an arrow runs across
   down: { layer: 58, wrap: 26, card: 18 },
 }
-const ASPECT = 1.5 // a crowded layer wraps until its topic is about this wide for its height
+const ASPECT = 1.5 // a crowded layer down the page wraps until its topic is about this wide for its height
+const ASPECT_ACROSS = 3 // a crowded column wraps sooner, as an open file makes it far taller than wide
 const NOMINAL = { w: 190, h: 64 } // what a box counts as when wrapping, open or not
 const COLUMN_ASPECT = 1.6 // the more of this, the more columns a topic of topics gets
+const FEW = 12 // a topic in rows by kind with no more cards than this runs on, without a row for each kind
 const COLUMN_GAP = 32 // between the columns of a topic of topics, and the boxes in them
 // The rows of a topic marked "rows: kinds": what is proved, what is true of the thing, how it is written, what to do with it.
 const KIND_ROW = { axiom: 0, theorem: 0, rule: 0, formula: 2, form: 2, skill: 3, technique: 3 }
 const kindRow = n => KIND_ROW[n.kind] ?? 1
 
-/** Whether a topic lays its contents out in columns: one holding topics, unless it asks for something else. */
-const inColumns = node => !node.flow && !node.wrap && node.children.some(k => k.children.length)
+const holdsTopics = node => node.children.some(k => k.children.length)
 
-/** The way a topic's contents flow: its own "flow:" if it has one; concepts run across, topics down. */
-export const flowOf = node => node.flow ?? (node.children.some(k => k.children.length) ? 'down' : 'right')
+/** Whether a topic lays its contents out in columns: one holding topics, or concepts with no arrows to follow. */
+const inColumns = node => !node.wrap && !node.rowsByKind && (holdsTopics(node) ? !node.flow : !node.localEdges.length)
+
+/** The way a topic's contents flow. "wrap:" always means so many to a row, across the page. */
+const plannedFlow = node => (node.wrap ? 'down' : node.flow ?? (holdsTopics(node) ? 'down' : 'right'))
+export const flowOf = node => (node.balanced ? 'down' : plannedFlow(node))
 
 /**
  * root: the atlas root; isOpen(node); cardSize(node) → {w, h}, with `file: true` for an open
@@ -70,12 +75,16 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
     const kids = container.children
     const size = kids.map(measure)
     const at = new Map(kids.map((k, i) => [k, i]))
-    // Rows by kind leave the arrows out of it: the cards keep the order they are written in.
-    const rows = container.rowsByKind ? kids.map(kindRow) : null
+    // Rows by kind leave the arrows out of it: the cards keep the order they are written in. A
+    // small topic has too few of each kind to fill a row, so it runs on, in balanced rows.
+    const bands = container.rowsByKind && kids.length > FEW
+    const rows = container.rowsByKind ? kids.map(k => (bands ? kindRow(k) : 0)) : null
+    const line = container.rowsByKind && !bands ? columnCount(kids.length) : container.wrap
     const edges = rows ? [] : container.localEdges.map(e => ({ a: at.get(e.from), b: at.get(e.to), w: e.weight, twin: e.twin }))
     const pos = inColumns(container)
       ? placeColumns(size, kids.map(k => k.leafCount))
-      : placeLayered(size, edges, flowOf(container), container.wrap, rows)
+      : placeLayered(size, edges, plannedFlow(container), line, rows)
+    container.balanced = !!pos.balanced
     kids.forEach((k, i) => rel.set(k, { x: pos.x[i], y: pos.y[i], w: size[i].w, h: size[i].h }))
     return { w: pos.w, h: pos.h }
   }
@@ -243,14 +252,16 @@ function layoutDomains(root, slot, frames) {
   return { places, frames: boxes, routes, width, height: rows ? y - DOMAINS.gap : 0 }
 }
 
+// How many columns, or cards to a row, keep n boxes about as wide as a screen.
+const columnCount = n => Math.max(1, Math.round(Math.sqrt(n * COLUMN_ASPECT)))
+
 // Lays boxes out in columns across the page, as text fills a newspaper, so that what they hold
 // spreads wide rather than tall. Each box, in the order written, goes to the column holding the
 // fewest concepts so far. That is reckoned from what the boxes hold, never from their sizes, so
 // a box always keeps its column: opening one moves only what is below it, or in columns to its right.
 function placeColumns(size, weight) {
   const n = size.length
-  const count = Math.max(1, Math.round(Math.sqrt(n * COLUMN_ASPECT)))
-  const load = new Array(count).fill(0)
+  const load = new Array(columnCount(n)).fill(0)
   const columns = load.map(() => [])
   size.forEach((_, k) => {
     const c = load.indexOf(Math.min(...load))
@@ -311,6 +322,10 @@ function placeLayered(size, edges, dir, wrap = 0, rows = null) {
     layer[v] = Math.min(...succs[v].map(s => layer[s.v])) - 1
   }
   const used = [...new Set(layer)].sort((p, q) => p - q)
+  // A long chain would run out in one thin line: it takes balanced rows instead, in the order written.
+  if (across && !wrap && !rows && used.length > columnCount(n)) {
+    return { ...placeLayered(size, [], 'down', columnCount(n), new Array(n).fill(0)), balanced: true }
+  }
   const compact = new Map(used.map((l, i) => [l, i]))
   const layers = used.map(() => [])
   for (let v = 0; v < n; v++) layers[compact.get(layer[v])].push(v)
@@ -338,7 +353,7 @@ function placeLayered(size, edges, dir, wrap = 0, rows = null) {
   const unit = across ? NOMINAL.h : NOMINAL.w
   const stack = list => list.reduce((s, k, i) => s + breadth(k) + (i ? gap.card : 0), 0)
   const area = n * (NOMINAL.w + gap.wrap) * (NOMINAL.h + gap.card)
-  const limit = Math.max(across ? Math.sqrt(area / ASPECT) : Math.sqrt(area * ASPECT), unit)
+  const limit = Math.max(across ? Math.sqrt(area / ASPECT_ACROSS) : Math.sqrt(area * ASPECT), unit)
   const lanes = [] // a layer's boxes, split into one or more lanes side by side
   layers.forEach((list, l) => {
     // A topic's "wrap: n" fixes the length of a line, keeping its authors' order (CANI / CANI / D).
