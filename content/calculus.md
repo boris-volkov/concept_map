@@ -306,7 +306,7 @@ $$\begin{aligned} \frac{d}{dx}\arcsin x &= \frac{1}{\sqrt{1 - x^2}}, \\ \frac{d}
 
 ### Table of Derivatives {#derivative-table}
 kind: formula
-prereqs: inverse-derivatives, trig-derivatives, exp-log-derivatives, product-rule, quotient-rule, chain-rule, hyperbolic-definition
+prereqs: inverse-derivatives, trig-derivatives, exp-log-derivatives, product-rule, quotient-rule, chain-rule
 
 Here $u$ and $v$ are differentiable functions of $x$, and $a$, $c$ and $n$ are constants. The last column of each table is the chain rule at work: the same derivative for an inside function $u$.
 
@@ -368,30 +368,6 @@ Here $u$ and $v$ are differentiable functions of $x$, and $a$, $c$ and $n$ are c
 | $\operatorname{arccsc} x$ | $-\dfrac{1}{\lvert x \rvert\sqrt{x^2 - 1}}$ | $-\dfrac{u'}{\lvert u \rvert\sqrt{u^2 - 1}}$ |
 
 These hold where $\lvert x \rvert < 1$ for $\arcsin$ and $\arccos$, and $\lvert x \rvert > 1$ for $\operatorname{arcsec}$ and $\operatorname{arccsc}$.
-
-: Hyperbolic Functions
-| $f(x)$ | $f'(x)$ | $\dfrac{d}{dx} f(u)$ |
-| --- | --- | --- |
-| $\sinh x$ | $\cosh x$ | $u' \cosh u$ |
-| $\cosh x$ | $\sinh x$ | $u' \sinh u$ |
-| $\tanh x$ | $\operatorname{sech}^2 x$ | $u' \operatorname{sech}^2 u$ |
-| $\coth x$ | $-\operatorname{csch}^2 x$ | $-u' \operatorname{csch}^2 u$ |
-| $\operatorname{sech} x$ | $-\operatorname{sech} x \tanh x$ | $-u' \operatorname{sech} u \tanh u$ |
-| $\operatorname{csch} x$ | $-\operatorname{csch} x \coth x$ | $-u' \operatorname{csch} u \coth u$ |
-
-These are defined in [[hyperbolic-functions]].
-
-: Inverse Hyperbolic Functions
-| $f(x)$ | $f'(x)$ | $\dfrac{d}{dx} f(u)$ |
-| --- | --- | --- |
-| $\operatorname{arcsinh} x$ | $\dfrac{1}{\sqrt{x^2 + 1}}$ | $\dfrac{u'}{\sqrt{u^2 + 1}}$ |
-| $\operatorname{arccosh} x$ | $\dfrac{1}{\sqrt{x^2 - 1}}$ | $\dfrac{u'}{\sqrt{u^2 - 1}}$ |
-| $\operatorname{arctanh} x$ | $\dfrac{1}{1 - x^2}$ | $\dfrac{u'}{1 - u^2}$ |
-| $\operatorname{arccoth} x$ | $\dfrac{1}{1 - x^2}$ | $\dfrac{u'}{1 - u^2}$ |
-| $\operatorname{arcsech} x$ | $-\dfrac{1}{x\sqrt{1 - x^2}}$ | $-\dfrac{u'}{u\sqrt{1 - u^2}}$ |
-| $\operatorname{arccsch} x$ | $-\dfrac{1}{\lvert x \rvert\sqrt{1 + x^2}}$ | $-\dfrac{u'}{\lvert u \rvert\sqrt{1 + u^2}}$ |
-
-These hold where $x > 1$ for $\operatorname{arccosh}$, $\lvert x \rvert < 1$ for $\operatorname{arctanh}$, $\lvert x \rvert > 1$ for $\operatorname{arccoth}$, and $0 < x < 1$ for $\operatorname{arcsech}$.
 
 : The nth Derivative
 | $f(x)$ | $f^{(n)}(x)$ |
@@ -559,18 +535,133 @@ $$\int f(x)\,dx = F(x) + C.$$
 
 ### Table of Integrals {#integral-table}
 kind: formula
-prereqs: antiderivatives, inverse-derivatives
+prereqs: antiderivatives, inverse-derivatives, integration-by-parts, trig-substitution, partial-fractions
 
-Each holds up to an added constant $C$:
+In the rules, $u$ and $v$ are differentiable functions of $x$, and $F$ is an antiderivative of $f$. In the other tables $a > 0$, and $b$, $c$, $m$ and $n$ are constants. Each integral holds up to an added constant $C$, wherever both sides are defined. The last column is substitution at work: the same integral for a linear inside function $u = mx + b$, with $m \ne 0$.
 
-| $f(x)$ | $\int f(x)\,dx$ | | $f(x)$ | $\int f(x)\,dx$ |
-| --- | --- | --- | --- | --- |
-| $x^n$, $n \ne -1$ | $\frac{x^{n+1}}{n + 1}$ | | $\sin x$ | $-\cos x$ |
-| $\frac{1}{x}$ | $\ln\lvert x \rvert$ | | $\cos x$ | $\sin x$ |
-| $e^x$ | $e^x$ | | $\sec^2 x$ | $\tan x$ |
-| $a^x$ | $\frac{a^x}{\ln a}$ | | $\sec x \tan x$ | $\sec x$ |
-| $\ln x$ | $x \ln x - x$ | | $\tan x$ | $-\ln\lvert \cos x \rvert$ |
-| $\frac{1}{1 + x^2}$ | $\arctan x$ | | $\frac{1}{\sqrt{1 - x^2}}$ | $\arcsin x$ |
+: Rules
+| Rule | Formula |
+| --- | --- |
+| constant multiple | $\int cf\,dx = c\int f\,dx$ |
+| sum and difference | $\int (f \pm g)\,dx = \int f\,dx \pm \int g\,dx$ |
+| substitution | $\int f(u)\,u'\,dx = F(u)$ |
+| linear substitution | $\int f(mx + b)\,dx = \dfrac{1}{m}F(mx + b)$ |
+| parts | $\int uv'\,dx = uv - \int u'v\,dx$ |
+| repeated parts | $\int uv''\,dx = uv' - u'v + \int u''v\,dx$ |
+| power | $\int u^n u'\,dx = \dfrac{u^{n+1}}{n + 1}$, for $n \ne -1$ |
+| logarithmic | $\int \dfrac{u'}{u}\,dx = \ln\lvert u \rvert$ |
+| exponential | $\int e^u u'\,dx = e^u$ |
+| inverse | $\int f^{-1}(x)\,dx = xf^{-1}(x) - F\big(f^{-1}(x)\big)$ |
+
+: Powers and Roots
+| $f(x)$ | $\int f(x)\,dx$ | $\int f(u)\,dx$ |
+| --- | --- | --- |
+| $c$ | $cx$ | $cx$ |
+| $x$ | $\dfrac{x^2}{2}$ | $\dfrac{u^2}{2m}$ |
+| $x^n$, $n \ne -1$ | $\dfrac{x^{n+1}}{n + 1}$ | $\dfrac{u^{n+1}}{m(n + 1)}$ |
+| $\dfrac{1}{x}$ | $\ln\lvert x \rvert$ | $\dfrac{\ln\lvert u \rvert}{m}$ |
+| $\dfrac{1}{x^2}$ | $-\dfrac{1}{x}$ | $-\dfrac{1}{mu}$ |
+| $\dfrac{1}{x^n}$, $n \ne 1$ | $-\dfrac{1}{(n - 1)x^{n-1}}$ | $-\dfrac{1}{m(n - 1)u^{n-1}}$ |
+| $\sqrt{x}$ | $\dfrac{2x\sqrt{x}}{3}$ | $\dfrac{2u\sqrt{u}}{3m}$ |
+| $\dfrac{1}{\sqrt{x}}$ | $2\sqrt{x}$ | $\dfrac{2\sqrt{u}}{m}$ |
+| $\sqrt[3]{x}$ | $\dfrac{3x\sqrt[3]{x}}{4}$ | $\dfrac{3u\sqrt[3]{u}}{4m}$ |
+| $\lvert x \rvert$ | $\dfrac{x\lvert x \rvert}{2}$ | $\dfrac{u\lvert u \rvert}{2m}$ |
+
+: Exponentials and Logarithms
+| $f(x)$ | $\int f(x)\,dx$ | $\int f(u)\,dx$ |
+| --- | --- | --- |
+| $e^x$ | $e^x$ | $\dfrac{e^u}{m}$ |
+| $a^x$ | $\dfrac{a^x}{\ln a}$ | $\dfrac{a^u}{m\ln a}$ |
+| $\ln x$ | $x\ln x - x$ | $\dfrac{u\ln u - u}{m}$ |
+| $\ln\lvert x \rvert$ | $x\ln\lvert x \rvert - x$ | $\dfrac{u\ln\lvert u \rvert - u}{m}$ |
+| $\log_a x$ | $\dfrac{x\ln x - x}{\ln a}$ | $\dfrac{u\ln u - u}{m\ln a}$ |
+
+: Trigonometric Functions
+| $f(x)$ | $\int f(x)\,dx$ | $\int f(u)\,dx$ |
+| --- | --- | --- |
+| $\sin x$ | $-\cos x$ | $-\dfrac{\cos u}{m}$ |
+| $\cos x$ | $\sin x$ | $\dfrac{\sin u}{m}$ |
+| $\tan x$ | $-\ln\lvert \cos x \rvert$ | $-\dfrac{\ln\lvert \cos u \rvert}{m}$ |
+| $\cot x$ | $\ln\lvert \sin x \rvert$ | $\dfrac{\ln\lvert \sin u \rvert}{m}$ |
+| $\sec x$ | $\ln\lvert \sec x + \tan x \rvert$ | $\dfrac{\ln\lvert \sec u + \tan u \rvert}{m}$ |
+| $\csc x$ | $-\ln\lvert \csc x + \cot x \rvert$ | $-\dfrac{\ln\lvert \csc u + \cot u \rvert}{m}$ |
+| $\sec^2 x$ | $\tan x$ | $\dfrac{\tan u}{m}$ |
+| $\csc^2 x$ | $-\cot x$ | $-\dfrac{\cot u}{m}$ |
+| $\sec x \tan x$ | $\sec x$ | $\dfrac{\sec u}{m}$ |
+| $\csc x \cot x$ | $-\csc x$ | $-\dfrac{\csc u}{m}$ |
+
+: Powers of Trigonometric Functions
+| $f(x)$ | $\int f(x)\,dx$ |
+| --- | --- |
+| $\sin^2 x$ | $\dfrac{x}{2} - \dfrac{\sin 2x}{4}$ |
+| $\cos^2 x$ | $\dfrac{x}{2} + \dfrac{\sin 2x}{4}$ |
+| $\tan^2 x$ | $\tan x - x$ |
+| $\cot^2 x$ | $-\cot x - x$ |
+| $\sin^3 x$ | $\dfrac{\cos^3 x}{3} - \cos x$ |
+| $\cos^3 x$ | $\sin x - \dfrac{\sin^3 x}{3}$ |
+| $\sec^3 x$ | $\dfrac{\sec x \tan x + \ln\lvert \sec x + \tan x \rvert}{2}$ |
+| $\sin x \cos x$ | $\dfrac{\sin^2 x}{2}$ |
+
+: Inverse Trigonometric Functions
+| $f(x)$ | $\int f(x)\,dx$ | $\int f(u)\,dx$ |
+| --- | --- | --- |
+| $\arcsin x$ | $x\arcsin x + \sqrt{1 - x^2}$ | $\dfrac{u\arcsin u + \sqrt{1 - u^2}}{m}$ |
+| $\arccos x$ | $x\arccos x - \sqrt{1 - x^2}$ | $\dfrac{u\arccos u - \sqrt{1 - u^2}}{m}$ |
+| $\arctan x$ | $x\arctan x - \dfrac{\ln(1 + x^2)}{2}$ | $\dfrac{1}{m}\left(u\arctan u - \dfrac{\ln(1 + u^2)}{2}\right)$ |
+| $\operatorname{arccot} x$ | $x\operatorname{arccot} x + \dfrac{\ln(1 + x^2)}{2}$ | $\dfrac{1}{m}\left(u\operatorname{arccot} u + \dfrac{\ln(1 + u^2)}{2}\right)$ |
+| $\operatorname{arcsec} x$ | $x\operatorname{arcsec} x - \ln\left(\lvert x \rvert + \sqrt{x^2 - 1}\right)$ | $\dfrac{1}{m}\left(u\operatorname{arcsec} u - \ln\left(\lvert u \rvert + \sqrt{u^2 - 1}\right)\right)$ |
+| $\operatorname{arccsc} x$ | $x\operatorname{arccsc} x + \ln\left(\lvert x \rvert + \sqrt{x^2 - 1}\right)$ | $\dfrac{1}{m}\left(u\operatorname{arccsc} u + \ln\left(\lvert u \rvert + \sqrt{u^2 - 1}\right)\right)$ |
+
+These hold where $\lvert x \rvert \le 1$ for $\arcsin$ and $\arccos$, and $\lvert x \rvert \ge 1$ for $\operatorname{arcsec}$ and $\operatorname{arccsc}$.
+
+: Rational Functions
+| $f(x)$ | $\int f(x)\,dx$ |
+| --- | --- |
+| $\dfrac{1}{1 + x^2}$ | $\arctan x$ |
+| $\dfrac{1}{x^2 + a^2}$ | $\dfrac{1}{a}\arctan\dfrac{x}{a}$ |
+| $\dfrac{1}{x^2 - a^2}$ | $\dfrac{1}{2a}\ln\left\lvert\dfrac{x - a}{x + a}\right\rvert$ |
+| $\dfrac{1}{a^2 - x^2}$ | $\dfrac{1}{2a}\ln\left\lvert\dfrac{x + a}{x - a}\right\rvert$ |
+| $\dfrac{x}{x^2 + a^2}$ | $\dfrac{\ln(x^2 + a^2)}{2}$ |
+| $\dfrac{1}{(x + a)(x + b)}$, $a \ne b$ | $\dfrac{1}{b - a}\ln\left\lvert\dfrac{x + a}{x + b}\right\rvert$ |
+
+: Roots of Quadratics
+| $f(x)$ | $\int f(x)\,dx$ |
+| --- | --- |
+| $\dfrac{1}{\sqrt{1 - x^2}}$ | $\arcsin x$ |
+| $\dfrac{1}{\sqrt{a^2 - x^2}}$ | $\arcsin\dfrac{x}{a}$ |
+| $\dfrac{1}{\sqrt{x^2 + a^2}}$ | $\ln\left(x + \sqrt{x^2 + a^2}\right)$ |
+| $\dfrac{1}{\sqrt{x^2 - a^2}}$ | $\ln\left\lvert x + \sqrt{x^2 - a^2}\right\rvert$ |
+| $\dfrac{1}{x\sqrt{x^2 - a^2}}$ | $\dfrac{1}{a}\operatorname{arcsec}\dfrac{\lvert x \rvert}{a}$ |
+| $\dfrac{x}{\sqrt{x^2 + a^2}}$ | $\sqrt{x^2 + a^2}$ |
+| $\sqrt{a^2 - x^2}$ | $\dfrac{x\sqrt{a^2 - x^2}}{2} + \dfrac{a^2}{2}\arcsin\dfrac{x}{a}$ |
+| $\sqrt{x^2 + a^2}$ | $\dfrac{x\sqrt{x^2 + a^2}}{2} + \dfrac{a^2}{2}\ln\left(x + \sqrt{x^2 + a^2}\right)$ |
+| $\sqrt{x^2 - a^2}$ | $\dfrac{x\sqrt{x^2 - a^2}}{2} - \dfrac{a^2}{2}\ln\left\lvert x + \sqrt{x^2 - a^2}\right\rvert$ |
+
+: Products
+| $f(x)$ | $\int f(x)\,dx$ |
+| --- | --- |
+| $xe^x$ | $(x - 1)e^x$ |
+| $x^2 e^x$ | $(x^2 - 2x + 2)e^x$ |
+| $x\ln x$ | $\dfrac{x^2}{2}\ln x - \dfrac{x^2}{4}$ |
+| $x^n\ln x$, $n \ne -1$ | $\dfrac{x^{n+1}}{n + 1}\ln x - \dfrac{x^{n+1}}{(n + 1)^2}$ |
+| $\dfrac{\ln x}{x}$ | $\dfrac{(\ln x)^2}{2}$ |
+| $\dfrac{1}{x\ln x}$ | $\ln\lvert \ln x \rvert$ |
+| $x\sin x$ | $\sin x - x\cos x$ |
+| $x\cos x$ | $\cos x + x\sin x$ |
+| $e^{ax}\sin bx$ | $\dfrac{e^{ax}(a\sin bx - b\cos bx)}{a^2 + b^2}$ |
+| $e^{ax}\cos bx$ | $\dfrac{e^{ax}(a\cos bx + b\sin bx)}{a^2 + b^2}$ |
+
+: Reduction Formulas
+| Integral | Equals |
+| --- | --- |
+| $\int x^n e^x\,dx$ | $x^n e^x - n\int x^{n-1}e^x\,dx$ |
+| $\int x^n \sin x\,dx$ | $-x^n\cos x + n\int x^{n-1}\cos x\,dx$ |
+| $\int x^n \cos x\,dx$ | $x^n\sin x - n\int x^{n-1}\sin x\,dx$ |
+| $\int (\ln x)^n\,dx$ | $x(\ln x)^n - n\int (\ln x)^{n-1}\,dx$ |
+| $\int \sin^n x\,dx$ | $-\dfrac{\sin^{n-1} x\cos x}{n} + \dfrac{n - 1}{n}\int \sin^{n-2} x\,dx$ |
+| $\int \cos^n x\,dx$ | $\dfrac{\cos^{n-1} x\sin x}{n} + \dfrac{n - 1}{n}\int \cos^{n-2} x\,dx$ |
+| $\int \tan^n x\,dx$ | $\dfrac{\tan^{n-1} x}{n - 1} - \int \tan^{n-2} x\,dx$ |
+| $\int \sec^n x\,dx$ | $\dfrac{\sec^{n-2} x\tan x}{n - 1} + \dfrac{n - 2}{n - 1}\int \sec^{n-2} x\,dx$ |
 
 ### Riemann Sums
 kind: definition

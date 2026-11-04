@@ -1063,7 +1063,7 @@ $$\sinh x = \frac{e^x - e^{-x}}{2}, \qquad \cosh x = \frac{e^x + e^{-x}}{2}.$$
 The other four follow as the trigonometric functions do:
 $$\tanh x = \frac{\sinh x}{\cosh x}, \quad \coth x = \frac{\cosh x}{\sinh x}, \quad \operatorname{sech} x = \frac{1}{\cosh x}, \quad \operatorname{csch} x = \frac{1}{\sinh x}.$$
 
-Their derivatives are in the [[derivative-table|table of derivatives]].
+Their derivatives and integrals are in the [[hyperbolic-calculus-table|table of hyperbolic derivatives and integrals]].
 
 ```quiz
 Q: What is $\cosh 0$?
@@ -1192,6 +1192,68 @@ Since the hyperbolic functions are built from $e^x$, their inverses are logarith
 *Proof for arcsinh.* Set $y = \sinh^{-1} x$, so that $e^y - e^{-y} = 2x$. Multiplying by $e^y$ gives a quadratic in $e^y$,
 $$(e^y)^2 - 2x\,e^y - 1 = 0,$$
 whose positive root is $e^y = x + \sqrt{x^2 + 1}$. $\square$
+
+### Table of Hyperbolic Derivatives & Integrals {#hyperbolic-calculus-table}
+kind: formula
+prereqs: hyperbolic-definition, inverse-hyperbolic, chain-rule, quotient-rule, inverse-derivatives, exp-log-derivatives, antiderivatives, integration-by-parts
+
+In the derivatives, $u$ is a differentiable function of $x$, and the last column is the chain rule at work: the same derivative for an inside function $u$. Each integral holds up to an added constant $C$, and its last column is the same integral for a linear inside function $u = mx + b$, with $m \ne 0$.
+
+: Derivatives
+| $f(x)$ | $f'(x)$ | $\dfrac{d}{dx} f(u)$ |
+| --- | --- | --- |
+| $\sinh x$ | $\cosh x$ | $u' \cosh u$ |
+| $\cosh x$ | $\sinh x$ | $u' \sinh u$ |
+| $\tanh x$ | $\operatorname{sech}^2 x$ | $u' \operatorname{sech}^2 u$ |
+| $\coth x$ | $-\operatorname{csch}^2 x$ | $-u' \operatorname{csch}^2 u$ |
+| $\operatorname{sech} x$ | $-\operatorname{sech} x \tanh x$ | $-u' \operatorname{sech} u \tanh u$ |
+| $\operatorname{csch} x$ | $-\operatorname{csch} x \coth x$ | $-u' \operatorname{csch} u \coth u$ |
+
+: Derivatives of the Inverses
+| $f(x)$ | $f'(x)$ | $\dfrac{d}{dx} f(u)$ |
+| --- | --- | --- |
+| $\operatorname{arcsinh} x$ | $\dfrac{1}{\sqrt{x^2 + 1}}$ | $\dfrac{u'}{\sqrt{u^2 + 1}}$ |
+| $\operatorname{arccosh} x$ | $\dfrac{1}{\sqrt{x^2 - 1}}$ | $\dfrac{u'}{\sqrt{u^2 - 1}}$ |
+| $\operatorname{arctanh} x$ | $\dfrac{1}{1 - x^2}$ | $\dfrac{u'}{1 - u^2}$ |
+| $\operatorname{arccoth} x$ | $\dfrac{1}{1 - x^2}$ | $\dfrac{u'}{1 - u^2}$ |
+| $\operatorname{arcsech} x$ | $-\dfrac{1}{x\sqrt{1 - x^2}}$ | $-\dfrac{u'}{u\sqrt{1 - u^2}}$ |
+| $\operatorname{arccsch} x$ | $-\dfrac{1}{\lvert x \rvert\sqrt{1 + x^2}}$ | $-\dfrac{u'}{\lvert u \rvert\sqrt{1 + u^2}}$ |
+
+These hold where $x > 1$ for $\operatorname{arccosh}$, $\lvert x \rvert < 1$ for $\operatorname{arctanh}$, $\lvert x \rvert > 1$ for $\operatorname{arccoth}$, and $0 < x < 1$ for $\operatorname{arcsech}$.
+
+: Integrals
+| $f(x)$ | $\int f(x)\,dx$ | $\int f(u)\,dx$ |
+| --- | --- | --- |
+| $\sinh x$ | $\cosh x$ | $\dfrac{\cosh u}{m}$ |
+| $\cosh x$ | $\sinh x$ | $\dfrac{\sinh u}{m}$ |
+| $\tanh x$ | $\ln(\cosh x)$ | $\dfrac{\ln(\cosh u)}{m}$ |
+| $\coth x$ | $\ln\lvert \sinh x \rvert$ | $\dfrac{\ln\lvert \sinh u \rvert}{m}$ |
+| $\operatorname{sech} x$ | $\arctan(\sinh x)$ | $\dfrac{\arctan(\sinh u)}{m}$ |
+| $\operatorname{csch} x$ | $\ln\left\lvert \tanh\dfrac{x}{2} \right\rvert$ | $\dfrac{1}{m}\ln\left\lvert \tanh\dfrac{u}{2} \right\rvert$ |
+| $\operatorname{sech}^2 x$ | $\tanh x$ | $\dfrac{\tanh u}{m}$ |
+| $\operatorname{csch}^2 x$ | $-\coth x$ | $-\dfrac{\coth u}{m}$ |
+| $\operatorname{sech} x \tanh x$ | $-\operatorname{sech} x$ | $-\dfrac{\operatorname{sech} u}{m}$ |
+| $\operatorname{csch} x \coth x$ | $-\operatorname{csch} x$ | $-\dfrac{\operatorname{csch} u}{m}$ |
+
+: Integrals of the Inverses
+| $f(x)$ | $\int f(x)\,dx$ | $\int f(u)\,dx$ |
+| --- | --- | --- |
+| $\operatorname{arcsinh} x$ | $x\operatorname{arcsinh} x - \sqrt{x^2 + 1}$ | $\dfrac{u\operatorname{arcsinh} u - \sqrt{u^2 + 1}}{m}$ |
+| $\operatorname{arccosh} x$ | $x\operatorname{arccosh} x - \sqrt{x^2 - 1}$ | $\dfrac{u\operatorname{arccosh} u - \sqrt{u^2 - 1}}{m}$ |
+| $\operatorname{arctanh} x$ | $x\operatorname{arctanh} x + \dfrac{\ln(1 - x^2)}{2}$ | $\dfrac{1}{m}\left(u\operatorname{arctanh} u + \dfrac{\ln(1 - u^2)}{2}\right)$ |
+| $\operatorname{arccoth} x$ | $x\operatorname{arccoth} x + \dfrac{\ln(x^2 - 1)}{2}$ | $\dfrac{1}{m}\left(u\operatorname{arccoth} u + \dfrac{\ln(u^2 - 1)}{2}\right)$ |
+| $\operatorname{arcsech} x$ | $x\operatorname{arcsech} x + \arcsin x$ | $\dfrac{u\operatorname{arcsech} u + \arcsin u}{m}$ |
+| $\operatorname{arccsch} x$ | $x\operatorname{arccsch} x + \lvert \operatorname{arcsinh} x \rvert$ | $\dfrac{u\operatorname{arccsch} u + \lvert \operatorname{arcsinh} u \rvert}{m}$ |
+
+: Integrals Giving the Inverses
+| $f(x)$ | $\int f(x)\,dx$ | Where |
+| --- | --- | --- |
+| $\dfrac{1}{\sqrt{x^2 + 1}}$ | $\operatorname{arcsinh} x$ | all $x$ |
+| $\dfrac{1}{\sqrt{x^2 - 1}}$ | $\operatorname{arccosh} x$ | $x > 1$ |
+| $\dfrac{1}{1 - x^2}$ | $\operatorname{arctanh} x$ | $\lvert x \rvert < 1$ |
+| $\dfrac{1}{1 - x^2}$ | $\operatorname{arccoth} x$ | $\lvert x \rvert > 1$ |
+| $\dfrac{1}{x\sqrt{1 - x^2}}$ | $-\operatorname{arcsech} x$ | $0 < x < 1$ |
+| $\dfrac{1}{x\sqrt{1 + x^2}}$ | $-\operatorname{arccsch} x$ | $x > 0$ |
 
 ### Proving Hyperbolic Identities {#proving-hyperbolic-identities}
 kind: skill
