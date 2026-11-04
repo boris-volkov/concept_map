@@ -27,7 +27,7 @@ A heading with headings under it is a **topic**: it shows as a card that opens u
 
 The first paragraph under a heading is its summary, shown on cards and in search results. Everything after that is the explanation, shown when the concept is opened. A topic's text is its README, which the *i* on its open frame shows at the top of the frame.
 
-The atlas is a reference for tutoring, so entries favour formal statements over casual explanation. For an **axiom**, **theorem**, **definition**, **formula**, **property** or **rule**, the first paragraph is its formal statement, and the entry sets it in a box: gold for axioms, blue for theorems (with the statement in italics), green for definitions. Each domain keeps all of its axioms together in one topic, `## Axioms`, at the top of its file; a topic that holds nothing but axioms is gilded on the map. Where a subject can be founded in more than one way, give each axiom system a topic of its own inside `## Axioms`, side by side, as Geometry does with Euclid's, Hilbert's and others. Theorems proved from them belong in other topics. Write the statement with no blank line inside it: it may include displayed formulas, and it may end with a list, such as numbered axioms. Proofs, examples and remarks follow after a blank line.
+The atlas is a reference for tutoring, so entries favour formal statements over casual explanation. For an **axiom**, **theorem**, **definition**, **formula**, **form**, **property** or **rule**, the first paragraph is its formal statement, and for a **skill** its method, and the entry sets it in a box: gold for axioms, blue for theorems (with the statement in italics), green for definitions, red for skills. Each domain keeps all of its axioms together in one topic, `## Axioms`, at the top of its file; a topic that holds nothing but axioms is gilded on the map. Where a subject can be founded in more than one way, give each axiom system a topic of its own inside `## Axioms`, side by side, as Geometry does with Euclid's, Hilbert's and others. Theorems proved from them belong in other topics. Write the statement with no blank line inside it: it may include displayed formulas, and it may end with a list, such as numbered axioms. Proofs, examples and remarks follow after a blank line.
 
 ```markdown
 ### Mean Value Theorem {#mvt}
@@ -66,12 +66,13 @@ Right under a heading, before the summary, these lines describe it. All are opti
 | Line | Meaning |
 | --- | --- |
 | `prereqs: lcm, equivalent-fractions` | What this builds on, by id. The map draws these as arrows. |
-| `kind: theorem` | A label on the card: `definition`, `axiom`, `property`, `theorem`, `formula`, `rule` (of inference), `skill` or `technique`. Leave it out for a plain concept. |
+| `kind: theorem` | A label on the card: `definition`, `axiom`, `property`, `theorem`, `formula`, `form` (a way of writing something, and what it shows), `rule` (of inference), `skill` or `technique`. Leave it out for a plain concept. |
 | `color: #8f2d2d` | The colour of this domain or topic and everything inside it. Usually only on the `#` heading. |
 | `summary: …` | A summary, when the first paragraph won't do. |
 | `tags: grade-6, exam` | Extra words for the search box to find. |
 | `flow: down` | On a topic: lay its contents out top to bottom (or `flow: across`, left to right), instead of the usual alternation. Good for a topic that is one long chain. |
 | `wrap: 4` | On a topic: lay its contents out at most 4 to a line, in the order written, as the field axioms are (C A N I / C A N I / D). Without it the map arranges a topic by its arrows. |
+| `rows: kinds` | On a topic: lay its contents out in rows by kind, in the order written, whatever the arrows say: theorems on top, then definitions and properties, then forms and formulas, then skills and techniques. Use it with `flow: down` and a `wrap:`, as Quadratics does, for a topic that reads best as a reference sheet. Its cards draw their arrows only when one is selected. |
 | `id: lcm` | The same as `{#lcm}` on the heading. |
 | `parent: algebra` | Only on a file's `#` heading: put this file's contents inside another topic (see *Splitting a big domain*). |
 

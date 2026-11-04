@@ -15,13 +15,13 @@ import { prepare } from './model.js'
 
 export const KINDS = {
   concept: 'Concept', definition: 'Definition', axiom: 'Axiom', property: 'Property',
-  theorem: 'Theorem', formula: 'Formula', rule: 'Rule', skill: 'Skill', technique: 'Technique', topic: 'Topic',
+  theorem: 'Theorem', formula: 'Formula', form: 'Form', rule: 'Rule', skill: 'Skill', technique: 'Technique', topic: 'Topic',
 }
 
 const KEYS = {
   id: 'id', kind: 'kind', type: 'kind', prereqs: 'prereqs', prereq: 'prereqs', prerequisites: 'prereqs',
   requires: 'prereqs', needs: 'prereqs', color: 'color', colour: 'color', parent: 'parent',
-  summary: 'summary', tags: 'tags', tag: 'tags', wrap: 'wrap', flow: 'flow',
+  summary: 'summary', tags: 'tags', tag: 'tags', wrap: 'wrap', flow: 'flow', rows: 'rows',
 }
 
 const DEFAULT_COLOR = '#6b5a45'
@@ -153,6 +153,9 @@ export function buildAtlas({ index, files }) {
     const flow = n.meta.flow?.value.trim().toLowerCase()
     if (flow && flow !== 'down' && flow !== 'across') report('warning', n.file, n.meta.flow.line, `“flow: ${flow}” should be “down” or “across”.`, n.id)
     n.flow = flow === 'down' ? 'down' : flow === 'across' ? 'right' : null // for a topic: overrides the alternating flow
+    const rows = n.meta.rows?.value.trim().toLowerCase()
+    if (rows && rows !== 'kinds') report('warning', n.file, n.meta.rows.line, `“rows: ${rows}” should be “kinds”.`, n.id)
+    n.rowsByKind = rows === 'kinds' // for a topic: one row per kind of thing, not an order set by its arrows
     n.tags = (n.meta.tags?.value ?? '').split(/[,\s]+/).filter(Boolean).map(t => t.toLowerCase())
     n.plainTitle = plainText(n.title)
     n.prereqs = []

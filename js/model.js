@@ -306,13 +306,14 @@ export function visibleRep(n, isOpen) {
  * The arrows to draw. Arrows only join neighbours: the children of each open topic, and the
  * domains themselves. A prerequisite in another topic shows as one arrow between the two topics,
  * whose weight is how many prerequisites it carries, so no arrow ever crosses a topic's border.
+ * A topic in rows by kind is laid out as a reference sheet, not by its arrows, so it draws none.
  * `focus`, a selected concept, also gets its own direct links drawn, wherever they lead.
  */
 export function visibleEdges(atlas, isOpen, focus = null) {
   const edges = new Map()
   const add = e => edges.set(e.key, e)
   const walk = container => {
-    container.localEdges.forEach(add)
+    if (!container.rowsByKind) container.localEdges.forEach(add)
     for (const k of container.children) if (isOpen(k)) walk(k)
   }
   walk(atlas.root)

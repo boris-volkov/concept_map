@@ -30,6 +30,9 @@ const GAP = {
 const GAP_FRAME = 26 // beside an open topic or an open file
 const ASPECT = 1.5 // a crowded layer wraps until its topic is about this wide for its height
 const TALL = 1600 // a column of boxes taller than this, as one of open files soon is, wraps into another beside it
+// The rows of a topic marked "rows: kinds": what is proved, what is true of the thing, how it is written, what to do with it.
+const KIND_ROW = { axiom: 0, theorem: 0, rule: 0, formula: 2, form: 2, skill: 3, technique: 3 }
+const kindRow = n => KIND_ROW[n.kind] ?? 1
 
 /** Which way a topic's contents flow, by its depth: domains (0) down, topics (1) across… (the domains themselves: see layoutDomains). */
 export const direction = depth => (depth % 2 === 0 ? 'down' : 'right')
@@ -69,8 +72,10 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
     const kids = container.children
     const size = kids.map(measure)
     const at = new Map(kids.map((k, i) => [k, i]))
-    const edges = container.localEdges.map(e => ({ a: at.get(e.from), b: at.get(e.to), w: e.weight, twin: e.twin }))
-    const pos = placeLayered(size, edges, flowOf(container), container.wrap)
+    // Rows by kind leave the arrows out of it: the cards keep the order they are written in.
+    const rows = container.rowsByKind ? kids.map(kindRow) : null
+    const edges = rows ? [] : container.localEdges.map(e => ({ a: at.get(e.from), b: at.get(e.to), w: e.weight, twin: e.twin }))
+    const pos = placeLayered(size, edges, flowOf(container), container.wrap, rows)
     kids.forEach((k, i) => rel.set(k, { x: pos.x[i], y: pos.y[i], w: size[i].w, h: size[i].h }))
     return { w: pos.w, h: pos.h }
   }
@@ -240,8 +245,9 @@ function layoutDomains(root, slot, frames) {
 }
 
 // Lays out boxes of the given sizes, with weighted arrows a → b between them, flowing `dir`.
+// `rows`, if given, says which layer each box starts in, for boxes with no arrows to place them.
 // Positions are worked out as u (along the flow) and v (across it), then turned into x and y.
-function placeLayered(size, edges, dir, wrap = 0) {
+function placeLayered(size, edges, dir, wrap = 0, rows = null) {
   const n = size.length
   if (!n) return { x: [], y: [], w: 0, h: 0 }
   const across = dir === 'right'
@@ -268,7 +274,7 @@ function placeLayered(size, edges, dir, wrap = 0) {
   const topo = [...Array(n).keys()].sort((p, q) => rank[p] - rank[q])
 
   // 2. Layers: each box goes one layer after its furthest prerequisite...
-  const layer = new Array(n).fill(0)
+  const layer = rows ? [...rows] : new Array(n).fill(0)
   for (const v of topo) for (const { v: u } of preds[v]) layer[v] = Math.max(layer[v], layer[u] + 1)
   // ...then boxes with more arrows out than in slide forward, toward what they lead to.
   for (const v of [...topo].reverse()) {

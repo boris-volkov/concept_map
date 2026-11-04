@@ -272,8 +272,20 @@ In hyperbolic geometry,
 In 1868 Beltrami built a model of it inside Euclidean geometry, which showed that it is free of contradiction if Euclidean geometry is, and so that the parallel postulate can never be proved from the others.
 
 ## Foundations {#geometry-foundations}
+flow: down
+rows: kinds
+wrap: 6
 
 The undefined terms and first definitions that everything else in geometry is built from.
+
+### Parallel Lines & Transversals {#parallel-lines}
+kind: theorem
+prereqs: angle-pairs, parallel-postulate
+
+When a line crosses two parallel lines, the following hold, and each of them, conversely, proves two lines parallel:
+- corresponding angles are equal;
+- alternate interior angles are equal;
+- co-interior angles add to $180^\circ$.
 
 ### Points, Lines & Planes {#points-lines-planes}
 kind: definition
@@ -302,6 +314,7 @@ Two rays from a common vertex, measured in degrees. An angle is
 - straight at $180^\circ$.
 
 ### Angle Pairs
+kind: definition
 prereqs: angles, addition
 
 Angles that come in pairs:
@@ -315,16 +328,20 @@ prereqs: angles
 
 Lines that meet at a right angle, written $\ell \perp m$. The shortest path from a point to a line is the perpendicular.
 
-### Parallel Lines & Transversals {#parallel-lines}
-kind: theorem
-prereqs: angle-pairs, parallel-postulate
+### Writing a Proof {#writing-proofs}
+kind: skill
+prereqs: points-lines-planes
 
-When a line crosses two parallel lines, the following hold, and each of them, conversely, proves two lines parallel:
-- corresponding angles are equal;
-- alternate interior angles are equal;
-- co-interior angles add to $180^\circ$.
+Write a proof in four steps:
+1. state what is given and what is to be proved, and draw a figure;
+2. mark the figure with what is known;
+3. work out the chain of reasoning, often backward from the goal;
+4. write each statement with its reason: a given, a definition, a postulate or a theorem.
 
 ## Lines & Angles {#lines-and-angles}
+flow: down
+rows: kinds
+wrap: 6
 
 The first theorems of geometry: what is forced on the angles where lines meet, and on lines that are parallel or perpendicular.
 
@@ -394,17 +411,24 @@ A point inside an angle lies on its bisector if and only if it is equally far fr
 
 *Proof.* Let the angle have vertex $A$, and drop perpendiculars $\overline{PD}$ and $\overline{PE}$ from $P$ to its sides. (⇒) The right triangles $PAD$ and $PAE$ share the hypotenuse $\overline{PA}$ and have equal angles at $A$, so they are congruent by AAS, and $PD = PE$. (⇐) If $PD = PE$, they are congruent by HL, so the angles at $A$ are equal. $\square$
 
+### Finding Angles with Parallel Lines {#finding-angles-parallel}
+kind: skill
+prereqs: parallel-lines, vertical-angles-theorem
+
+Mark what is equal: corresponding, alternate and vertical angles are equal, and same-side interior angles add to $180^\circ$. Write an equation and solve.
+
+```quiz
+Q: Two parallel lines are cut by a transversal. Same-side interior angles are $3x$ and $x + 20$ degrees. What is $x$?
+A: 40
+Why: $4x + 20 = 180$.
+```
+
 ## Triangles
+flow: down
+rows: kinds
+wrap: 6
 
 The simplest polygons, and the ones every other shape breaks into.
-
-### Classifying Triangles {#triangle-types}
-kind: definition
-prereqs: angles, segments-and-rays
-
-Triangles are classified
-- by sides: scalene, isosceles (two equal sides) or equilateral;
-- by angles: acute, right or obtuse.
 
 ### Triangle Angle Sum
 kind: theorem
@@ -429,15 +453,6 @@ prereqs: triangle-types, comparing-numbers
 
 In every triangle with sides $a, b, c$:
 $$\begin{aligned} a + b &> c, \\ b + c &> a, \\ a + c &> b. \end{aligned}$$
-
-### Medians, Altitudes & Bisectors {#triangle-segments}
-prereqs: triangle-types, perpendicular-lines
-
-Special lines in a triangle, each family meeting at a single point:
-- the medians, from each corner to the middle of the opposite side, at the centroid, the balance point;
-- the altitudes, from each corner perpendicular to the opposite side, at the orthocentre;
-- the angle bisectors, at the incentre;
-- the perpendicular bisectors of the sides, at the circumcentre.
 
 ### Pythagorean Theorem
 kind: theorem
@@ -471,6 +486,7 @@ Why: $49 + 576 = 625 = 25^2$.
 ```
 
 ### Special Right Triangles
+kind: theorem
 prereqs: pythagorean-theorem, simplifying-radicals, isosceles-triangle-theorem
 
 Two triangles worth knowing by heart:
@@ -605,15 +621,48 @@ The three altitudes of a triangle, extended as lines, meet at one point, the ort
 
 *Proof.* Through each vertex draw the parallel to the opposite side. They form a larger triangle, made of four copies of the first, whose sides have $A$, $B$ and $C$ as midpoints, by the parallelograms in the figure. Each altitude of the small triangle is perpendicular to a side of the large one at its midpoint, so the altitudes are the large triangle's perpendicular bisectors, which meet by the [[circumcentre-theorem|circumcentre theorem]]. $\square$
 
+### Classifying Triangles {#triangle-types}
+kind: definition
+prereqs: angles, segments-and-rays
+
+Triangles are classified
+- by sides: scalene, isosceles (two equal sides) or equilateral;
+- by angles: acute, right or obtuse.
+
+### Medians, Altitudes & Bisectors {#triangle-segments}
+kind: definition
+prereqs: triangle-types, perpendicular-lines
+
+Special lines in a triangle, each family meeting at a single point:
+- the medians, from each corner to the middle of the opposite side, at the centroid, the balance point;
+- the altitudes, from each corner perpendicular to the opposite side, at the orthocentre;
+- the angle bisectors, at the incentre;
+- the perpendicular bisectors of the sides, at the circumcentre.
+
+### Using the Pythagorean Theorem {#using-pythagoras}
+kind: skill
+prereqs: pythagorean-theorem
+
+Label the hypotenuse $c$, opposite the right angle, substitute, and solve. Look for the triples 3-4-5, 5-12-13, 8-15-17 and their multiples.
+
+```quiz
+Q: A right triangle has hypotenuse 13 and one leg 5. What is the other leg?
+A: 12
+Why: $\sqrt{169 - 25} = 12$.
+```
+
+### Classifying by Sides {#classifying-by-sides}
+kind: skill
+prereqs: pythagorean-inequalities
+
+With $c$ the longest side, compare $c^2$ with $a^2 + b^2$: less is acute, equal is right, more is obtuse. First check the [[triangle-inequality]].
+
 ## Congruence & Similarity {#congruence-and-similarity}
+flow: down
+rows: kinds
+wrap: 6
 
 When two figures are the same, and when they are the same shape at different sizes.
-
-### Congruent Figures {#congruence}
-kind: definition
-prereqs: rigid-motions
-
-Figures with the same shape and size: one can be moved onto the other by slides, turns and flips. Corresponding sides and angles are equal.
 
 ### Triangle Congruence Criteria {#triangle-congruence}
 kind: theorem
@@ -639,14 +688,6 @@ prereqs: triangle-congruence, two-column-proofs
 
 Corresponding parts of congruent triangles are congruent: once two triangles are proved congruent, every matching side and angle may be used as equal.
 
-### Similar Figures {#similarity}
-kind: definition
-prereqs: congruence, dilations, proportions
-
-Figures with the same shape but possibly different sizes:
-- equal corresponding angles;
-- every pair of corresponding sides in the same ratio, the scale factor.
-
 ### Triangle Similarity Criteria {#triangle-similarity}
 kind: theorem
 prereqs: similarity, triangle-angle-sum
@@ -655,13 +696,6 @@ Two triangles are similar if
 - AA: two pairs of angles are equal;
 - SAS: two pairs of sides are proportional and the included angles are equal;
 - SSS: all three pairs of sides are proportional.
-
-### Using Similar Triangles
-kind: skill
-prereqs: triangle-similarity, solving-proportions
-
-Measuring the unreachable. A tree casting a 12 m shadow, beside a 2 m post casting a 3 m shadow, has the same ratio of height to shadow:
-$$\frac{h}{12} = \frac{2}{3} \implies h = 8\text{ m}.$$
 
 ### Isosceles Triangle Bisector Theorem {#isosceles-bisector}
 kind: theorem
@@ -728,9 +762,94 @@ Hint: The altitude is the geometric mean of the two pieces.
 Why: $h^2 = 4 \cdot 9 = 36$, so $h = 6$.
 ```
 
+### Congruence by Rigid Motions {#congruence-by-rigid-motions}
+kind: theorem
+prereqs: rigid-motions, congruence
+
+Two figures are congruent if and only if a sequence of rigid motions takes one onto the other.
+
+### Similarity by Transformations {#similarity-by-transformations}
+kind: theorem
+prereqs: dilations, rigid-motions, similarity
+
+Two figures are similar if and only if a dilation followed by rigid motions takes one onto the other.
+
+### Congruent Figures {#congruence}
+kind: definition
+prereqs: rigid-motions
+
+Figures with the same shape and size: one can be moved onto the other by slides, turns and flips. Corresponding sides and angles are equal.
+
+### Similar Figures {#similarity}
+kind: definition
+prereqs: congruence, dilations, proportions
+
+Figures with the same shape but possibly different sizes:
+- equal corresponding angles;
+- every pair of corresponding sides in the same ratio, the scale factor.
+
+### Using Similar Triangles
+kind: skill
+prereqs: triangle-similarity, solving-proportions
+
+Measuring the unreachable. A tree casting a 12 m shadow, beside a 2 m post casting a 3 m shadow, has the same ratio of height to shadow:
+$$\frac{h}{12} = \frac{2}{3} \implies h = 8\text{ m}.$$
+
+### Proving Triangles Congruent {#proving-congruence}
+kind: skill
+prereqs: triangle-congruence, cpctc, writing-proofs
+
+Find three matching pairs that fit SSS, SAS, ASA, AAS or HL. Look for shared sides, vertical angles and angles from parallel lines, and use [[cpctc]] to reach the other parts.
+
+### Proving Triangles Similar {#proving-similarity}
+kind: skill
+prereqs: triangle-similarity, writing-proofs
+
+Find two pairs of equal angles (AA), or compare the ratios of sides for SSS or SAS similarity. Then write proportions in the order of the matching vertices.
+
 ## Transformations {#geometric-transformations}
+flow: down
+rows: kinds
+wrap: 6
 
 Moving and resizing figures in the plane.
+
+### Properties of Dilations {#dilation-properties}
+kind: theorem
+prereqs: dilations, triangle-proportionality
+
+A dilation with centre $O$ and scale factor $k$
+- maps a line through $O$ to itself, and every other line to a parallel line;
+- multiplies every length by $|k|$;
+- keeps every angle the same.
+
+So it maps every figure to a similar one, which is how [[similarity|similarity]] is defined by transformations.
+
+### Two Reflections in Parallel Lines {#reflections-parallel}
+kind: theorem
+prereqs: reflections, translations
+
+Reflecting in a line, and then in a parallel line a distance $d$ away, is a translation by $2d$, perpendicular to the lines, in the direction from the first line to the second.
+
+### Two Reflections in Crossing Lines {#reflections-crossing}
+kind: theorem
+prereqs: reflections, rotations
+
+Reflecting in a line, and then in a second line that crosses it at $P$ at an angle $\theta$, is a rotation about $P$ by $2\theta$, in the direction from the first line to the second.
+
+### Three Reflections Theorem
+kind: theorem
+prereqs: reflections-parallel, reflections-crossing, rigid-motions
+
+Every rigid motion of the plane is a composition of at most three reflections: one or none for a reflection or the identity, two for a translation or rotation, three for a glide reflection.
+
+So reflections are the building blocks of all the rigid motions.
+
+### Rigid Motions Preserve Distance and Angle {#rigid-motion-properties}
+kind: theorem
+prereqs: rigid-motions
+
+Translations, reflections and rotations preserve distance, angle measure, parallelism and collinearity.
 
 ### Translations
 kind: definition
@@ -769,72 +888,52 @@ prereqs: translations, reflections, rotations
 Translations, reflections, rotations and their combinations: the motions that keep every distance and angle the same.
 
 ### Symmetry
+kind: definition
 prereqs: reflections, rotations
 
 A figure has symmetry when some motion maps it onto itself:
 - reflection symmetry, about a mirror line;
 - rotational symmetry, about a centre by an angle.
 
-### Properties of Dilations {#dilation-properties}
-kind: theorem
-prereqs: dilations, triangle-proportionality
+### Coordinate Rules {#transformation-rules}
+kind: form
+prereqs: translations, reflections, rotations, dilations
 
-A dilation with centre $O$ and scale factor $k$
-- maps a line through $O$ to itself, and every other line to a parallel line;
-- multiplies every length by $|k|$;
-- keeps every angle the same.
+| Transformation | $(x, y) \to$ |
+| --- | --- |
+| translation by $\langle a, b \rangle$ | $(x + a, y + b)$ |
+| reflection in the $x$-axis | $(x, -y)$ |
+| reflection in the $y$-axis | $(-x, y)$ |
+| reflection in $y = x$ | $(y, x)$ |
+| rotation $90^\circ$ counter-clockwise | $(-y, x)$ |
+| rotation $180^\circ$ | $(-x, -y)$ |
+| rotation $270^\circ$ counter-clockwise | $(y, -x)$ |
+| dilation by $k$ from the origin | $(kx, ky)$ |
 
-So it maps every figure to a similar one, which is how [[similarity|similarity]] is defined by transformations.
+### Performing Transformations {#performing-transformations}
+kind: skill
+prereqs: transformation-rules
 
-### Two Reflections in Parallel Lines {#reflections-parallel}
-kind: theorem
-prereqs: reflections, translations
+Apply the rule to each vertex, one transformation at a time, in order. The order of a sequence matters.
 
-Reflecting in a line, and then in a parallel line a distance $d$ away, is a translation by $2d$, perpendicular to the lines, in the direction from the first line to the second.
+```quiz
+Q: The point $(2, 5)$ is rotated $90^\circ$ counter-clockwise about the origin. What is the new $x$-coordinate?
+A: -5
+Why: $(x, y) \to (-y, x)$.
+```
 
-### Two Reflections in Crossing Lines {#reflections-crossing}
-kind: theorem
-prereqs: reflections, rotations
+### Describing a Sequence of Motions {#describing-transformations}
+kind: skill
+prereqs: rigid-motion-properties
 
-Reflecting in a line, and then in a second line that crosses it at $P$ at an angle $\theta$, is a rotation about $P$ by $2\theta$, in the direction from the first line to the second.
-
-### Three Reflections Theorem
-kind: theorem
-prereqs: reflections-parallel, reflections-crossing, rigid-motions
-
-Every rigid motion of the plane is a composition of at most three reflections: one or none for a reflection or the identity, two for a translation or rotation, three for a glide reflection.
-
-So reflections are the building blocks of all the rigid motions.
+Match the vertices of the two figures. A change of orientation means a reflection is needed. Then translate one matching point onto the other, and rotate to line the rest up.
 
 ## Polygons
+flow: down
+rows: kinds
+wrap: 6
 
 Closed figures made of straight sides.
-
-### Polygons {#polygon-basics}
-kind: definition
-prereqs: segments-and-rays, angles
-
-Closed shapes made of segments, named by their number of sides: triangle, quadrilateral, pentagon, hexagon. Regular polygons have all sides and all angles equal.
-
-### Polygon Angle Sums
-kind: formula
-prereqs: triangle-angle-sum, polygon-basics
-
-For a convex $n$-gon:
-- the interior angles sum to $(n - 2) \cdot 180^\circ$;
-- the exterior angles sum to $360^\circ$;
-- each interior angle of a regular one is $\dfrac{(n - 2) \cdot 180^\circ}{n}$.
-
-### Quadrilaterals
-kind: definition
-prereqs: polygon-basics, parallel-lines, perpendicular-lines
-
-Four-sided polygons, and their family tree:
-- a trapezoid has a pair of parallel sides;
-- a parallelogram has two;
-- a rectangle is a parallelogram with right angles;
-- a rhombus is a parallelogram with equal sides;
-- a square is both.
 
 ### Properties of Parallelograms {#parallelogram-properties}
 kind: theorem
@@ -909,56 +1008,62 @@ The midpoints of the four sides of any quadrilateral are the corners of a parall
 
 *Proof.* Each diagonal of the quadrilateral splits it into two triangles, in which two opposite sides of the inner quadrilateral are [[triangle-midsegment-theorem|midsegments]]: both parallel to that diagonal and half as long. So both pairs of opposite sides are parallel. $\square$
 
+### Polygons {#polygon-basics}
+kind: definition
+prereqs: segments-and-rays, angles
+
+Closed shapes made of segments, named by their number of sides: triangle, quadrilateral, pentagon, hexagon. Regular polygons have all sides and all angles equal.
+
+### Quadrilaterals
+kind: definition
+prereqs: polygon-basics, parallel-lines, perpendicular-lines
+
+Four-sided polygons, and their family tree:
+- a trapezoid has a pair of parallel sides;
+- a parallelogram has two;
+- a rectangle is a parallelogram with right angles;
+- a rhombus is a parallelogram with equal sides;
+- a square is both.
+
+### Polygon Angle Sums
+kind: formula
+prereqs: triangle-angle-sum, polygon-basics
+
+For a convex $n$-gon:
+- the interior angles sum to $(n - 2) \cdot 180^\circ$;
+- the exterior angles sum to $360^\circ$;
+- each interior angle of a regular one is $\dfrac{(n - 2) \cdot 180^\circ}{n}$.
+
+### Finding Angles in Polygons {#finding-polygon-angles}
+kind: skill
+prereqs: polygon-angle-sums
+
+The interior angles of an $n$-gon add to $(n - 2)180^\circ$, and the exterior angles to $360^\circ$. In a regular polygon, divide by $n$.
+
+```quiz
+Q: What is each interior angle of a regular octagon, in degrees?
+A: 135
+Why: $\frac{6 \cdot 180}{8} = 135$.
+```
+
+### Classifying Quadrilaterals {#classifying-quadrilaterals}
+kind: skill
+prereqs: quadrilaterals, parallelogram-properties
+
+Test in order: does it have two pairs of parallel sides, then equal diagonals for a rectangle, perpendicular diagonals for a rhombus, and both for a square? In coordinates, compare slopes and lengths.
+
 ## Circles
+flow: down
+rows: kinds
+wrap: 6
 
 The set of points at a fixed distance from a centre.
-
-### Parts of a Circle {#circle-parts}
-kind: definition
-prereqs: segments-and-rays
-
-The parts of a circle:
-- the centre;
-- a radius, from the centre to the circle;
-- a diameter, through the centre, twice the radius;
-- a chord, joining two points of the circle;
-- an arc, a piece of the circle;
-- a tangent, a line touching the circle at exactly one point.
-
-### Circumference and Pi {#circumference}
-kind: formula
-prereqs: circle-parts, decimal-arithmetic
-
-A circle of radius $r$ and diameter $d$ has circumference
-$$C = 2\pi r = \pi d,$$
-where $\pi \approx 3.14159$ is the ratio of circumference to diameter, the same for every circle.
-
-### Area of a Circle {#circle-area}
-kind: formula
-prereqs: circumference, area-basic
-
-A circle of radius $r$ encloses area
-$$A = \pi r^2.$$
-
-### Arcs & Central Angles {#arcs-and-central-angles}
-prereqs: circle-parts, angles
-
-An angle at the centre cuts off an arc, and the arc is measured by that angle: a $90^\circ$ central angle cuts off a quarter of the circle.
 
 ### Inscribed Angle Theorem
 kind: theorem
 prereqs: arcs-and-central-angles, isosceles-triangle-theorem, exterior-angle-theorem
 
 An inscribed angle measures half the central angle subtending the same arc. In particular, an angle inscribed in a semicircle is a right angle (Thales' theorem).
-
-### Arc Length & Sector Area {#arc-length-sector}
-kind: formula
-prereqs: circumference, circle-area, arcs-and-central-angles, proportions
-
-A sector of radius $r$ and central angle $\theta$, in radians, has arc length and area
-$$\begin{aligned} s &= r\theta, \\ A &= \frac{1}{2}r^2\theta; \end{aligned}$$
-with $\theta$ in degrees,
-$$\begin{aligned} s &= \frac{\theta}{360^\circ} \cdot 2\pi r, \\ A &= \frac{\theta}{360^\circ} \cdot \pi r^2. \end{aligned}$$
 
 ### Tangents to a Circle {#circle-tangents}
 kind: theorem
@@ -1076,14 +1181,125 @@ Hint: The square of the tangent is $PA \cdot PB$.
 Why: $PT^2 = 4 \cdot 9 = 36$, so $PT = 6$.
 ```
 
+### Parts of a Circle {#circle-parts}
+kind: definition
+prereqs: segments-and-rays
+
+The parts of a circle:
+- the centre;
+- a radius, from the centre to the circle;
+- a diameter, through the centre, twice the radius;
+- a chord, joining two points of the circle;
+- an arc, a piece of the circle;
+- a tangent, a line touching the circle at exactly one point.
+
+### Arcs & Central Angles {#arcs-and-central-angles}
+kind: definition
+prereqs: circle-parts, angles
+
+An angle at the centre cuts off an arc, and the arc is measured by that angle: a $90^\circ$ central angle cuts off a quarter of the circle.
+
+### Circumference and Pi {#circumference}
+kind: formula
+prereqs: circle-parts, decimal-arithmetic
+
+A circle of radius $r$ and diameter $d$ has circumference
+$$C = 2\pi r = \pi d,$$
+where $\pi \approx 3.14159$ is the ratio of circumference to diameter, the same for every circle.
+
+### Area of a Circle {#circle-area}
+kind: formula
+prereqs: circumference, area-basic
+
+A circle of radius $r$ encloses area
+$$A = \pi r^2.$$
+
+### Arc Length & Sector Area {#arc-length-sector}
+kind: formula
+prereqs: circumference, circle-area, arcs-and-central-angles, proportions
+
+A sector of radius $r$ and central angle $\theta$, in radians, has arc length and area
+$$\begin{aligned} s &= r\theta, \\ A &= \frac{1}{2}r^2\theta; \end{aligned}$$
+with $\theta$ in degrees,
+$$\begin{aligned} s &= \frac{\theta}{360^\circ} \cdot 2\pi r, \\ A &= \frac{\theta}{360^\circ} \cdot \pi r^2. \end{aligned}$$
+
+### Finding Angles in Circles {#finding-circle-angles}
+kind: skill
+prereqs: inscribed-angle-theorem, tangent-chord-angle-theorem
+
+Find where the vertex is, and use the rule for that place:
+
+| Vertex | Angle |
+| --- | --- |
+| at the centre | the arc |
+| on the circle | half the arc |
+| inside the circle | half the sum of the arcs |
+| outside the circle | half the difference of the arcs |
+
+```quiz
+Q: An inscribed angle cuts off an arc of $110^\circ$. What is the angle, in degrees?
+A: 55
+Why: Half the arc.
+```
+
+### Finding Arcs and Sectors {#finding-arcs-and-sectors}
+kind: skill
+prereqs: arc-length-sector
+
+Take the fraction of the whole circle: $\frac{\theta}{360^\circ}$ of the circumference, or of the area.
+
+```quiz
+Q: A sector of a circle of radius 6 has angle $60^\circ$. Its area is $k\pi$. What is $k$?
+A: 6
+Why: $\frac{1}{6} \cdot 36\pi = 6\pi$.
+```
+
 ## Measurement
+flow: down
+rows: kinds
+wrap: 6
 
 How much space a shape covers, encloses or fills.
 
+### How Area & Volume Scale {#scaling}
+kind: theorem
+prereqs: similarity, volume-prisms
+
+Enlarge a shape by a factor $k$ and its
+- lengths grow by $k$;
+- areas grow by $k^2$;
+- volumes grow by $k^3$.
+
+Double a cube's edge and it takes four times the paint to cover and eight times the water to fill.
+
+### Cavalieri's Principle
+kind: theorem
+prereqs: volume-prisms
+
+If two solids have cross-sections of equal area at every height, they have equal volumes.
+
+It is why a slanted prism has the same volume, $V = Bh$, as an upright one: a stack of coins pushed sideways still holds the same metal. Archimedes found the volume of a sphere the same way, as a cylinder less a cone.
+
+### Euler's Polyhedron Formula
+kind: theorem
+prereqs: polygon-basics
+
+A convex polyhedron with $V$ vertices, $E$ edges and $F$ faces has
+$$V - E + F = 2.$$
+
+**Example.** A cube has $8 - 12 + 6 = 2$; a square pyramid $5 - 8 + 5 = 2$.
+
 ### Perimeter
+kind: definition
 prereqs: addition, segments-and-rays
 
 The distance all the way around a shape: add up the lengths of its sides.
+
+### Cross-Sections & Solids of Revolution {#cross-sections}
+kind: property
+prereqs: surface-area
+
+A plane cuts a solid in a two-dimensional cross-section: a cylinder across gives a circle, and a sphere always gives a circle. Rotating a plane figure about an axis gives a solid: a rectangle gives a cylinder, a right triangle a cone, a semicircle a sphere.
 
 ### Area of Rectangles & Triangles {#area-basic}
 kind: formula
@@ -1102,6 +1318,7 @@ With height $h$:
 - a trapezoid with parallel sides $a$ and $b$: $A = \frac{1}{2}(a + b)h$.
 
 ### Surface Area
+kind: formula
 prereqs: area-polygons, circle-area
 
 The total area of a solid's faces, found by unfolding it into a flat net: a cylinder unrolls into two circles and a rectangle.
@@ -1122,17 +1339,6 @@ prereqs: volume-prisms
 The solids that come to a point, and the sphere:
 - a pyramid or cone with base area $B$ and height $h$: $V = \frac{1}{3}Bh$, so a cone of radius $r$ has $V = \frac{1}{3}\pi r^2 h$;
 - a sphere of radius $r$: $V = \frac{4}{3}\pi r^3$, with surface area $S = 4\pi r^2$.
-
-### How Area & Volume Scale {#scaling}
-kind: theorem
-prereqs: similarity, volume-prisms
-
-Enlarge a shape by a factor $k$ and its
-- lengths grow by $k$;
-- areas grow by $k^2$;
-- volumes grow by $k^3$.
-
-Double a cube's edge and it takes four times the paint to cover and eight times the water to fill.
 
 ### Heron's Formula
 kind: formula
@@ -1164,26 +1370,39 @@ $$A = \frac{1}{2}d_1 d_2.$$
 
 *Proof.* One diagonal cuts it into two triangles whose base is that diagonal and whose heights add to the other. $\square$
 
-### Cavalieri's Principle
-kind: theorem
+### Density {#density}
+kind: formula
 prereqs: volume-prisms
 
-If two solids have cross-sections of equal area at every height, they have equal volumes.
+Density is mass per unit of volume, or a count per unit of area:
+$$\rho = \frac{m}{V}.$$
 
-It is why a slanted prism has the same volume, $V = Bh$, as an upright one: a stack of coins pushed sideways still holds the same metal. Archimedes found the volume of a sphere the same way, as a cylinder less a cone.
+### Composite Figures {#composite-figures}
+kind: skill
+prereqs: area-basic, volume-prisms
 
-### Euler's Polyhedron Formula
-kind: theorem
-prereqs: polygon-basics
+Split the figure into shapes with known formulas. Add their areas or volumes, and subtract the holes.
 
-A convex polyhedron with $V$ vertices, $E$ edges and $F$ faces has
-$$V - E + F = 2.$$
+### Modelling with Solids {#modeling-with-geometry}
+kind: skill
+prereqs: composite-figures, density
 
-**Example.** A cube has $8 - 12 + 6 = 2$; a square pyramid $5 - 8 + 5 = 2$.
+Describe the object as simple shapes, compute what is asked, and round in the direction that the setting needs. Design problems choose the dimensions that meet a constraint at least cost.
 
 ## Coordinate Geometry
+flow: down
+rows: kinds
+wrap: 6
 
 Geometry done with algebra, by giving every point coordinates.
+
+### Slope Criteria {#slope-criteria}
+kind: theorem
+prereqs: parallel-perpendicular-slopes
+
+Two non-vertical lines are parallel if and only if their slopes are equal, and perpendicular if and only if their slopes multiply to $-1$.
+
+A coordinate proof uses these criteria to show that sides are parallel or perpendicular.
 
 ### Distance Formula
 kind: formula
@@ -1206,6 +1425,35 @@ prereqs: distance-formula, circle-parts, completing-the-square
 The circle with centre $(h, k)$ and radius $r$ is
 $$(x - h)^2 + (y - k)^2 = r^2.$$
 
+### Centre–Radius Form {#circle-center-radius-form}
+kind: form
+prereqs: circle-equation
+
+$$(x - h)^2 + (y - k)^2 = r^2.$$
+
+| Reads off | From |
+| --- | --- |
+| centre | $(h, k)$ |
+| radius | $r$ |
+
+### General Form of a Circle {#circle-general-form}
+kind: form
+prereqs: circle-equation
+
+$$x^2 + y^2 + Dx + Ey + F = 0.$$
+
+| Reads off | From |
+| --- | --- |
+| centre | $\left(-\frac{D}{2}, -\frac{E}{2}\right)$ |
+| radius squared | $\frac{D^2 + E^2}{4} - F$ |
+
+### Dividing a Segment in a Ratio {#partitioning-segments}
+kind: formula
+prereqs: midpoint-formula
+
+The point dividing the segment from $(x_1, y_1)$ to $(x_2, y_2)$ in the ratio $m : n$ is
+$$\left(\frac{nx_1 + mx_2}{m + n}, \frac{ny_1 + my_2}{m + n}\right).$$
+
 ### Coordinate Proofs
 kind: technique
 prereqs: distance-formula, midpoint-formula, slope, two-column-proofs
@@ -1214,3 +1462,87 @@ Place a figure on axes and prove things by computing:
 - equal slopes show sides are parallel;
 - slopes multiplying to $-1$ show them perpendicular;
 - equal distances show them equal.
+
+### Perimeter & Area in Coordinates {#coordinate-area}
+kind: skill
+prereqs: distance-formula
+
+Find the side lengths with the [[distance-formula]], and read base and height from the grid if the sides are level. For a polygon with vertices in order, the shoelace formula gives
+$$\text{Area} = \frac{1}{2}\left|\sum (x_iy_{i+1} - x_{i+1}y_i)\right|.$$
+
+```quiz
+Q: What is the perimeter of the triangle with vertices $(0, 0)$, $(3, 0)$, $(3, 4)$?
+A: 12
+Why: The sides are 3, 4 and 5.
+```
+
+### Finding Centre and Radius {#finding-circle-center}
+kind: skill
+prereqs: completing-the-square, circle-general-form
+
+Complete the square in $x$ and in $y$:
+$$\begin{aligned} x^2 + y^2 + 4x - 2y &= 4 \\ (x + 2)^2 + (y - 1)^2 &= 9 \end{aligned}$$
+so the centre is $(-2, 1)$ and the radius is 3.
+
+
+
+## Constructions
+flow: down
+rows: kinds
+wrap: 6
+
+Figures drawn with compass and straightedge alone.
+
+### Copying a Segment or Angle {#copying-constructions}
+kind: skill
+prereqs: postulate-circles, angles
+
+To copy a segment, set the compass to its length and mark it off. To copy an angle, draw an arc across its sides, draw the same arc at the new vertex, and step off the width between the crossings.
+
+### Bisecting a Segment {#bisecting-segment}
+kind: skill
+prereqs: perpendicular-bisector-theorem
+
+Draw arcs of the same radius, over half the segment, from each end. The line through their two crossings is the perpendicular bisector.
+
+### Bisecting an Angle {#bisecting-angle}
+kind: skill
+prereqs: angle-bisector-equidistance
+
+Draw an arc crossing both sides. From those crossings, draw equal arcs that meet. The ray from the vertex through the meeting point is the bisector.
+
+### Perpendicular Through a Point {#perpendicular-construction}
+kind: skill
+prereqs: bisecting-segment
+
+Draw an arc from the point that crosses the line twice. Then bisect the segment between the crossings.
+
+### Parallel Through a Point {#parallel-construction}
+kind: skill
+prereqs: copying-constructions, parallel-lines
+
+Draw a transversal through the point, and copy the angle it makes with the line, as a corresponding angle at the point.
+
+### Equilateral Triangle & Regular Hexagon {#polygon-constructions}
+kind: skill
+prereqs: postulate-circles
+
+Keep one compass setting. For an equilateral triangle, draw arcs from both ends of a segment; where they meet is the third vertex. For a regular hexagon, step the radius around a circle six times.
+
+### Square in a Circle {#square-construction}
+kind: skill
+prereqs: perpendicular-construction
+
+Draw a diameter, and then the diameter perpendicular to it. Their ends are the vertices of a square.
+
+### Inscribed & Circumscribed Circles {#triangle-circle-constructions}
+kind: skill
+prereqs: bisecting-angle, bisecting-segment, incentre-theorem, circumcentre-theorem
+
+For the circumscribed circle, bisect two sides perpendicularly: the lines meet at the centre, and the radius reaches a vertex. For the inscribed circle, bisect two angles: they meet at the centre, and the radius is the perpendicular to a side.
+
+### Tangent from a Point {#tangent-construction}
+kind: skill
+prereqs: bisecting-segment, thales-theorem, circle-tangents
+
+Bisect the segment from the point to the centre, and draw the circle on that segment as diameter. Where it meets the given circle are the points of tangency, by [[thales-theorem|Thales' theorem]].

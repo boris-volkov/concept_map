@@ -516,6 +516,9 @@ But $n + 1$ is a natural number too, so $s$ is not an upper bound after all. $\s
 So for every $\varepsilon > 0$ some $\frac{1}{n}$ is smaller than $\varepsilon$ (take $n > \frac{1}{\varepsilon}$), which is why $\frac{1}{n}$ [[sequence-limits|tends to zero]]. [[hilbert-continuity|Hilbert]] takes the same property as an axiom of geometry.
 
 ## Expressions
+flow: down
+rows: kinds
+wrap: 6
 
 Letters standing for numbers, and the rules for rewriting them.
 
@@ -530,6 +533,14 @@ kind: definition
 prereqs: variables
 
 A combination of numbers, variables and operations, like $2x^2 - 5x + 1$, made of terms joined by $+$ and $-$. An expression has a value; it doesn't say anything is equal.
+
+### Terms, Factors & Coefficients {#terms-and-coefficients}
+kind: definition
+prereqs: algebraic-expressions
+
+In an expression, terms are the parts joined by addition, factors are the parts joined by multiplication, a coefficient is the number multiplying a variable, and a constant is a term with no variable.
+
+In $3x^2 - 5x + 7$ the terms are $3x^2$, $-5x$ and $7$; the coefficients are $3$ and $-5$; the constant is $7$.
 
 ### Evaluating Expressions
 kind: skill
@@ -554,9 +565,51 @@ Multiplying out:
 $$2(x - 3) - (x + 1) = 2x - 6 - x - 1 = x - 7.$$
 A minus sign in front of a bracket multiplies every term inside by $-1$.
 
+### Translating Words into Expressions {#translating-words}
+kind: skill
+prereqs: algebraic-expressions
+
+Name the unknown with a variable, then replace each phrase by its operation:
+
+| Words | Expression |
+| --- | --- |
+| 5 more than $x$ | $x + 5$ |
+| 5 less than $x$ | $x - 5$ |
+| twice $x$ | $2x$ |
+| the sum of $x$ and 3, doubled | $2(x + 3)$ |
+| $x$ per $y$ | $\frac{x}{y}$ |
+
+```quiz
+Q: Which expression is 4 less than three times $n$?
+- $4 - 3n$
++ $3n - 4$
+- $3(n - 4)$
+Why: "Less than" reverses the order: start with $3n$ and take away 4.
+```
+
+### Seeing Structure {#seeing-structure}
+kind: skill
+prereqs: expanding-brackets
+
+Treat a part of an expression as a single quantity, and look for a known pattern:
+$$\begin{aligned} x^4 - y^4 &= (x^2)^2 - (y^2)^2 \\ &= (x^2 - y^2)(x^2 + y^2). \end{aligned}$$
+
 ## Equations & Inequalities {#equations}
+flow: down
+rows: kinds
+wrap: 6
 
 Statements that two things are equal, or that one is bigger, and how to find the values that make them true.
+
+### Equivalent Equations {#equivalent-equations}
+kind: theorem
+prereqs: equality-properties, multiplication-cancellation
+
+Adding the same expression to both sides of an equation, or multiplying both sides by the same non-zero number, gives an equation with exactly the same solutions.
+
+*Proof.* If $a = b$ then $a + c = b + c$, by the [[equality-properties|properties of equality]]; adding $-c$ reverses the step. If $d \ne 0$, then $a = b$ gives $ad = bd$, and multiplying by $\frac{1}{d}$ reverses the step. $\square$
+
+Multiplying by $0$, or by an expression that can be $0$, can add solutions. So can squaring both sides, which is why [[solving-radical-equations|radical equations]] must be checked.
 
 ### Equations & Solutions {#equations-and-solutions}
 kind: definition
@@ -564,6 +617,27 @@ prereqs: algebraic-expressions, equality-properties
 
 An equation says two expressions are equal. A solution is a value of the variable that makes it true: $x = 4$ solves
 $$2x + 1 = 9.$$
+
+### Extraneous Solutions {#extraneous-solutions}
+kind: definition
+prereqs: equations-and-solutions
+
+An extraneous solution is a value found by a correct-looking algebraic step that does not satisfy the original equation. They arise from squaring both sides and from multiplying by an expression that can be $0$.
+
+### Number of Solutions of a Linear Equation {#linear-solution-count}
+kind: property
+prereqs: linear-equations
+
+An equation that reduces to $ax = b$ has
+- one solution, $x = \frac{b}{a}$, if $a \ne 0$;
+- no solution if $a = 0$ and $b \ne 0$;
+- every number as a solution if $a = 0$ and $b = 0$.
+
+```quiz
+Q: How many solutions does $2(x + 1) = 2x + 3$ have?
+A: 0
+Why: It reduces to $2 = 3$, which is never true.
+```
 
 ### One-Step Equations
 kind: skill
@@ -621,6 +695,42 @@ An absolute value is a distance:
 - $|x - 3| < 5$ means within 5 of 3, so $-2 < x < 8$;
 - $|x - 3| > 5$ means further than 5 away, so $x < -2$ or $x > 8$.
 
+### Compound Inequalities {#compound-inequalities}
+kind: skill
+prereqs: linear-inequalities
+
+Solve each part, then combine: "and" keeps the numbers in both solution sets, and "or" the numbers in either.
+$$\begin{aligned} -3 &< 2x + 1 \le 7 \\ -4 &< 2x \le 6 \\ -2 &< x \le 3 \end{aligned}$$
+
+```quiz
+Q: How many integers satisfy $-1 \le x + 2 < 3$?
+A: 4
+Why: $-3 \le x < 1$, which holds $-3, -2, -1, 0$.
+```
+
+### Writing Equations from Words {#word-problems}
+kind: skill
+prereqs: translating-words, linear-equations
+
+Solve a word problem in five steps:
+1. name the unknown, with its units;
+2. write each other quantity in terms of it;
+3. write an equation that says the same thing as the problem;
+4. solve it;
+5. check the answer against the original words.
+
+**Example.** Two consecutive integers add to 47:
+$$n + (n + 1) = 47 \implies n = 23,$$
+so the integers are 23 and 24.
+
+### Units & Dimensional Analysis {#dimensional-analysis}
+kind: skill
+prereqs: unit-conversion
+
+Keep the units in the calculation, and multiply by fractions equal to 1 so that the unwanted units cancel:
+$$60\ \frac{\text{mi}}{\text{h}} \cdot \frac{5280\ \text{ft}}{1\ \text{mi}} \cdot \frac{1\ \text{h}}{3600\ \text{s}} = 88\ \frac{\text{ft}}{\text{s}}.$$
+An answer in the wrong units shows a mistake in the setup.
+
 ## Functions {#functions}
 
 A function $f : A \to B$ assigns to each element $x$ of a set $A$, its domain, exactly one element $f(x)$ of a set $B$.
@@ -628,8 +738,37 @@ A function $f : A \to B$ assigns to each element $x$ of a set $A$, its domain, e
 The general notions first, then each family of functions: linear, polynomial, quadratic, rational, radical, exponential and logarithmic.
 
 ### Function Basics {#function-basics}
+flow: down
+rows: kinds
+wrap: 6
 
 Notation, domain and range, graphs, and the ways functions combine and transform.
+
+#### Vertical Line Test
+kind: theorem
+prereqs: function-graphs
+
+A curve in the plane is the graph of a function of $x$ if and only if no vertical line meets it more than once.
+
+*Proof.* A vertical line $x = a$ meets the curve at the points with first coordinate $a$. Two such points would give one input two outputs, and a function allows exactly one. $\square$
+
+#### Horizontal Line Test
+kind: theorem
+prereqs: inverse-functions, vertical-line-test
+
+A function has an inverse function if and only if no horizontal line meets its graph more than once, that is, if and only if it is one-to-one.
+
+*Proof.* The inverse sends each output back to its input. That is a function exactly when no output comes from two different inputs. $\square$
+
+A function that fails the test can be given an inverse by restricting its domain: $y = x^2$ on $x \ge 0$ has inverse $y = \sqrt{x}$.
+
+#### Graph of an Inverse {#inverse-graph-reflection}
+kind: theorem
+prereqs: inverse-functions
+
+The graph of $f^{-1}$ is the reflection of the graph of $f$ in the line $y = x$.
+
+*Proof.* The point $(a, b)$ lies on $y = f(x)$ exactly when $f(a) = b$, which is when $f^{-1}(b) = a$, which is when $(b, a)$ lies on $y = f^{-1}(x)$. Swapping coordinates is reflecting in $y = x$. $\square$
 
 #### The Coordinate Plane
 kind: definition
@@ -638,6 +777,7 @@ prereqs: number-line, negative-numbers
 Two number lines crossing at right angles, so that every point has an address $(x, y)$: how far across, then how far up.
 
 #### Function Notation
+kind: definition
 prereqs: variables, evaluating-expressions
 
 $f(x)$ is the output of $f$ at input $x$, and $f(3)$ means "put in 3". If $f(x) = x^2 + 1$ then
@@ -653,6 +793,7 @@ $$[2, 5) = \{x : 2 \le x < 5\},$$
 a square bracket including its end and a round one leaving it out.
 
 #### Domain & Range {#domain-and-range}
+kind: definition
 prereqs: function-notation, interval-notation
 
 The domain is every input a function accepts; the range is every output it produces. The function
@@ -660,11 +801,13 @@ $$f(x) = \sqrt{x}$$
 has domain $[0, \infty)$, because negatives have no real square root.
 
 #### Graphs of Functions {#function-graphs}
+kind: definition
 prereqs: function-notation, coordinate-plane
 
 The picture of a function: every point $(x, f(x))$. A curve is a function's graph exactly when no vertical line crosses it twice.
 
 #### Composition of Functions {#composition}
+kind: definition
 prereqs: function-notation
 
 Feeding one function's output into another:
@@ -673,22 +816,15 @@ Order matters: with $f(x) = x^2$ and $g(x) = x + 1$,
 $$f(g(2)) = f(3) = 9 \quad\text{but}\quad g(f(2)) = g(4) = 5.$$
 
 #### Inverse Functions
+kind: definition
 prereqs: composition, domain-and-range
 
 A function $f^{-1}$ that undoes $f$:
 $$f^{-1}(f(x)) = x.$$
 Only functions that never repeat an output have one, and its graph is $f$'s graph reflected in the line $y = x$.
 
-#### Transformations of Graphs {#graph-transformations}
-prereqs: function-graphs, function-notation
-
-Changing the formula moves the graph:
-- $f(x) + k$ shifts it up by $k$;
-- $f(x - h)$ shifts it right by $h$;
-- $a f(x)$ stretches it vertically by $a$;
-- $-f(x)$ flips it over the $x$-axis.
-
 #### Piecewise Functions
+kind: definition
 prereqs: function-notation, domain-and-range
 
 Functions defined by different rules on different parts of the domain, like the absolute value:
@@ -706,6 +842,7 @@ point: 1, 1 below-right
 ```
 
 #### Even & Odd Functions {#even-odd-functions}
+kind: definition
 prereqs: graph-transformations
 
 Two kinds of symmetry a graph can have:
@@ -714,9 +851,185 @@ $$f(-x) = f(x).$$
 - Odd functions are symmetric through the origin, like $x^3$:
 $$f(-x) = -f(x).$$
 
+#### The Absolute Value Function {#absolute-value-function}
+kind: definition
+prereqs: absolute-value, piecewise-functions
+
+The function
+$$f(x) = |x| = \begin{cases} x & x \ge 0 \\ -x & x < 0. \end{cases}$$
+
+Its graph is a V with its vertex at the origin. In general, $y = a|x - h| + k$ has vertex $(h, k)$ and slopes $\pm a$.
+```graph
+y = abs(x)
+x: -3, 3
+y: -1, 3
+point: 0, 0 below-right
+```
+
+#### Step Functions {#step-functions}
+kind: definition
+prereqs: piecewise-functions
+
+A step function is a piecewise function that is constant on each piece. The greatest integer function $\lfloor x \rfloor$ gives the greatest integer not above $x$:
+$$\lfloor 2.7 \rfloor = 2, \quad \lfloor -2.7 \rfloor = -3.$$
+
+Postage by weight and parking fees by the hour are step functions.
+
+#### Transformations of Graphs {#graph-transformations}
+kind: property
+prereqs: function-graphs, function-notation
+
+Changing the formula moves the graph:
+- $f(x) + k$ shifts it up by $k$;
+- $f(x - h)$ shifts it right by $h$;
+- $a f(x)$ stretches it vertically by $a$;
+- $-f(x)$ flips it over the $x$-axis.
+
+#### Key Features of a Graph {#key-features-of-graphs}
+kind: property
+prereqs: function-graphs, domain-and-range
+
+The features read from a graph are:
+- intercepts, where it meets the axes;
+- intervals where it is increasing, decreasing, positive or negative;
+- relative maximums and minimums, where it turns;
+- symmetry;
+- end behaviour, what it does as $x \to \pm\infty$;
+- periodicity, if it repeats.
+
+#### Table of Parent Functions {#parent-functions}
+kind: property
+prereqs: function-graphs
+
+Each family of functions is a [[graph-transformations|transformation]] of its simplest member:
+
+| Family | Parent | Domain | Range |
+| --- | --- | --- | --- |
+| linear | $y = x$ | $\mathbb{R}$ | $\mathbb{R}$ |
+| quadratic | $y = x^2$ | $\mathbb{R}$ | $[0, \infty)$ |
+| cubic | $y = x^3$ | $\mathbb{R}$ | $\mathbb{R}$ |
+| absolute value | $y = \lvert x \rvert$ | $\mathbb{R}$ | $[0, \infty)$ |
+| square root | $y = \sqrt{x}$ | $[0, \infty)$ | $[0, \infty)$ |
+| cube root | $y = \sqrt[3]{x}$ | $\mathbb{R}$ | $\mathbb{R}$ |
+| reciprocal | $y = \frac{1}{x}$ | $x \ne 0$ | $y \ne 0$ |
+| exponential | $y = 2^x$ | $\mathbb{R}$ | $(0, \infty)$ |
+| logarithmic | $y = \log_2 x$ | $(0, \infty)$ | $\mathbb{R}$ |
+
+#### General Transformation Form {#transformation-form}
+kind: form
+prereqs: graph-transformations
+
+$$y = a\,f\big(b(x - h)\big) + k.$$
+
+| Reads off | From |
+| --- | --- |
+| vertical stretch by $\lvert a \rvert$, flipped over the $x$-axis if $a < 0$ | $a$ |
+| horizontal stretch by $\frac{1}{\lvert b \rvert}$, flipped over the $y$-axis if $b < 0$ | $b$ |
+| shift right $h$ | $h$ |
+| shift up $k$ | $k$ |
+
+#### Evaluating & Interpreting Functions {#evaluating-functions}
+kind: skill
+prereqs: function-notation
+
+Substitute the input everywhere the variable appears, in brackets, and say what the output means in the setting:
+$$f(x) = x^2 - 3x \implies f(-2) = (-2)^2 - 3(-2) = 10.$$
+If $h(t)$ is a height after $t$ seconds, then $h(3) = 40$ says that the height is 40 after 3 seconds.
+
+```quiz
+Q: If $f(x) = 2x^2 - 1$, what is $f(-3)$?
+A: 17
+Why: $2 \cdot 9 - 1 = 17$.
+```
+
+#### Finding a Domain {#finding-a-domain}
+kind: skill
+prereqs: domain-and-range
+
+Start from all real numbers and remove what is not allowed:
+- a denominator cannot be $0$;
+- what is under an even root cannot be negative;
+- what is inside a logarithm must be positive;
+- a model allows only the inputs that make sense in its setting.
+
+**Example.** For $f(x) = \frac{\sqrt{x + 2}}{x - 1}$, the domain is $x \ge -2$ with $x \ne 1$.
+
+#### Composing Functions {#composing-functions}
+kind: skill
+prereqs: composition
+
+To find $f(g(x))$, replace every $x$ in $f$ by the whole expression $g(x)$:
+$$f(x) = x^2 + 1, \quad g(x) = x - 3 \implies f(g(x)) = (x - 3)^2 + 1.$$
+
+```quiz
+Q: With $f(x) = 2x$ and $g(x) = x + 5$, what is $f(g(1))$?
+A: 12
+Why: $g(1) = 6$, and $f(6) = 12$.
+
+Q: With $f(x) = 2x$ and $g(x) = x + 5$, what is $g(f(1))$?
+A: 7
+Why: $f(1) = 2$, and $g(2) = 7$. The order matters.
+```
+
+#### Finding an Inverse {#finding-an-inverse}
+kind: skill
+prereqs: inverse-functions, literal-equations
+
+Find an inverse in three steps:
+1. write $y = f(x)$;
+2. swap $x$ and $y$;
+3. solve for $y$.
+
+**Example.** For $f(x) = 2x + 6$:
+$$\begin{aligned} x &= 2y + 6 \\ y &= \frac{x - 6}{2} \end{aligned}$$
+so $f^{-1}(x) = \frac{x - 6}{2}$. Check that $f(f^{-1}(x)) = x$.
+
+```quiz
+Q: If $f(x) = 3x - 4$, what is $f^{-1}(5)$?
+A: 3
+Why: Solve $3x - 4 = 5$.
+```
+
+#### Transforming a Graph {#transforming-a-graph}
+kind: skill
+prereqs: transformation-form
+
+Apply the changes to the parent graph in this order: horizontal shift and stretch, then vertical stretch and flip, then vertical shift. Track a few key points through each step.
+
+**Example.** $y = -2(x - 1)^2 + 3$ takes $y = x^2$ right 1, stretches it by 2, flips it, and moves it up 3, so the vertex $(0, 0)$ goes to $(1, 3)$.
+
+#### Solving Equations with Graphs {#solving-with-graphs}
+kind: skill
+prereqs: function-graphs
+
+The solutions of $f(x) = g(x)$ are the $x$-coordinates of the points where the graphs of $y = f(x)$ and $y = g(x)$ meet. Draw both, by hand or by calculator, and read off the crossings.
+
 ### Linear Functions
+flow: down
+rows: kinds
+wrap: 6
 
 Functions whose graphs are straight lines: the simplest relationships, changing at a constant rate.
+
+#### Parallel & Perpendicular Slopes {#parallel-perpendicular-slopes}
+kind: theorem
+prereqs: slope, reciprocals
+
+Two non-vertical lines with slopes $m_1$ and $m_2$ are
+- parallel if and only if $m_1 = m_2$;
+- perpendicular if and only if $m_1 m_2 = -1$.
+
+#### Constant Rate Theorem {#constant-rate-theorem}
+kind: theorem
+prereqs: average-rate-of-change, slope-intercept
+
+A function on $\mathbb{R}$ is linear if and only if its average rate of change is the same over every interval. Equal steps in $x$ then give equal steps in $y$.
+
+*Proof.* (⇒) For $f(x) = mx + b$,
+$$\frac{f(x_2) - f(x_1)}{x_2 - x_1} = \frac{m(x_2 - x_1)}{x_2 - x_1} = m.$$
+(⇐) If the rate from $0$ to $x$ is always $m$, then $f(x) - f(0) = mx$, so $f(x) = mx + f(0)$. $\square$
+
+Compare [[constant-ratio-theorem|constant ratios]], which mark exponentials, and [[second-differences|constant second differences]], which mark quadratics.
 
 #### Slope
 kind: definition
@@ -750,8 +1063,41 @@ Q: A horizontal line has slope
 Why: $\Delta y = 0$. Vertical lines have undefined slope.
 ```
 
+#### Average Rate of Change
+kind: definition
+prereqs: slope, function-notation
+
+How much a function's output changes per unit of input between $a$ and $b$:
+$$\frac{f(b) - f(a)}{b - a},$$
+the slope of the secant line joining them. A linear function's average rate of change is the same everywhere, which is what makes it linear.
+
+#### Direct Variation
+kind: definition
+prereqs: slope-intercept, proportions
+
+A quantity $y$ varies directly with $x$ if, for a constant $k \ne 0$,
+$$y = kx.$$
+
+The graph is a line through the origin with slope $k$, and $\frac{y}{x}$ is constant.
+
+#### Features of a Line {#features-of-a-line}
+kind: property
+prereqs: slope
+
+For a line $y = mx + b$:
+- the slope $m$ is positive if it rises, negative if it falls, and $0$ if it is level;
+- the $y$-intercept is $(0, b)$;
+- the $x$-intercept is $\left(-\frac{b}{m}, 0\right)$ if $m \ne 0$;
+- the domain is $\mathbb{R}$, and the range is $\mathbb{R}$ if $m \ne 0$.
+
+#### Horizontal & Vertical Lines {#horizontal-vertical-lines}
+kind: property
+prereqs: slope
+
+The line $y = c$ is horizontal, with slope $0$. The line $x = c$ is vertical, with undefined slope, and is not the graph of a function.
+
 #### Slope-Intercept Form {#slope-intercept}
-kind: formula
+kind: form
 prereqs: slope, function-notation, linear-equations
 
 The line with slope $m$ and $y$-intercept $b$ is
@@ -768,11 +1114,33 @@ point: 1, 1 below-right
 ```
 
 #### Point-Slope Form {#point-slope}
-kind: formula
+kind: form
 prereqs: slope-intercept
 
 The line with slope $m$ through $(x_1, y_1)$ is
 $$y - y_1 = m(x - x_1).$$
+
+#### Standard Form of a Line {#line-standard-form}
+kind: form
+prereqs: slope-intercept
+
+$$Ax + By = C, \quad A, B \text{ not both } 0.$$
+
+| Reads off | From |
+| --- | --- |
+| slope, if $B \ne 0$ | $-\frac{A}{B}$ |
+| $x$-intercept, if $A \ne 0$ | $\left(\frac{C}{A}, 0\right)$ |
+| $y$-intercept, if $B \ne 0$ | $\left(0, \frac{C}{B}\right)$ |
+
+The one form that also covers vertical lines, and the form for [[elimination-method|elimination]].
+
+#### Intercept Form of a Line {#line-intercept-form}
+kind: form
+prereqs: line-standard-form
+
+$$\frac{x}{p} + \frac{y}{q} = 1, \quad p, q \ne 0.$$
+
+The line crosses the $x$-axis at $(p, 0)$ and the $y$-axis at $(0, q)$.
 
 #### Graphing Lines
 kind: skill
@@ -783,32 +1151,140 @@ From slope-intercept form, in three steps:
 2. Step by the slope: for $m = \frac{2}{3}$, three right and two up.
 3. Draw the line through the points.
 
-#### Parallel & Perpendicular Slopes {#parallel-perpendicular-slopes}
-kind: theorem
-prereqs: slope, reciprocals
-
-Two non-vertical lines with slopes $m_1$ and $m_2$ are
-- parallel if and only if $m_1 = m_2$;
-- perpendicular if and only if $m_1 m_2 = -1$.
-
 #### Linear Models
+kind: skill
 prereqs: slope-intercept, unit-rates
 
 A constant rate of change in a real situation: a taxi charging \$3 plus \$2 per mile costs
 $$C = 2m + 3$$
 for $m$ miles. The slope is the rate; the intercept is the starting amount.
 
-#### Average Rate of Change
-kind: definition
-prereqs: slope, function-notation
+#### Writing the Equation of a Line {#writing-a-line}
+kind: skill
+prereqs: point-slope, parallel-perpendicular-slopes
 
-How much a function's output changes per unit of input between $a$ and $b$:
-$$\frac{f(b) - f(a)}{b - a},$$
-the slope of the secant line joining them. A linear function's average rate of change is the same everywhere, which is what makes it linear.
+Find the slope, then put it and any one point into [[point-slope|point-slope form]]:
+- from two points, $m = \frac{y_2 - y_1}{x_2 - x_1}$;
+- parallel to a line, the same slope;
+- perpendicular to a line, the negative reciprocal slope.
+
+**Example.** Through $(1, 2)$ and $(3, 8)$: $m = 3$, so $y - 2 = 3(x - 1)$, which is $y = 3x - 1$.
+
+```quiz
+Q: What is the $y$-intercept of the line through $(2, 7)$ and $(4, 11)$?
+A: 3
+Why: $m = 2$, so $y = 2x + 3$.
+
+Q: What is the slope of a line perpendicular to $y = 4x - 1$?
+A: -1/4
+Why: The negative reciprocal of 4.
+```
+
+#### Interpreting Slope & Intercept {#interpreting-slope}
+kind: skill
+prereqs: slope-intercept
+
+In a model $y = mx + b$, read $m$ as the change in $y$ per unit of $x$, with both units, and $b$ as the value of $y$ when $x = 0$.
+
+**Example.** For a taxi fare $C = 2.5m + 4$ in dollars after $m$ miles, the fare rises \$2.50 per mile from a starting charge of \$4.
 
 ### Polynomials
+flow: down
+rows: kinds
+wrap: 6
 
 Sums of powers of $x$ with number coefficients: the most important functions in algebra, and the theorems connecting their factors, zeros and graphs.
+
+#### Remainder Theorem
+kind: theorem
+prereqs: polynomial-division, function-notation
+
+Let $p(x)$ be a polynomial and $a$ a number. The remainder on dividing $p(x)$ by $x - a$ is $p(a)$: there is a polynomial $q(x)$ with
+$$p(x) = (x - a)\,q(x) + p(a).$$
+
+#### Factor Theorem
+kind: theorem
+prereqs: remainder-theorem, zero-product-property
+
+For a polynomial $p(x)$ and a number $a$:
+$$(x - a) \text{ divides } p(x) \iff p(a) = 0$$
+
+*Proof.* By the [[remainder-theorem]],
+$$p(x) = (x - a)q(x) + p(a),$$
+so the remainder vanishes exactly when $p(a) = 0$. $\square$
+
+**Example.** The polynomial
+$$p(x) = x^3 - 6x^2 + 11x - 6$$
+has $p(1) = 0$, so $(x - 1) \mid p(x)$, and in full
+$$p(x) = (x - 1)(x - 2)(x - 3).$$
+
+```quiz
+Q: If $p(3) = 0$, which must divide $p(x)$?
+- $x + 3$
++ $x - 3$
+- $3x$
+- $x - \frac{1}{3}$
+Why: A zero at $x = a$ gives the factor $x - a$.
+
+Q: Is $x + 2$ a factor of $x^2 + 5x + 6$? Answer yes or no.
+A: yes
+Hint: Evaluate at $x = -2$.
+Why: $p(-2) = 4 - 10 + 6 = 0$, and $x^2 + 5x + 6 = (x + 2)(x + 3)$.
+
+Q: For $p(x) = x^3 - 6x^2 + 11x - 6$, what is $p(2)$?
+A: 0
+Why: $8 - 24 + 22 - 6 = 0$, so $x - 2$ is a factor.
+```
+
+#### Rational Root Theorem
+kind: theorem
+prereqs: factor-theorem, factors
+
+Let
+$$p(x) = a_n x^n + \cdots + a_1 x + a_0$$
+have integer coefficients, $a_n \ne 0$. If $\frac{r}{s}$ is a zero of $p$ in lowest terms, then $r \mid a_0$ and $s \mid a_n$.
+
+#### Fundamental Theorem of Algebra
+kind: theorem
+prereqs: factor-theorem, complex-numbers
+
+Every polynomial of degree $n \ge 1$ with complex coefficients has exactly $n$ complex zeros, counted with multiplicity:
+$$p(x) = a_n(x - z_1)(x - z_2)\cdots(x - z_n).$$
+
+#### Binomial Theorem
+kind: theorem
+prereqs: special-products, combinations
+
+For all $a, b$ and every integer $n \ge 0$:
+$$(a + b)^n = \sum_{k=0}^{n} \binom{n}{k} a^{n-k} b^k,$$
+where
+$$\binom{n}{k} = \frac{n!}{k!\,(n - k)!}.$$
+
+#### Closure of Polynomials {#polynomial-closure}
+kind: theorem
+prereqs: polynomial-addition, polynomial-multiplication
+
+The sum, difference and product of two polynomials are polynomials. The quotient need not be one.
+
+So polynomials behave like the integers: closed under $+$, $-$ and $\times$, but not division.
+
+#### Complex Conjugate Root Theorem {#conjugate-root-theorem}
+kind: theorem
+prereqs: fundamental-theorem-of-algebra, complex-conjugates
+
+If a polynomial has real coefficients and $z$ is a root, then its conjugate $\bar{z}$ is a root too.
+
+*Proof.* Conjugation respects sums and products and fixes real numbers, so $p(\bar{z}) = \overline{p(z)} = \bar{0} = 0$. $\square$
+
+So non-real roots come in pairs, and a real polynomial of odd degree has a real root.
+
+#### Sign Change Theorem {#polynomial-sign-change}
+kind: theorem
+prereqs: polynomial-functions
+
+If $p$ is a polynomial and $p(a)$ and $p(b)$ have opposite signs, then $p$ has a zero between $a$ and $b$.
+
+This is the [[ivt|intermediate value theorem]], and polynomials are continuous. It locates zeros that do not factor.
 
 #### Polynomials and Their Parts {#polynomial-basics}
 kind: definition
@@ -819,6 +1295,97 @@ $$4x^3 - x + 7.$$
 Its parts:
 - the degree is the highest power: 3;
 - the leading coefficient is the number in front of that power: 4.
+
+#### Polynomial Functions & End Behavior {#polynomial-functions}
+kind: property
+prereqs: polynomial-basics, function-graphs
+
+Polynomial graphs are smooth and unbroken. Far out, the leading term wins: $-2x^3 + 100x$ eventually falls to the right and rises to the left, like $-2x^3$.
+
+The parent cubic function, $y = x^3$:
+```graph
+y = x^3
+x: -2, 2
+y: -3, 3
+point: -1, -1 above-left
+point: 0, 0 below-right
+point: 1, 1 below-right
+```
+
+#### Zeros & Multiplicity
+kind: property
+prereqs: factor-theorem, polynomial-functions
+
+Each factor $(x - a)^k$ gives a zero at $a$ of multiplicity $k$. At that zero the graph
+- crosses the axis when $k$ is odd;
+- bounces off it when $k$ is even.
+
+#### Turning Points of a Polynomial {#polynomial-turning-points}
+kind: property
+prereqs: polynomial-functions
+
+A polynomial of degree $n$ has at most $n$ real zeros and at most $n - 1$ turning points.
+
+#### Leading Term & End Behaviour {#end-behavior-table}
+kind: property
+prereqs: polynomial-functions
+
+The leading term $ax^n$ sets what the graph does at both ends:
+
+| Degree | $a > 0$ | $a < 0$ |
+| --- | --- | --- |
+| even | up on both sides | down on both sides |
+| odd | down on the left, up on the right | up on the left, down on the right |
+
+#### Special Products
+kind: formula
+prereqs: polynomial-multiplication
+
+For all $a, b$:
+$$\begin{aligned} (a + b)^2 &= a^2 + 2ab + b^2 \\ (a - b)^2 &= a^2 - 2ab + b^2 \\ (a + b)(a - b) &= a^2 - b^2 \\ (a + b)^3 &= a^3 + 3a^2 b + 3ab^2 + b^3 \\ (a - b)^3 &= a^3 - 3a^2 b + 3ab^2 - b^3 \end{aligned}$$
+
+#### Factoring Patterns {#factoring-special-forms}
+kind: formula
+prereqs: special-products, factoring-gcf
+
+For all $a, b, x, p, q$:
+$$\begin{aligned} a^2 - b^2 &= (a - b)(a + b) \\ a^2 + 2ab + b^2 &= (a + b)^2 \\ a^2 - 2ab + b^2 &= (a - b)^2 \\ a^3 - b^3 &= (a - b)(a^2 + ab + b^2) \\ a^3 + b^3 &= (a + b)(a^2 - ab + b^2) \\ x^2 + (p + q)x + pq &= (x + p)(x + q) \\ ax + ay + bx + by &= (a + b)(x + y) \end{aligned}$$
+
+More generally,
+$$a^n - b^n = (a - b)(a^{n-1} + a^{n-2}b + \cdots + b^{n-1}).$$
+The sum of squares $a^2 + b^2$ has no factorisation over $\mathbb{R}$.
+
+Order of attack:
+1. a common factor;
+2. a pattern above;
+3. grouping;
+4. the quadratic formula or the [[rational-root-theorem]].
+
+#### Standard Form of a Polynomial {#polynomial-standard-form}
+kind: form
+prereqs: polynomial-basics
+
+$$p(x) = a_nx^n + a_{n-1}x^{n-1} + \cdots + a_1x + a_0, \quad a_n \ne 0.$$
+
+| Reads off | From |
+| --- | --- |
+| degree | $n$ |
+| end behaviour | $a_n$ and whether $n$ is even |
+| $y$-intercept | $(0, a_0)$ |
+| possible rational roots | factors of $a_0$ over factors of $a_n$ |
+
+#### Factored Form of a Polynomial {#polynomial-factored-form}
+kind: form
+prereqs: factor-theorem
+
+$$p(x) = a(x - r_1)^{m_1}(x - r_2)^{m_2}\cdots(x - r_k)^{m_k}.$$
+
+| Reads off | From |
+| --- | --- |
+| zeros | $r_1, \dots, r_k$ |
+| whether the graph crosses or touches at $r_i$ | $m_i$ odd or even |
+| degree | $m_1 + \cdots + m_k$ |
+| end behaviour | $a$ and the degree |
 
 #### Adding & Subtracting Polynomials {#polynomial-addition}
 kind: skill
@@ -833,13 +1400,6 @@ prereqs: polynomial-addition, expanding-brackets
 
 Multiply every term of one by every term of the other, then collect:
 $$(x + 2)(x + 3) = x^2 + 3x + 2x + 6 = x^2 + 5x + 6.$$
-
-#### Special Products
-kind: formula
-prereqs: polynomial-multiplication
-
-For all $a, b$:
-$$\begin{aligned} (a + b)^2 &= a^2 + 2ab + b^2 \\ (a - b)^2 &= a^2 - 2ab + b^2 \\ (a + b)(a - b) &= a^2 - b^2 \\ (a + b)^3 &= a^3 + 3a^2 b + 3ab^2 + b^3 \\ (a - b)^3 &= a^3 - 3a^2 b + 3ab^2 - b^3 \end{aligned}$$
 
 #### Factoring Out the GCF {#factoring-gcf}
 kind: skill
@@ -909,23 +1469,6 @@ Q: Which trinomial does not factor over the integers?
 Why: For $2x^2 + 7x + 4$, $ac = 8$, and the factor pairs of $8$ add to $\pm 6$ or $\pm 9$, never to $7$.
 ```
 
-#### Factoring Patterns {#factoring-special-forms}
-kind: formula
-prereqs: special-products, factoring-gcf
-
-For all $a, b, x, p, q$:
-$$\begin{aligned} a^2 - b^2 &= (a - b)(a + b) \\ a^2 + 2ab + b^2 &= (a + b)^2 \\ a^2 - 2ab + b^2 &= (a - b)^2 \\ a^3 - b^3 &= (a - b)(a^2 + ab + b^2) \\ a^3 + b^3 &= (a + b)(a^2 - ab + b^2) \\ x^2 + (p + q)x + pq &= (x + p)(x + q) \\ ax + ay + bx + by &= (a + b)(x + y) \end{aligned}$$
-
-More generally,
-$$a^n - b^n = (a - b)(a^{n-1} + a^{n-2}b + \cdots + b^{n-1}).$$
-The sum of squares $a^2 + b^2$ has no factorisation over $\mathbb{R}$.
-
-Order of attack:
-1. a common factor;
-2. a pattern above;
-3. grouping;
-4. the quadratic formula or the [[rational-root-theorem]].
-
 #### Polynomial Long Division {#polynomial-division}
 kind: skill
 prereqs: polynomial-multiplication, long-division
@@ -942,96 +1485,212 @@ prereqs: polynomial-division
 
 A shortcut for dividing by $(x - a)$ using only the coefficients. The last number it produces is the remainder.
 
-#### Remainder Theorem
-kind: theorem
-prereqs: polynomial-division, function-notation
+#### Factoring by Grouping {#factoring-by-grouping}
+kind: skill
+prereqs: factoring-gcf
 
-Let $p(x)$ be a polynomial and $a$ a number. The remainder on dividing $p(x)$ by $x - a$ is $p(a)$: there is a polynomial $q(x)$ with
-$$p(x) = (x - a)\,q(x) + p(a).$$
+Split the terms into pairs, take out each pair's common factor, then take out the shared bracket:
+$$\begin{aligned} x^3 + 2x^2 + 3x + 6 &= x^2(x + 2) + 3(x + 2) \\ &= (x^2 + 3)(x + 2). \end{aligned}$$
 
-#### Factor Theorem
-kind: theorem
-prereqs: remainder-theorem, zero-product-property
+#### Factoring Completely {#factoring-completely}
+kind: skill
+prereqs: factoring-trinomials, factoring-special-forms, factoring-by-grouping
 
-For a polynomial $p(x)$ and a number $a$:
-$$(x - a) \text{ divides } p(x) \iff p(a) = 0$$
+Work in this order, and repeat on each factor until none will go further:
+1. take out the greatest common factor;
+2. look for a pattern;
+3. factor the trinomial, or group the terms.
 
-*Proof.* By the [[remainder-theorem]],
-$$p(x) = (x - a)q(x) + p(a),$$
-so the remainder vanishes exactly when $p(a) = 0$. $\square$
-
-**Example.** The polynomial
-$$p(x) = x^3 - 6x^2 + 11x - 6$$
-has $p(1) = 0$, so $(x - 1) \mid p(x)$, and in full
-$$p(x) = (x - 1)(x - 2)(x - 3).$$
+$$\begin{aligned} 2x^3 - 8x &= 2x(x^2 - 4) \\ &= 2x(x - 2)(x + 2). \end{aligned}$$
 
 ```quiz
-Q: If $p(3) = 0$, which must divide $p(x)$?
-- $x + 3$
-+ $x - 3$
-- $3x$
-- $x - \frac{1}{3}$
-Why: A zero at $x = a$ gives the factor $x - a$.
-
-Q: Is $x + 2$ a factor of $x^2 + 5x + 6$? Answer yes or no.
-A: yes
-Hint: Evaluate at $x = -2$.
-Why: $p(-2) = 4 - 10 + 6 = 0$, and $x^2 + 5x + 6 = (x + 2)(x + 3)$.
-
-Q: For $p(x) = x^3 - 6x^2 + 11x - 6$, what is $p(2)$?
-A: 0
-Why: $8 - 24 + 22 - 6 = 0$, so $x - 2$ is a factor.
+Q: How many linear factors does $3x^3 - 12x$ have when factored completely?
+A: 3
+Why: $3x(x - 2)(x + 2)$.
 ```
 
-#### Rational Root Theorem
-kind: theorem
-prereqs: factor-theorem, factors
+#### Solving Polynomial Equations {#solving-polynomial-equations}
+kind: skill
+prereqs: rational-root-theorem, synthetic-division, factoring-completely
 
-Let
-$$p(x) = a_n x^n + \cdots + a_1 x + a_0$$
-have integer coefficients, $a_n \ne 0$. If $\frac{r}{s}$ is a zero of $p$ in lowest terms, then $r \mid a_0$ and $s \mid a_n$.
+Find all the roots of a polynomial in four steps:
+1. get 0 on one side and factor as far as possible;
+2. list the candidates from the [[rational-root-theorem]], and test them;
+3. divide out each root found, to lower the degree;
+4. solve the remaining quadratic.
 
-#### Fundamental Theorem of Algebra
-kind: theorem
-prereqs: factor-theorem, complex-numbers
+**Example.** $x^3 - 4x^2 + x + 6 = 0$ has root $x = 2$; dividing gives $(x - 2)(x^2 - 2x - 3)$, so the roots are $2$, $3$, $-1$.
 
-Every polynomial of degree $n \ge 1$ with complex coefficients has exactly $n$ complex zeros, counted with multiplicity:
-$$p(x) = a_n(x - z_1)(x - z_2)\cdots(x - z_n).$$
+#### Graphing a Polynomial {#graphing-polynomials}
+kind: skill
+prereqs: polynomial-factored-form, end-behavior-table
 
-#### Polynomial Functions & End Behavior {#polynomial-functions}
-prereqs: polynomial-basics, function-graphs
+Sketch a polynomial in four steps:
+1. factor it, and mark the zeros;
+2. read the end behaviour from the leading term;
+3. mark the $y$-intercept;
+4. join them, crossing at zeros of odd multiplicity and touching at zeros of even multiplicity.
 
-Polynomial graphs are smooth and unbroken. Far out, the leading term wins: $-2x^3 + 100x$ eventually falls to the right and rises to the left, like $-2x^3$.
-
-The parent cubic function, $y = x^3$:
+For example, $y = x(x - 2)^2$, which crosses at 0 and touches at 2:
 ```graph
-y = x^3
-x: -2, 2
-y: -3, 3
-point: -1, -1 above-left
-point: 0, 0 below-right
-point: 1, 1 below-right
+y = x*(x-2)^2
+x: -1, 3.5
+y: -3, 4
+point: 0, 0 above-left
+point: 2, 0 below
 ```
 
-#### Zeros & Multiplicity
-prereqs: factor-theorem, polynomial-functions
+#### Polynomial Inequalities {#polynomial-inequalities}
+kind: skill
+prereqs: polynomial-factored-form, interval-notation
 
-Each factor $(x - a)^k$ gives a zero at $a$ of multiplicity $k$. At that zero the graph
-- crosses the axis when $k$ is odd;
-- bounces off it when $k$ is even.
+Factor, mark the zeros on a number line, find the sign on each interval from a test point, and keep the intervals that fit. The ends count for $\le$ and $\ge$.
 
-#### Binomial Theorem
-kind: theorem
-prereqs: special-products, combinations
+**Example.** $x(x - 2)(x + 3) > 0$ has solution $(-3, 0) \cup (2, \infty)$.
 
-For all $a, b$ and every integer $n \ge 0$:
-$$(a + b)^n = \sum_{k=0}^{n} \binom{n}{k} a^{n-k} b^k,$$
-where
-$$\binom{n}{k} = \frac{n!}{k!\,(n - k)!}.$$
+#### Proving Polynomial Identities {#polynomial-identities}
+kind: skill
+prereqs: polynomial-multiplication
+
+Expand both sides and show that they agree term by term:
+$$(x^2 + y^2)^2 = (x^2 - y^2)^2 + (2xy)^2.$$
+With $x > y$, this identity makes Pythagorean triples: $x = 2$, $y = 1$ gives $3, 4, 5$.
 
 ### Quadratics
+flow: down
+rows: kinds
+wrap: 6
 
-Degree-two polynomials: parabolas, and four ways to solve them.
+Degree-two polynomials and their parabolas: the theorems, the properties, the forms and what each one shows, and the skills of working with them.
+
+| Form | Written | Shows |
+| --- | --- | --- |
+| [[quadratic-standard-form]] | $ax^2 + bx + c$ | direction, $y$-intercept, the discriminant |
+| [[vertex-form]] | $a(x - h)^2 + k$ | vertex, axis, maximum or minimum, transformations of $x^2$ |
+| [[quadratic-factored-form]] | $a(x - r)(x - s)$ | roots, axis midway between them, sign |
+| [[sum-product-form]] | $x^2 - (r + s)x + rs$ | sum and product of the roots |
+| [[focal-form]] | $(x - h)^2 = 4p(y - k)$ | vertex, focus, directrix |
+
+#### The Quadratic Formula {#quadratic-formula}
+kind: theorem
+prereqs: completing-the-square, simplifying-radicals
+
+For $a \ne 0$, the solutions of $ax^2 + bx + c = 0$ are
+$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
+
+*Proof.* Divide by $a$ and [[completing-the-square|complete the square]]:
+$$\begin{aligned} x^2 + \frac{b}{a}x &= -\frac{c}{a} \\ x^2 + \frac{b}{a}x + \frac{b^2}{4a^2} &= \frac{b^2}{4a^2} - \frac{c}{a} \\ \left(x + \frac{b}{2a}\right)^2 &= \frac{b^2 - 4ac}{4a^2} \\ x + \frac{b}{2a} &= \pm\frac{\sqrt{b^2 - 4ac}}{2a} \end{aligned}$$
+Subtract $\frac{b}{2a}$ from both sides. $\square$
+
+Split in two, the formula reads
+$$x = -\frac{b}{2a} \pm \frac{\sqrt{b^2 - 4ac}}{2a}:$$
+the [[axis-of-symmetry|axis of symmetry]], and equal steps either side of it.
+
+#### The Discriminant {#discriminant}
+kind: theorem
+prereqs: quadratic-formula
+
+For real $a \ne 0$, $b$, $c$, the discriminant of $ax^2 + bx + c$ is
+$$\Delta = b^2 - 4ac,$$
+and the equation $ax^2 + bx + c = 0$ has
+- two distinct real solutions if and only if $\Delta > 0$;
+- one repeated real solution if and only if $\Delta = 0$;
+- two complex conjugate solutions if and only if $\Delta < 0$.
+
+*Proof.* By the [[quadratic-formula|quadratic formula]], the solutions are
+$$x = -\frac{b}{2a} \pm \frac{\sqrt{\Delta}}{2a},$$
+and $\sqrt{\Delta}$ is a positive real number, zero, or not real, as $\Delta$ is positive, zero or negative. $\square$
+
+On the graph, the parabola crosses the $x$-axis twice, touches it at the vertex, or misses it. Here are all three, with $a = 1$:
+```graph
+y = x^2-1
+y = x^2 | dashed
+y = x^2+1 | faint
+x: -2.5, 2.5
+y: -1.5, 4
+```
+
+When $a$, $b$ and $c$ are integers, the solutions are rational exactly when $\Delta$ is a perfect square, which is when the quadratic factors over the rationals.
+
+```quiz
+Q: How many real solutions does $x^2 - 4x + 4 = 0$ have?
+A: 1
+Why: $\Delta = 16 - 16 = 0$, so there is one repeated solution, $x = 2$.
+
+Q: How many real solutions does $2x^2 + x + 3 = 0$ have?
+A: 0
+Why: $\Delta = 1 - 24 = -23 < 0$.
+```
+
+#### Vieta's Formulas {#vietas-formulas}
+kind: theorem
+prereqs: quadratic-factored-form
+
+If $r$ and $s$ are the solutions of $ax^2 + bx + c = 0$, counted with multiplicity, then
+$$r + s = -\frac{b}{a} \quad\text{and}\quad rs = \frac{c}{a}.$$
+
+*Proof.* Expand the [[quadratic-factored-form|factored form]],
+$$a(x - r)(x - s) = ax^2 - a(r + s)x + ars,$$
+and compare coefficients with $ax^2 + bx + c$. $\square$
+
+The formulas hold for complex solutions as well.
+
+```quiz
+Q: The solutions of $2x^2 - 6x + 1 = 0$ add to what?
+A: 3
+Why: $-\frac{b}{a} = \frac{6}{2} = 3$.
+
+Q: The solutions of $2x^2 - 6x + 1 = 0$ multiply to what?
+A: 1/2
+Why: $\frac{c}{a} = \frac{1}{2}$.
+```
+
+#### Maximum or Minimum Value {#quadratic-extreme-value}
+kind: theorem
+prereqs: parabola-vertex, squares-nonnegative
+
+Let $f(x) = a(x - h)^2 + k$ with $a \ne 0$. If $a > 0$, then $k$ is the minimum value of $f$; if $a < 0$, it is the maximum value. In both cases it is attained only at $x = h$.
+
+*Proof.* [[squares-nonnegative|Squares are non-negative]], so $(x - h)^2 \ge 0$, with equality only at $x = h$. Multiplying by $a$ gives $a(x - h)^2 \ge 0$ if $a > 0$ and $a(x - h)^2 \le 0$ if $a < 0$. Add $k$. $\square$
+
+#### Constant Second Differences {#second-differences}
+kind: theorem
+prereqs: odd-number-pattern, quadratic-standard-form
+
+Let $y_0, y_1, y_2, \dots$ be the values of a function at equally spaced inputs, a step $d$ apart. They are the values of a quadratic $ax^2 + bx + c$ if and only if their second differences are a constant other than $0$, and that constant is
+$$2ad^2.$$
+
+*Proof.* (⇒) For $f(x) = ax^2 + bx + c$,
+$$f(x + d) - f(x) = 2adx + ad^2 + bd,$$
+which rises by $2ad \cdot d = 2ad^2$ each time $x$ rises by $d$. (⇐) A sequence with constant second difference $D$ and first difference $e$ at the start has
+$$y_n = y_0 + ne + \frac{n(n - 1)}{2}D,$$
+which is quadratic in $n$ when $D \ne 0$, and so in $x$, since $n$ is linear in $x$. $\square$
+
+**Example.** For $y = 2x^2 + x$, so $a = 2$ and $d = 1$:
+
+| $x$ | 0 | 1 | 2 | 3 | 4 |
+| --- | --- | --- | --- | --- | --- |
+| $y$ | 0 | 3 | 10 | 21 | 36 |
+| first differences | | 3 | 7 | 11 | 15 |
+| second differences | | | 4 | 4 | 4 |
+
+Divided by $d$, the first differences are the slopes of the chords, so the slopes of equal chords go up in equal steps. The [[odd-number-pattern|odd-number pattern]] is the case $y = x^2$ from the vertex.
+
+```quiz
+Q: A table with $x = 0, 1, 2, 3$ has $y = 1, 4, 11, 22$. What is $a$ in the quadratic it comes from?
+A: 2
+Why: The first differences are 3, 7, 11, and the second differences are 4, so $2a = 4$.
+```
+
+#### Three Points Determine a Quadratic {#three-points-determine-a-quadratic}
+kind: theorem
+prereqs: factor-theorem, quadratic-functions
+
+Through any three points $(x_1, y_1)$, $(x_2, y_2)$, $(x_3, y_3)$ with distinct $x$-coordinates passes exactly one polynomial of degree at most 2. It is a quadratic exactly when the points are not collinear.
+
+*Proof.* Existence: this polynomial passes through all three,
+$$p(x) = y_1\frac{(x - x_2)(x - x_3)}{(x_1 - x_2)(x_1 - x_3)} + y_2\frac{(x - x_1)(x - x_3)}{(x_2 - x_1)(x_2 - x_3)} + y_3\frac{(x - x_1)(x - x_2)}{(x_3 - x_1)(x_3 - x_2)}.$$
+Uniqueness: the difference of two such polynomials has degree at most 2 and three zeros, so by the [[factor-theorem]] it is the zero polynomial. If the points are collinear, their line is that polynomial, and otherwise its degree must be exactly 2. $\square$
 
 #### Quadratic Functions
 kind: definition
@@ -1051,13 +1710,215 @@ point: 0, 0 below-right
 point: 1, 1 below-right
 ```
 
-#### Vertex Form
-kind: formula
+#### The Leading Coefficient {#quadratic-leading-coefficient}
+kind: property
 prereqs: quadratic-functions, graph-transformations
 
-The form
-$$f(x) = a(x - h)^2 + k$$
-shows the vertex $(h, k)$ at a glance: it is $x^2$ stretched by $a$ and moved right $h$ and up $k$.
+In $f(x) = ax^2 + bx + c$, the coefficient $a$ alone sets the shape of the parabola:
+- $a > 0$ opens up, and $a < 0$ opens down;
+- $|a| > 1$ is narrower than $y = x^2$, and $|a| < 1$ is wider.
+
+Changing $b$ and $c$ moves the parabola without changing its shape. Here are $y = x^2$, $y = 2x^2$ (dashed) and $y = \frac{1}{2}x^2$ (faint):
+```graph
+y = x^2
+y = 2x^2 | dashed
+y = x^2/2 | faint
+x: -2.5, 2.5
+y: -1, 4
+```
+
+#### The Vertex {#parabola-vertex}
+kind: property
+prereqs: vertex-form, completing-the-square
+
+The vertex of the parabola $y = ax^2 + bx + c$ is its turning point
+$$(h, k) = \left(-\frac{b}{2a},\; c - \frac{b^2}{4a}\right),$$
+the lowest point if $a > 0$ and the highest if $a < 0$.
+
+*Proof.* [[completing-the-square|Complete the square]]:
+$$\begin{aligned} ax^2 + bx + c &= a\left(x^2 + \frac{b}{a}x\right) + c \\ &= a\left(x + \frac{b}{2a}\right)^2 + c - \frac{b^2}{4a}. \end{aligned}$$
+This is [[vertex-form]] with the $h$ and $k$ above. $\square$
+
+The value $k$ is also $f(h)$, which is usually the quicker way to find it, and it equals $-\frac{\Delta}{4a}$, with $\Delta$ the [[discriminant|discriminant]].
+
+```quiz
+Q: What is the $x$-coordinate of the vertex of $y = x^2 - 6x + 5$?
+A: 3
+Why: $-\frac{b}{2a} = \frac{6}{2} = 3$.
+
+Q: What is the $y$-coordinate of the vertex of $y = x^2 - 6x + 5$?
+A: -4
+Why: $f(3) = 9 - 18 + 5 = -4$.
+```
+
+#### Axis of Symmetry
+kind: property
+prereqs: parabola-vertex
+
+A parabola with vertex $(h, k)$ is symmetric about the vertical line
+$$x = h = -\frac{b}{2a},$$
+that is, for every $t$:
+$$f(h + t) = f(h - t).$$
+
+*Proof.* Both sides equal $at^2 + k$ in [[vertex-form]]. $\square$
+
+So two different inputs with the same output lie equally far from the axis: if $f(p) = f(q)$ with $p \ne q$, then
+$$h = \frac{p + q}{2}.$$
+In particular the axis runs midway between the roots.
+
+#### Intercepts {#parabola-intercepts}
+kind: property
+prereqs: quadratic-functions, discriminant
+
+The parabola $y = ax^2 + bx + c$ meets the $y$-axis once, at $(0, c)$, and meets the $x$-axis at its real roots, of which it has two, one or none as the [[discriminant|discriminant]] is positive, zero or negative.
+
+#### Range & Monotonicity {#quadratic-range}
+kind: property
+prereqs: quadratic-extreme-value, domain-and-range
+
+A quadratic function with vertex $(h, k)$ has domain $\mathbb{R}$, and
+- if $a > 0$, its range is $[k, \infty)$, and it decreases on $(-\infty, h]$ and increases on $[h, \infty)$;
+- if $a < 0$, its range is $(-\infty, k]$, and it increases on $(-\infty, h]$ and decreases on $[h, \infty)$.
+
+```quiz
+Q: What is the least number in the range of $f(x) = 3(x - 1)^2 + 4$?
+A: 4
+Why: $a > 0$, so the range is $[4, \infty)$.
+```
+
+#### The Odd-Number Pattern {#odd-number-pattern}
+kind: property
+prereqs: vertex-form
+
+Going out from the vertex of $f(x) = a(x - h)^2 + k$ in steps of 1, either way, the rises are $a$ times the odd numbers in turn:
+$$f(h + n + 1) - f(h + n) = a(2n + 1), \quad n = 0, 1, 2, \dots$$
+
+*Proof.* The difference is $a\left((n + 1)^2 - n^2\right) = a(2n + 1)$. $\square$
+
+So from the vertex of $y = x^2$: over 1 up 1, over 1 up 3, over 1 up 5, and so on.
+```graph
+y = x^2
+segment: 0, 0, 1, 0
+segment: 1, 0, 1, 1
+segment: 1, 1, 2, 1
+segment: 2, 1, 2, 4
+segment: 2, 4, 3, 4
+segment: 3, 4, 3, 9
+label: 1, 0.5 "1" right
+label: 2, 2.5 "3" right
+label: 3, 6.5 "5" right
+x: -0.5, 4
+y: -0.5, 10
+grid: 1, 1
+```
+
+| steps from the vertex | 0 | 1 | 2 | 3 | 4 |
+| --- | --- | --- | --- | --- | --- |
+| height above the vertex, in units of $a$ | 0 | 1 | 4 | 9 | 16 |
+| rise of this step, in units of $a$ | | 1 | 3 | 5 | 7 |
+
+Each slope of a unit step is an odd number times $a$, and adding them up gives the squares:
+$$1 + 3 + 5 + \cdots + (2n - 1) = n^2.$$
+For a step of $d$ instead of 1, the rises are $ad^2$ times the odd numbers.
+
+```quiz
+Q: On $y = 3x^2$, how far does the curve rise from $x = 2$ to $x = 3$?
+A: 15
+Why: This is the third step out from the vertex, so the rise is $3 \cdot 5 = 15$.
+
+Q: From the vertex of $y = -2(x - 1)^2 + 5$, what is the change in $y$ over the second unit step?
+A: -6
+Why: $a \cdot 3 = -6$.
+```
+
+#### Sign of a Quadratic {#quadratic-sign}
+kind: property
+prereqs: quadratic-factored-form, discriminant
+
+Let $f(x) = ax^2 + bx + c$ with [[discriminant|discriminant]] $\Delta$.
+- If $\Delta < 0$, then $f(x)$ has the sign of $a$ for every $x$.
+- If $\Delta = 0$, then $f(x)$ has the sign of $a$ except at the root, where it is $0$.
+- If $\Delta > 0$, with roots $r < s$, then $f(x)$ has the sign of $a$ for $x < r$ and $x > s$, and the opposite sign for $r < x < s$.
+
+#### Standard Form {#quadratic-standard-form}
+kind: form
+prereqs: quadratic-functions
+
+$$f(x) = ax^2 + bx + c, \quad a \ne 0.$$
+
+| Reads off | From |
+| --- | --- |
+| direction and width | $a$ |
+| $y$-intercept | $(0, c)$ |
+| axis of symmetry | $x = -\frac{b}{2a}$ |
+| slope where it crosses the $y$-axis | $b$ |
+| number of real roots | $b^2 - 4ac$ |
+| sum and product of the roots | $-\frac{b}{a}$ and $\frac{c}{a}$ |
+
+The form for the [[quadratic-formula|quadratic formula]] and for adding, subtracting and differentiating quadratics.
+
+#### Vertex Form
+kind: form
+prereqs: quadratic-standard-form, graph-transformations
+
+$$f(x) = a(x - h)^2 + k, \quad a \ne 0.$$
+
+| Reads off | From |
+| --- | --- |
+| direction and width | $a$ |
+| vertex | $(h, k)$ |
+| axis of symmetry | $x = h$ |
+| maximum or minimum value | $k$ |
+| as a transformation of $y = x^2$ | stretched by $a$, moved right $h$ and up $k$ |
+| roots, when $-\frac{k}{a} \ge 0$ | $x = h \pm \sqrt{-\frac{k}{a}}$ |
+
+The form for graphing and for maximum and minimum problems. [[completing-the-square|Completing the square]] reaches it from standard form.
+
+#### Factored Form {#quadratic-factored-form}
+kind: form
+prereqs: quadratic-standard-form, factor-theorem
+
+$$f(x) = a(x - r)(x - s), \quad a \ne 0.$$
+
+| Reads off | From |
+| --- | --- |
+| direction and width | $a$ |
+| roots, the $x$-intercepts | $x = r$ and $x = s$ |
+| axis of symmetry | $x = \frac{r + s}{2}$ |
+| $y$-intercept | $(0, ars)$ |
+| sign | changes at $r$ and at $s$ |
+
+Also called intercept form. A real quadratic has a factored form over $\mathbb{R}$ exactly when its [[discriminant|discriminant]] is $\Delta \ge 0$; when $\Delta = 0$ it is a perfect square, $a(x - r)^2$, with its vertex on the $x$-axis. Over $\mathbb{C}$ every quadratic has one.
+
+#### Sum–Product Form {#sum-product-form}
+kind: form
+prereqs: vietas-formulas
+
+For a quadratic with leading coefficient 1 and roots $r$ and $s$:
+$$x^2 - (r + s)x + rs.$$
+
+| Reads off | From |
+| --- | --- |
+| sum of the roots | the coefficient of $x$, with its sign changed |
+| product of the roots | the constant term |
+
+The form for factoring by inspection, and for writing down a quadratic with given roots.
+
+#### Focal Form {#focal-form}
+kind: form
+prereqs: vertex-form
+
+$$(x - h)^2 = 4p(y - k), \quad p \ne 0.$$
+
+| Reads off | From |
+| --- | --- |
+| vertex | $(h, k)$ |
+| focus | $(h, k + p)$ |
+| directrix | $y = k - p$ |
+| axis of symmetry | $x = h$ |
+| leading coefficient | $a = \frac{1}{4p}$ |
+
+Every point of the curve is as far from the focus as from the directrix: see [[parabolas]].
 
 #### Solving by Factoring {#quadratics-by-factoring}
 kind: skill
@@ -1082,14 +1943,15 @@ Add the number that makes a perfect square:
 $$\begin{aligned} x^2 + 6x + 2 &= 0 \\ x^2 + 6x + 9 &= 7 \\ (x + 3)^2 &= 7 \\ x &= -3 \pm \sqrt{7} \end{aligned}$$
 It is also how vertex form is found.
 
-#### The Quadratic Formula {#quadratic-formula}
-kind: formula
-prereqs: completing-the-square, simplifying-radicals
+#### Solving with the Formula {#solving-with-the-quadratic-formula}
+kind: skill
+prereqs: quadratic-formula
 
-For $a \ne 0$, the solutions of $ax^2 + bx + c = 0$ are
-$$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
-
-It follows from [[completing-the-square]] on the general equation. The [[discriminant]] $b^2 - 4ac$ decides whether the solutions are real.
+Solve with the [[quadratic-formula|quadratic formula]] in four steps:
+1. write the equation as $ax^2 + bx + c = 0$;
+2. read off $a$, $b$ and $c$, signs included;
+3. work out $b^2 - 4ac$;
+4. substitute and simplify.
 
 **Example.** For $2x^2 + 3x - 2 = 0$:
 $$x = \frac{-3 \pm \sqrt{9 + 16}}{4} = \frac{-3 \pm 5}{4},$$
@@ -1112,20 +1974,146 @@ A: -16
 Why: $4 - 20 = -16$; the equation has no real solutions.
 ```
 
-#### The Discriminant {#discriminant}
-kind: definition
-prereqs: quadratic-formula
+#### Choosing a Method {#choosing-a-quadratic-method}
+kind: skill
+prereqs: quadratics-by-factoring, solving-with-the-quadratic-formula
 
-The discriminant of $ax^2 + bx + c$ is
-$$\Delta = b^2 - 4ac.$$
-The equation $ax^2 + bx + c = 0$ has
-- two real solutions if $\Delta > 0$;
-- one repeated solution if $\Delta = 0$;
-- two complex conjugate solutions if $\Delta < 0$.
+Choose the method from the shape of the equation:
+
+| The equation | Method |
+| --- | --- |
+| has no $x$ term, or is $(x - h)^2 = q$ | [[quadratics-by-square-roots]] |
+| has a discriminant that is a perfect square | [[quadratics-by-factoring]] |
+| has $a = 1$ and an even $b$ | [[completing-the-square]] |
+| is anything else | [[solving-with-the-quadratic-formula]] |
+
+#### Converting Between Forms {#converting-quadratic-forms}
+kind: skill
+prereqs: completing-the-square, quadratics-by-factoring, vertex-form, quadratic-factored-form
+
+Convert between the forms by:
+- vertex or factored to standard: expand;
+- standard to vertex: complete the square, or take $h = -\frac{b}{2a}$ and $k = f(h)$;
+- standard to factored: factor, or find the roots by the [[quadratic-formula|quadratic formula]];
+- factored to vertex: take $h = \frac{r + s}{2}$ and $k = f(h)$.
+
+**Example.** One quadratic in all three forms:
+$$\begin{aligned} y &= 2x^2 - 8x + 6 \\ &= 2(x - 2)^2 - 2 \\ &= 2(x - 1)(x - 3). \end{aligned}$$
+
+```quiz
+Q: Write $y = x^2 + 4x + 1$ as $y = (x - h)^2 + k$. What is $k$?
+A: -3
+Why: $x^2 + 4x + 1 = (x + 2)^2 - 4 + 1 = (x + 2)^2 - 3$.
+
+Q: What is the $x$-coordinate of the vertex of $y = (x - 2)(x - 8)$?
+A: 5
+Why: The axis runs midway between the roots: $\frac{2 + 8}{2} = 5$.
+```
+
+#### Sketching a Parabola {#sketching-a-parabola}
+kind: skill
+prereqs: odd-number-pattern, axis-of-symmetry, parabola-intercepts
+
+Sketch a parabola from its [[vertex-form]] in five steps:
+1. read the direction from the sign of $a$;
+2. plot the vertex;
+3. step out from the vertex both ways, rising $a$, $3a$, $5a$;
+4. mark the $y$-intercept and any real $x$-intercepts;
+5. join the points in a smooth curve.
+
+**Example.** For $y = 2(x - 1)^2 - 3$, the vertex is $(1, -3)$, and the rises are 2, then 6:
+```graph
+y = 2*(x-1)^2-3
+x: -2, 4
+y: -4, 6
+point: 1, -3 below-right
+point: 0, -1 left
+point: 2, -1 right
+point: -1, 5 left
+point: 3, 5 right
+```
+
+#### Writing a Quadratic from Its Features {#writing-a-quadratic}
+kind: skill
+prereqs: vertex-form, quadratic-factored-form, three-points-determine-a-quadratic
+
+Take the form that holds what is given, and find $a$ from one more point:
+- from the vertex and a point, use $y = a(x - h)^2 + k$;
+- from the roots and a point, use $y = a(x - r)(x - s)$;
+- from three points, put each into $y = ax^2 + bx + c$ and solve the [[linear-systems|system]].
+
+**Example.** With vertex $(2, -1)$, through $(4, 7)$:
+$$\begin{aligned} 7 &= a(4 - 2)^2 - 1 \\ 8 &= 4a \\ a &= 2 \end{aligned}$$
+so $y = 2(x - 2)^2 - 1$.
+
+```quiz
+Q: A parabola has roots 1 and 5 and passes through $(0, 10)$. What is $a$?
+A: 2
+Why: $10 = a(0 - 1)(0 - 5) = 5a$.
+```
+
+#### Solving Quadratic Inequalities {#quadratic-inequalities}
+kind: skill
+prereqs: quadratic-sign, quadratics-by-factoring, interval-notation
+
+Find the roots, then use the [[quadratic-sign|sign of the quadratic]] on either side of them:
+1. get 0 on one side;
+2. solve the equation $f(x) = 0$;
+3. read the sign outside and between the roots;
+4. write the answer as intervals, with the ends included for $\le$ and $\ge$.
+
+**Example.** To solve $x^2 - x - 6 < 0$:
+$$(x + 2)(x - 3) < 0.$$
+The parabola opens up, so it is negative between its roots, and the solution is $(-2, 3)$.
+
+```quiz
+Q: Which is the solution of $x^2 - 4 > 0$?
+- $(-2, 2)$
++ $(-\infty, -2) \cup (2, \infty)$
+- $(2, \infty)$
+- $(-\infty, 2)$
+Why: The parabola opens up, so it is positive outside its roots, $\pm 2$.
+```
+
+#### Maximum and Minimum Problems {#quadratic-optimization}
+kind: skill
+prereqs: quadratic-extreme-value
+
+Write the quantity as a quadratic in one variable, find its vertex, and answer in the terms of the problem.
+
+**Example.** A rectangle has perimeter 40. With width $x$, its height is $20 - x$, and its area is
+$$A(x) = x(20 - x).$$
+The roots are 0 and 20, so the vertex is at $x = 10$, and the greatest area is
+$$A(10) = 100.$$
+
+```quiz
+Q: A ball's height is $h(t) = -5t^2 + 20t + 1$. What is its greatest height?
+A: 21
+Why: The vertex is at $t = \frac{20}{10} = 2$, and $h(2) = -20 + 40 + 1 = 21$.
+```
+
+#### Equations in Quadratic Form {#equations-in-quadratic-form}
+kind: skill
+prereqs: quadratics-by-factoring
+
+Substitute a new variable for the repeated expression, solve the quadratic, and substitute back:
+$$\begin{aligned} x^4 - 5x^2 + 4 &= 0 \\ u^2 - 5u + 4 &= 0 && u = x^2 \\ (u - 1)(u - 4) &= 0 \end{aligned}$$
+so $x^2 = 1$ or $x^2 = 4$, and $x = \pm 1$ or $x = \pm 2$.
 
 ### Rational Expressions & Functions {#rational}
+flow: down
+rows: kinds
+wrap: 6
 
 Fractions with polynomials on top and bottom: the arithmetic of fractions, grown up.
+
+#### Closure of Rational Expressions {#rational-closure}
+kind: theorem
+prereqs: rational-expressions
+
+The sum, difference, product and quotient, by a non-zero expression, of rational expressions are rational expressions.
+
+So rational expressions behave like fractions, and are closed under all four operations.
 
 #### Rational Expressions
 kind: definition
@@ -1134,6 +2122,86 @@ prereqs: polynomial-basics, fraction-concept
 A ratio of polynomials, like
 $$\frac{x + 1}{x^2 - 4}.$$
 It is undefined wherever the bottom is 0, here at $x = \pm 2$.
+
+#### Rational Functions
+kind: definition
+prereqs: rational-expressions, domain-and-range
+
+Functions
+$$f(x) = \frac{p(x)}{q(x)}$$
+with polynomials $p$ and $q$. The domain is everything except the zeros of $q$, and that is where the interesting behaviour is.
+
+The parent rational function, $y = \frac{1}{x}$, with both axes as asymptotes:
+```graph
+y = 1/x
+x: -3, 3
+y: -3, 3
+asymptote: x = 0
+asymptote: y = 0
+point: -1, -1 below-left
+point: 1, 1 above-right
+point: 2, 1/2 "(2, ½)" above-right
+```
+
+#### Inverse Variation
+kind: definition
+prereqs: rational-functions
+
+A quantity $y$ varies inversely with $x$ if, for a constant $k \ne 0$,
+$$y = \frac{k}{x}.$$
+
+The product $xy$ is constant.
+
+#### Asymptotes & Holes {#asymptotes}
+kind: property
+prereqs: rational-functions, polynomial-functions, simplifying-rational-expressions
+
+Lines a graph approaches but never settles on, and the gaps a cancelled factor leaves:
+- where the bottom is 0 but the top isn't, the graph shoots off along a **vertical asymptote**;
+- far out, the leading terms set a **horizontal** (or slanted) one;
+- a factor that cancels leaves only a **hole**.
+
+For example,
+$$f(x) = \frac{2x}{x - 1}$$
+has the vertical asymptote $x = 1$ and the horizontal asymptote $y = 2$.
+
+#### Horizontal Asymptote Rule {#horizontal-asymptote-rule}
+kind: property
+prereqs: rational-functions, polynomial-functions
+
+For $f(x) = \frac{p(x)}{q(x)}$, compare degrees:
+
+| Degrees | End behaviour |
+| --- | --- |
+| $\deg p < \deg q$ | horizontal asymptote $y = 0$ |
+| $\deg p = \deg q$ | horizontal asymptote $y =$ the ratio of the leading coefficients |
+| $\deg p = \deg q + 1$ | slant asymptote: the quotient from dividing |
+| $\deg p > \deg q + 1$ | no line: follows the quotient |
+
+#### Hyperbola Form {#rational-shifted-form}
+kind: form
+prereqs: rational-functions, graph-transformations
+
+$$y = \frac{a}{x - h} + k, \quad a \ne 0.$$
+
+| Reads off | From |
+| --- | --- |
+| vertical asymptote | $x = h$ |
+| horizontal asymptote | $y = k$ |
+| domain and range | $x \ne h$ and $y \ne k$ |
+| branches in quadrants I and III of the shifted axes, or II and IV | $a > 0$ or $a < 0$ |
+
+#### Factored Form of a Rational Function {#rational-factored-form}
+kind: form
+prereqs: asymptotes
+
+$$f(x) = a\frac{(x - r_1)\cdots(x - r_m)}{(x - s_1)\cdots(x - s_n)}.$$
+
+| Reads off | From |
+| --- | --- |
+| zeros | the numerator's roots, not cancelled |
+| vertical asymptotes | the denominator's roots, not cancelled |
+| holes | roots that cancel |
 
 #### Simplifying Rational Expressions
 kind: skill
@@ -1165,38 +2233,6 @@ Clear the fractions, then solve, in three steps:
 2. Solve.
 3. Discard any answer that makes a denominator 0.
 
-#### Rational Functions
-kind: definition
-prereqs: rational-expressions, domain-and-range
-
-Functions
-$$f(x) = \frac{p(x)}{q(x)}$$
-with polynomials $p$ and $q$. The domain is everything except the zeros of $q$, and that is where the interesting behaviour is.
-
-The parent rational function, $y = \frac{1}{x}$, with both axes as asymptotes:
-```graph
-y = 1/x
-x: -3, 3
-y: -3, 3
-asymptote: x = 0
-asymptote: y = 0
-point: -1, -1 below-left
-point: 1, 1 above-right
-point: 2, 1/2 "(2, ½)" above-right
-```
-
-#### Asymptotes & Holes {#asymptotes}
-prereqs: rational-functions, polynomial-functions, simplifying-rational-expressions
-
-Lines a graph approaches but never settles on, and the gaps a cancelled factor leaves:
-- where the bottom is 0 but the top isn't, the graph shoots off along a **vertical asymptote**;
-- far out, the leading terms set a **horizontal** (or slanted) one;
-- a factor that cancels leaves only a **hole**.
-
-For example,
-$$f(x) = \frac{2x}{x - 1}$$
-has the vertical asymptote $x = 1$ and the horizontal asymptote $y = 2$.
-
 #### Graphing Rational Functions
 kind: skill
 prereqs: asymptotes, zeros-and-multiplicity
@@ -1206,11 +2242,58 @@ A sketch in three steps:
 2. Test a point in each region.
 3. Sketch the branches.
 
+#### Complex Fractions {#complex-fractions}
+kind: skill
+prereqs: adding-rational-expressions
+
+Multiply the top and bottom by the common denominator of every small fraction:
+$$\frac{1 + \frac{1}{x}}{1 - \frac{1}{x^2}} \cdot \frac{x^2}{x^2} = \frac{x^2 + x}{x^2 - 1} = \frac{x}{x - 1}.$$
+
+#### Rational Inequalities {#rational-inequalities}
+kind: skill
+prereqs: rational-functions, polynomial-inequalities
+
+Get 0 on one side as a single fraction. Mark the zeros of the top and of the bottom on a number line, test each interval, and leave out every zero of the bottom. Do not multiply through by an expression whose sign is unknown.
+
+**Example.** $\frac{x - 1}{x + 2} \le 0$ has solution $(-2, 1]$.
+
+#### Rate & Work Problems {#rate-work-problems}
+kind: skill
+prereqs: solving-rational-equations
+
+Rates add. If one worker takes $a$ hours and another $b$ hours, then together, in $t$ hours:
+$$\frac{1}{a} + \frac{1}{b} = \frac{1}{t}.$$
+
+```quiz
+Q: One pipe fills a tank in 3 hours and another in 6 hours. How many hours do they take together?
+A: 2
+Why: $\frac{1}{3} + \frac{1}{6} = \frac{1}{2}$.
+```
+
+#### Partial Fractions {#partial-fractions-algebra}
+kind: skill
+prereqs: adding-rational-expressions, polynomial-factored-form
+
+Undo a sum of fractions: write the fraction with a constant over each linear factor, and find the constants:
+$$\frac{5x - 1}{(x - 1)(x + 1)} = \frac{2}{x - 1} + \frac{3}{x + 1}.$$
+
 ### Radical Expressions & Functions {#radicals}
+flow: down
+rows: kinds
+wrap: 6
 
 Functions built from roots, and equations with variables under a root sign.
 
+#### Roots Undo Powers {#roots-as-inverses}
+kind: theorem
+prereqs: inverse-functions, radical-functions
+
+$\sqrt{x}$ is the inverse of $x^2$ restricted to $x \ge 0$, and $\sqrt[3]{x}$ is the inverse of $x^3$. That is why
+$$\sqrt{x^2} = |x|,$$
+not $x$.
+
 #### The Square Root Function {#square-root-function}
+kind: definition
 prereqs: square-roots, function-graphs, domain-and-range
 
 The function
@@ -1228,6 +2311,7 @@ point: 4, 2 below-right
 ```
 
 #### Radical Functions
+kind: definition
 prereqs: square-root-function, nth-roots, graph-transformations
 
 Functions such as $\sqrt{x - 2} + 1$ or $\sqrt[3]{x}$: root functions moved and stretched. Even roots need a non-negative inside; odd roots accept anything.
@@ -1242,6 +2326,41 @@ point: 0, 0 below-right
 point: 1, 1 below-right
 ```
 
+#### The Cube Root Function {#cube-root-function}
+kind: definition
+prereqs: nth-roots, function-graphs
+
+The function $f(x) = \sqrt[3]{x}$, the inverse of $y = x^3$, defined for every real $x$.
+
+```graph
+y = cbrt(x)
+x: -8, 8
+y: -3, 3
+point: 0, 0 below-right
+point: 1, 1 above
+point: -1, -1 below
+```
+
+#### Features of Radical Functions {#radical-function-features}
+kind: property
+prereqs: square-root-function, cube-root-function
+
+For $y = a\sqrt{x - h} + k$ with $a > 0$: the graph starts at $(h, k)$, the domain is $[h, \infty)$, the range is $[k, \infty)$, and it rises ever more slowly.
+
+For $y = a\sqrt[3]{x - h} + k$: the domain and range are $\mathbb{R}$, and $(h, k)$ is the point of symmetry.
+
+#### Radical Function Form {#radical-function-form}
+kind: form
+prereqs: radical-functions, graph-transformations
+
+$$y = a\sqrt[n]{x - h} + k.$$
+
+| Reads off | From |
+| --- | --- |
+| the starting point, or centre | $(h, k)$ |
+| stretch and flip | $a$ |
+| domain, for even $n$ | $x \ge h$ |
+
 #### Solving Radical Equations
 kind: skill
 prereqs: nth-roots, quadratics-by-factoring
@@ -1254,16 +2373,50 @@ Checking:
 - $x = 2$ works: $\sqrt{4} = 2$;
 - $x = -1$ gives $\sqrt{1} = 1 \ne -1$, so it is extraneous.
 
-#### Roots Undo Powers {#roots-as-inverses}
-prereqs: inverse-functions, radical-functions
+#### Graphing Radical Functions {#graphing-radical-functions}
+kind: skill
+prereqs: radical-function-form
 
-$\sqrt{x}$ is the inverse of $x^2$ restricted to $x \ge 0$, and $\sqrt[3]{x}$ is the inverse of $x^3$. That is why
-$$\sqrt{x^2} = |x|,$$
-not $x$.
+Plot $(h, k)$, then step right by $1$, $4$ and $9$ from it, rising $a$, $2a$ and $3a$ for a square root, and join the points.
 
 ### Exponentials & Logarithms {#exponentials-and-logarithms}
+flow: down
+rows: kinds
+wrap: 6
 
 Growth by a constant factor, and the logarithms that measure it.
+
+#### Laws of Logarithms {#log-laws}
+kind: theorem
+prereqs: logarithms, exponent-laws
+
+For $b > 0$, $b \ne 1$, and $x, y > 0$:
+$$\begin{aligned} \log_b(xy) &= \log_b x + \log_b y \\ \log_b \frac{x}{y} &= \log_b x - \log_b y \\ \log_b x^r &= r \log_b x \\ \log_b 1 &= 0 \\ b^{\log_b x} &= x \\ \log_b b^x &= x \end{aligned}$$
+
+#### Constant Ratio Theorem {#constant-ratio-theorem}
+kind: theorem
+prereqs: exponential-functions
+
+A function given at equally spaced inputs is exponential if and only if each output divided by the one before is the same constant.
+
+*Proof.* For $f(x) = ab^x$, $\frac{f(x + d)}{f(x)} = b^d$, the same for every $x$. Conversely, a constant ratio $r$ over step $d$ gives $f(x_0 + nd) = f(x_0)r^n$, which is exponential in $n$. $\square$
+
+#### Exponentials and Logarithms Are Inverses {#exp-log-inverses}
+kind: theorem
+prereqs: logarithms, inverse-functions
+
+For $b > 0$, $b \ne 1$, the functions $b^x$ and $\log_b x$ are inverses:
+$$\log_b(b^x) = x \quad\text{and}\quad b^{\log_b x} = x \ (x > 0).$$
+
+*Proof.* Both are restatements of the definition: $\log_b y$ is the power of $b$ that gives $y$. $\square$
+
+#### Exponentials Outgrow Polynomials {#exponentials-outgrow}
+kind: theorem
+prereqs: exponential-functions, polynomial-functions
+
+For every $b > 1$ and every polynomial $p$, the value of $b^x$ eventually exceeds $p(x)$, however large the coefficients.
+
+For example, $2^x$ passes $x^3$ for good at about $x = 10$.
 
 #### Exponential Functions
 kind: definition
@@ -1284,13 +2437,6 @@ point: 0, 1 above-left
 point: 1, 2 above-left
 ```
 
-#### Exponential Growth & Decay {#exponential-growth}
-prereqs: exponential-functions, percent-change
-
-Growing by a fixed percent: \$1000 at 5% a year grows to
-$$A(t) = 1000(1.05)^t$$
-after $t$ years. Populations, compound interest, radioactive decay and cooling coffee all work this way.
-
 #### The Number e {#number-e}
 kind: definition
 prereqs: exponential-growth
@@ -1307,13 +2453,6 @@ For $b > 0$, $b \ne 1$ and $x > 0$, $\log_b x$ is the unique real number $y$ wit
 $$b^y = x.$$
 Thus $\log_b$ is the inverse of $x \mapsto b^x$; for example,
 $$\log_2 8 = 3 \quad\text{because}\quad 2^3 = 8.$$
-
-#### Laws of Logarithms {#log-laws}
-kind: theorem
-prereqs: logarithms, exponent-laws
-
-For $b > 0$, $b \ne 1$, and $x, y > 0$:
-$$\begin{aligned} \log_b(xy) &= \log_b x + \log_b y \\ \log_b \frac{x}{y} &= \log_b x - \log_b y \\ \log_b x^r &= r \log_b x \\ \log_b 1 &= 0 \\ b^{\log_b x} &= x \\ \log_b b^x &= x \end{aligned}$$
 
 #### The Natural Logarithm {#natural-log}
 kind: definition
@@ -1333,21 +2472,8 @@ point: 1, 0 below-right
 point: e, 1 below-right
 ```
 
-#### Change of Base
-kind: formula
-prereqs: log-laws
-
-For $a, b > 0$ with $a, b \ne 1$, and $x > 0$:
-$$\log_b x = \frac{\log_a x}{\log_a b} = \frac{\ln x}{\ln b}$$
-
-#### Solving Exponential Equations
-kind: skill
-prereqs: log-laws, linear-equations
-
-Take a logarithm of both sides to bring the variable down from the exponent:
-$$\begin{aligned} 3^x &= 20 \\ x \ln 3 &= \ln 20 \\ x &= \frac{\ln 20}{\ln 3} \approx 2.73 \end{aligned}$$
-
 #### Graphs of Logarithms {#log-graphs}
+kind: property
 prereqs: logarithms, graph-transformations
 
 The exponential graph reflected in $y = x$: it rises without bound but ever more slowly, and has a vertical asymptote at $x = 0$.
@@ -1365,15 +2491,179 @@ point: 1, 0 below-right
 point: 2, 1 below-right
 ```
 
+#### Properties of Exponential Functions {#exponential-properties}
+kind: property
+prereqs: exponential-functions
+
+For $f(x) = ab^x$ with $a > 0$, $b > 0$, $b \ne 1$:
+- the domain is $\mathbb{R}$ and the range is $(0, \infty)$;
+- the $y$-intercept is $(0, a)$;
+- the line $y = 0$ is a horizontal asymptote;
+- it increases if $b > 1$ and decreases if $0 < b < 1$.
+
+#### Properties of Logarithmic Functions {#log-properties}
+kind: property
+prereqs: logarithms
+
+For $f(x) = \log_b x$ with $b > 0$, $b \ne 1$:
+- the domain is $(0, \infty)$ and the range is $\mathbb{R}$;
+- the $x$-intercept is $(1, 0)$;
+- the line $x = 0$ is a vertical asymptote;
+- it increases if $b > 1$ and decreases if $0 < b < 1$.
+
+#### Exponential Growth & Decay {#exponential-growth}
+kind: form
+prereqs: exponential-functions, percent-change
+
+Growing by a fixed percent: \$1000 at 5% a year grows to
+$$A(t) = 1000(1.05)^t$$
+after $t$ years. Populations, compound interest, radioactive decay and cooling coffee all work this way.
+
+#### Change of Base
+kind: formula
+prereqs: log-laws
+
+For $a, b > 0$ with $a, b \ne 1$, and $x > 0$:
+$$\log_b x = \frac{\log_a x}{\log_a b} = \frac{\ln x}{\ln b}$$
+
+#### Exponential Function Form {#exponential-form}
+kind: form
+prereqs: exponential-functions
+
+$$y = ab^x + k, \quad a \ne 0,\ b > 0,\ b \ne 1.$$
+
+| Reads off | From |
+| --- | --- |
+| value at $x = 0$ | $a + k$ |
+| growth factor per unit | $b$ |
+| horizontal asymptote | $y = k$ |
+
+#### Half-Life & Doubling Form {#half-life-form}
+kind: form
+prereqs: exponential-growth
+
+$$y = a\left(\frac{1}{2}\right)^{t/T} \quad\text{or}\quad y = a \cdot 2^{t/T}.$$
+
+| Reads off | From |
+| --- | --- |
+| starting amount | $a$ |
+| half-life, or doubling time | $T$ |
+
+#### Compound Interest Form {#compound-interest}
+kind: form
+prereqs: exponential-growth, number-e
+
+$$A = P\left(1 + \frac{r}{n}\right)^{nt}, \qquad A = Pe^{rt} \text{ for continuous compounding}.$$
+
+| Reads off | From |
+| --- | --- |
+| principal | $P$ |
+| annual rate, as a decimal | $r$ |
+| compoundings per year | $n$ |
+| years | $t$ |
+
+#### Logarithmic Form {#log-exponential-forms}
+kind: form
+prereqs: logarithms
+
+$$\log_b y = x \iff b^x = y.$$
+
+The two sides say the same thing: the logarithm is the exponent.
+
+#### Solving Exponential Equations
+kind: skill
+prereqs: log-laws, linear-equations
+
+Take a logarithm of both sides to bring the variable down from the exponent:
+$$\begin{aligned} 3^x &= 20 \\ x \ln 3 &= \ln 20 \\ x &= \frac{\ln 20}{\ln 3} \approx 2.73 \end{aligned}$$
+
+#### Solving Logarithmic Equations {#solving-log-equations}
+kind: skill
+prereqs: log-laws, log-exponential-forms, extraneous-solutions
+
+Combine the logarithms into one, write it in exponential form, solve, and reject any solution that puts a non-positive number inside a logarithm:
+$$\begin{aligned} \log_2 x + \log_2(x - 2) &= 3 \\ x(x - 2) &= 8 \\ x &= 4 \text{ or } x = -2 \end{aligned}$$
+so $x = 4$.
+
+```quiz
+Q: Solve $\log_3(2x + 1) = 2$.
+A: 4
+Why: $2x + 1 = 9$.
+```
+
+#### Graphing Exponentials & Logarithms {#graphing-exponentials}
+kind: skill
+prereqs: exponential-properties, log-properties
+
+Mark the asymptote, the intercept, and one point a unit along. For $y = 2^x$ these are $y = 0$, $(0, 1)$, $(1, 2)$; for $y = \log_2 x$ they are $x = 0$, $(1, 0)$, $(2, 1)$. A logarithm is the exponential reflected in $y = x$.
+
+#### Writing Exponential Models {#writing-exponential-models}
+kind: skill
+prereqs: exponential-form, constant-ratio-theorem
+
+Find $a$ from the starting value and $b$ from a ratio, or from a percent: growth of $r$ gives $b = 1 + r$, decay of $r$ gives $b = 1 - r$.
+
+**Example.** A \$20,000 car loses 15% of its value a year:
+$$V(t) = 20000(0.85)^t.$$
+
+```quiz
+Q: \$1000 grows at 10% a year, compounded yearly. What is it worth after 2 years, in dollars?
+A: 1210
+Why: $1000(1.1)^2 = 1210$.
+```
+
+#### Rewriting Exponential Expressions {#rewriting-exponentials}
+kind: skill
+prereqs: exponent-laws
+
+Use the laws of exponents to show a different rate. Yearly growth of 15% as a monthly factor:
+$$1.15^t = \left(1.15^{1/12}\right)^{12t} \approx 1.0117^{12t},$$
+about 1.17% a month.
+
 ## Systems of Equations {#systems}
+flow: down
+rows: kinds
+wrap: 6
 
 Several equations sharing unknowns, solved together.
+
+### Elimination Preserves Solutions {#elimination-theorem}
+kind: theorem
+prereqs: linear-systems, equivalent-equations
+
+Replacing one equation of a system by the sum of it and a multiple of another gives a system with the same solutions.
+
+*Proof.* A pair that satisfies $P = a$ and $Q = b$ satisfies $P + kQ = a + kb$. Conversely, subtracting $k$ times the second equation recovers the first. $\square$
+
+### Number of Solutions of a System {#system-solution-count}
+kind: theorem
+prereqs: linear-systems, parallel-perpendicular-slopes
+
+Two linear equations in two unknowns have
+- exactly one solution if the lines cross, that is, if their slopes differ;
+- no solution if the lines are parallel and different;
+- infinitely many solutions if they are the same line.
 
 ### Systems of Linear Equations {#linear-systems}
 kind: definition
 prereqs: graphing-lines, linear-equations
 
 Two or more linear equations in the same variables. A solution satisfies all of them at once: for two lines, it is where they cross.
+
+### Cramer's Rule
+kind: formula
+prereqs: linear-systems, determinants
+
+If $ad - bc \ne 0$, the system $ax + by = e$, $cx + dy = f$ has the one solution
+$$x = \frac{ed - bf}{ad - bc}, \quad y = \frac{af - ec}{ad - bc}.$$
+
+### Matrix Form of a System {#system-matrix-form}
+kind: form
+prereqs: linear-systems, matrix-operations
+
+$$\begin{bmatrix} a & b \\ c & d \end{bmatrix}\begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} e \\ f \end{bmatrix}.$$
+
+The coefficients, unknowns and constants are written apart, ready for [[matrix-inverses|the inverse matrix]] or [[row-reduction]].
 
 ### Solving by Graphing {#systems-by-graphing}
 kind: skill
@@ -1410,7 +2700,44 @@ prereqs: systems-by-graphing, linear-inequalities
 
 Shade each inequality's half-plane; the solutions are the region where all the shadings overlap.
 
+### Linear–Quadratic Systems {#linear-quadratic-systems}
+kind: skill
+prereqs: substitution-method, solving-with-the-quadratic-formula
+
+Substitute the line into the curve and solve the quadratic. Its two, one or no real solutions are the points where the line crosses, touches or misses the curve.
+
+**Example.** For $y = x + 2$ and $y = x^2$: $x^2 - x - 2 = 0$, so the points are $(2, 4)$ and $(-1, 1)$.
+
+```quiz
+Q: At how many points does $y = 2x - 1$ meet $y = x^2$?
+A: 1
+Why: $x^2 - 2x + 1 = (x - 1)^2 = 0$: the line is a tangent.
+```
+
+### Three Equations in Three Unknowns {#three-variable-systems}
+kind: skill
+prereqs: elimination-method
+
+Use one pair of equations, and then another, to eliminate the same variable. This leaves two equations in two unknowns. Solve them, then substitute back.
+
+### Linear Programming {#linear-programming}
+kind: skill
+prereqs: systems-of-inequalities
+
+Graph the constraints as a [[systems-of-inequalities|system of inequalities]]. The greatest and least values of a linear objective occur at corners of the region, so evaluate it at each corner.
+
+### System Word Problems {#system-word-problems}
+kind: skill
+prereqs: linear-systems, word-problems
+
+Name two unknowns, and write one equation for each fact.
+
+**Example.** 20 tickets, adults at \$8 and children at \$5, bring in \$130: $a + c = 20$ and $8a + 5c = 130$, so $a = 10$ and $c = 10$.
+
 ## Exponents & Radicals
+flow: down
+rows: kinds
+wrap: 6
 
 Powers beyond whole numbers, and the roots that undo them.
 
@@ -1420,6 +2747,33 @@ prereqs: exponents, variables
 
 For $a, b > 0$ and real $m, n$:
 $$\begin{aligned} a^m a^n &= a^{m+n} \\ \frac{a^m}{a^n} &= a^{m-n} \\ (a^m)^n &= a^{mn} \\ (ab)^n &= a^n b^n \\ a^0 &= 1 \\ a^{-n} &= \frac{1}{a^n} \end{aligned}$$
+
+### Rules of Radicals {#radical-rules}
+kind: theorem
+prereqs: nth-roots, exponent-laws
+
+For $a, b \ge 0$ and $b \ne 0$ in the quotient:
+$$\sqrt[n]{ab} = \sqrt[n]{a}\sqrt[n]{b}, \qquad \sqrt[n]{\frac{a}{b}} = \frac{\sqrt[n]{a}}{\sqrt[n]{b}}.$$
+
+*Proof.* Both sides are non-negative, and their $n$th powers are equal by the [[exponent-laws|laws of exponents]]. $\square$
+
+There is no such rule for sums: $\sqrt{9 + 16} \ne \sqrt{9} + \sqrt{16}$.
+
+### Irrationality of the Square Root of 2 {#sqrt-2-irrational}
+kind: theorem
+prereqs: fundamental-theorem-of-arithmetic, square-roots
+
+$\sqrt{2}$ is not a rational number.
+
+*Proof.* Suppose $\sqrt{2} = \frac{p}{q}$ in lowest terms. Then $p^2 = 2q^2$, so $p$ is even, say $p = 2k$. Then $q^2 = 2k^2$, so $q$ is even too, which contradicts lowest terms. $\square$
+
+### Sums & Products with Irrationals {#irrational-closure}
+kind: theorem
+prereqs: number-systems
+
+The sum and product of two rationals are rational. The sum of a rational and an irrational is irrational, and so is the product of a non-zero rational and an irrational.
+
+*Proof.* If $r$ and $r + x$ were both rational, so would $x = (r + x) - r$ be. Products are the same, with division by $r$. $\square$
 
 ### Zero & Negative Exponents {#negative-exponents}
 kind: definition
@@ -1437,20 +2791,29 @@ $\sqrt[n]{a}$ is the number whose $n$th power is $a$:
 $$\sqrt[3]{8} = 2 \quad\text{because}\quad 2^3 = 8.$$
 Odd roots of negatives exist; even ones don't, among the real numbers.
 
-### Simplifying Radicals
-kind: skill
-prereqs: nth-roots, prime-factorization
-
-Pull perfect powers out from under the root:
-$$\sqrt{50} = \sqrt{25 \cdot 2} = 5\sqrt{2}.$$
-
 ### Rational Exponents
+kind: definition
 prereqs: negative-exponents, nth-roots
 
 A fractional exponent is a root:
 $$\begin{aligned} a^{1/n} &= \sqrt[n]{a}, \\ a^{m/n} &= \left(\sqrt[n]{a}\right)^m. \end{aligned}$$
 So
 $$8^{2/3} = \left(\sqrt[3]{8}\right)^2 = 2^2 = 4.$$
+
+### Radical & Exponent Form {#radical-exponent-form}
+kind: form
+prereqs: rational-exponents
+
+$$a^{m/n} = \sqrt[n]{a^m} = \left(\sqrt[n]{a}\right)^m, \quad a \ge 0.$$
+
+The denominator is the root and the numerator the power. Exponent form is the one for the laws of exponents.
+
+### Simplifying Radicals
+kind: skill
+prereqs: nth-roots, prime-factorization
+
+Pull perfect powers out from under the root:
+$$\sqrt{50} = \sqrt{25 \cdot 2} = 5\sqrt{2}.$$
 
 ### Rationalizing Denominators
 kind: skill
@@ -1461,9 +2824,50 @@ $$\frac{1}{\sqrt{2}} = \frac{1}{\sqrt{2}} \cdot \frac{\sqrt{2}}{\sqrt{2}} = \fra
 A bottom like $1 + \sqrt{2}$ is cleared with its conjugate $1 - \sqrt{2}$:
 $$\frac{1}{1 + \sqrt{2}} = \frac{1 - \sqrt{2}}{(1 + \sqrt{2})(1 - \sqrt{2})} = \sqrt{2} - 1.$$
 
+### Adding & Multiplying Radicals {#radical-arithmetic}
+kind: skill
+prereqs: simplifying-radicals, radical-rules
+
+Simplify first. Add only like radicals, and multiply with the [[radical-rules|rules of radicals]] and the distributive law:
+$$\begin{aligned} \sqrt{12} + \sqrt{27} &= 2\sqrt{3} + 3\sqrt{3} = 5\sqrt{3} \\ (1 + \sqrt{2})(3 - \sqrt{2}) &= 1 + 2\sqrt{2} \end{aligned}$$
+
+```quiz
+Q: $\sqrt{18} + \sqrt{8} = k\sqrt{2}$. What is $k$?
+A: 5
+Why: $3\sqrt{2} + 2\sqrt{2}$.
+```
+
+### Converting Radicals and Exponents {#converting-radicals}
+kind: skill
+prereqs: radical-exponent-form
+
+Rewrite each root as a fractional exponent, apply the laws of exponents, and rewrite if needed:
+$$\sqrt{x} \cdot \sqrt[3]{x} = x^{1/2 + 1/3} = x^{5/6}.$$
+
+```quiz
+Q: What is $8^{2/3}$?
+A: 4
+Why: $\sqrt[3]{8} = 2$, and $2^2 = 4$.
+```
+
 ## Conic Sections
+flow: down
+rows: kinds
+wrap: 6
 
 The curves you get by slicing a double cone with a plane: circles, ellipses, parabolas and hyperbolas, the graphs of second-degree equations in $x$ and $y$.
+
+### Focus and Eccentricity {#conic-eccentricity}
+kind: theorem
+prereqs: conics
+
+Every conic other than a circle is the set of points whose distance to a fixed focus is a constant $e$ times their distance to a fixed directrix. It is an ellipse if $e < 1$, a parabola if $e = 1$, and a hyperbola if $e > 1$.
+
+### Reflective Properties {#conic-reflection}
+kind: theorem
+prereqs: parabolas, ellipses
+
+A ray from the focus of a parabola reflects parallel to its axis. A ray from one focus of an ellipse reflects through the other. A ray aimed at one focus of a hyperbola reflects toward the other.
 
 ### Conic Sections {#conics}
 kind: definition
@@ -1472,11 +2876,13 @@ prereqs: circle-equation
 Every second-degree equation in $x$ and $y$ draws a circle, an ellipse, a parabola or a hyperbola, and completing the square shows which.
 
 ### Parabolas
+kind: definition
 prereqs: conics, distance-formula, vertex-form
 
 The points equally far from a fixed point, the focus, and a fixed line, the directrix. Satellite dishes and headlights are parabolas because of their focus.
 
 ### Ellipses
+kind: definition
 prereqs: conics, completing-the-square
 
 The points whose distances to two foci add up to a constant. Centred at the origin:
@@ -1484,16 +2890,112 @@ $$\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1.$$
 Planets orbit in ellipses with the sun at one focus.
 
 ### Hyperbolas
+kind: definition
 prereqs: ellipses, asymptotes
 
 The points whose distances to two foci differ by a constant: two branches,
 $$\frac{x^2}{a^2} - \frac{y^2}{b^2} = 1,$$
 closing in on a pair of asymptotes.
 
+### Features of an Ellipse {#ellipse-features}
+kind: property
+prereqs: ellipses
+
+For $\frac{(x - h)^2}{a^2} + \frac{(y - k)^2}{b^2} = 1$ with $a > b > 0$:
+- the centre is $(h, k)$;
+- the major axis has length $2a$, and the minor axis $2b$;
+- the foci lie $c$ from the centre along the major axis, where $c^2 = a^2 - b^2$;
+- the eccentricity is $e = \frac{c}{a}$;
+- the distances from any point to the foci add to $2a$.
+
+### Features of a Hyperbola {#hyperbola-features}
+kind: property
+prereqs: hyperbolas
+
+For $\frac{(x - h)^2}{a^2} - \frac{(y - k)^2}{b^2} = 1$:
+- the centre is $(h, k)$, and the vertices are $(h \pm a, k)$;
+- the foci are $(h \pm c, k)$, where $c^2 = a^2 + b^2$;
+- the asymptotes are $y - k = \pm\frac{b}{a}(x - h)$;
+- the eccentricity is $e = \frac{c}{a}$;
+- the distances from any point to the foci differ by $2a$.
+
+### Standard Forms of the Conics {#conic-standard-forms}
+kind: form
+prereqs: ellipses, hyperbolas, parabolas
+
+| Conic | Form | Shows |
+| --- | --- | --- |
+| circle | $(x - h)^2 + (y - k)^2 = r^2$ | centre, radius |
+| ellipse | $\frac{(x - h)^2}{a^2} + \frac{(y - k)^2}{b^2} = 1$ | centre, semi-axes |
+| hyperbola | $\frac{(x - h)^2}{a^2} - \frac{(y - k)^2}{b^2} = 1$ | centre, vertices, asymptotes |
+| parabola | $(x - h)^2 = 4p(y - k)$ | vertex, focus, directrix |
+
+### General Second-Degree Form {#conic-general-form}
+kind: form
+prereqs: conics
+
+$$Ax^2 + Cy^2 + Dx + Ey + F = 0.$$
+
+| Reads off | From |
+| --- | --- |
+| circle | $A = C$ |
+| ellipse | $A$ and $C$ the same sign |
+| hyperbola | $A$ and $C$ opposite signs |
+| parabola | $A$ or $C$ is $0$ |
+
+### Deriving the Equation of a Parabola {#deriving-parabola}
+kind: skill
+prereqs: parabolas, distance-formula
+
+Set the distance to the focus $(0, p)$ equal to the distance to the directrix $y = -p$, then square:
+$$\begin{aligned} \sqrt{x^2 + (y - p)^2} &= |y + p| \\ x^2 + y^2 - 2py + p^2 &= y^2 + 2py + p^2 \\ x^2 &= 4py \end{aligned}$$
+
+### Putting a Conic in Standard Form {#conic-to-standard}
+kind: skill
+prereqs: completing-the-square, conic-standard-forms
+
+Group the $x$ terms and the $y$ terms, complete the square in each, and divide to get 1 on the right:
+$$\begin{aligned} x^2 + 4y^2 - 2x - 3 &= 0 \\ (x - 1)^2 + 4y^2 &= 4 \\ \frac{(x - 1)^2}{4} + y^2 &= 1 \end{aligned}$$
+This is an ellipse with centre $(1, 0)$ and semi-axes 2 and 1.
+
+```quiz
+Q: What is the radius of the circle $x^2 + y^2 - 6x + 8y = 0$?
+A: 5
+Why: $(x - 3)^2 + (y + 4)^2 = 25$.
+```
+
+### Graphing Ellipses & Hyperbolas {#graphing-conics}
+kind: skill
+prereqs: ellipse-features, hyperbola-features
+
+For an ellipse, mark the centre, step $a$ across and $b$ up, and join the four points in an oval. For a hyperbola, draw the box of sides $2a$ and $2b$ about the centre, extend its diagonals as the asymptotes, and draw the branches from the vertices.
+
 ## Complex Numbers {#complex}
 flow: down
+rows: kinds
+wrap: 6
 
 Numbers that make every polynomial solvable, built on a square root of $-1$.
+
+### Complex Roots of Quadratics {#complex-roots}
+kind: theorem
+prereqs: complex-arithmetic, discriminant
+
+When the discriminant is negative the quadratic formula still works:
+$$x^2 + 2x + 5 = 0 \implies x = \frac{-2 \pm \sqrt{-16}}{2} = -1 \pm 2i,$$
+a conjugate pair.
+
+### Conjugate Product {#conjugate-product}
+kind: theorem
+prereqs: complex-conjugates, complex-modulus, complex-arithmetic
+
+For every complex number $z = a + bi$:
+$$z\bar{z} = a^2 + b^2 = |z|^2.$$
+
+*Proof.* Expand:
+$$(a + bi)(a - bi) = a^2 - b^2i^2 = a^2 + b^2. \quad \square$$
+
+So every non-zero complex number has a reciprocal, $\frac{1}{z} = \frac{\bar{z}}{|z|^2}$, and the complex numbers are a field.
 
 ### The Imaginary Unit {#imaginary-unit}
 kind: definition
@@ -1510,6 +3012,59 @@ prereqs: imaginary-unit, number-systems
 
 A number $a + bi$ with a real part $a$ and an imaginary part $b$. They live on a plane rather than a line, with the reals along one axis.
 
+### Complex Conjugates
+kind: definition
+prereqs: complex-numbers
+
+The conjugate of $z = a + bi$ is
+$$\bar{z} = a - bi.$$
+
+### Modulus of a Complex Number {#complex-modulus}
+kind: definition
+prereqs: complex-numbers, distance-formula
+
+The modulus of $z = a + bi$ is its distance from $0$ in the complex plane:
+$$|z| = \sqrt{a^2 + b^2}.$$
+
+### Powers of i {#powers-of-i}
+kind: property
+prereqs: imaginary-unit
+
+The powers of $i$ repeat with period 4:
+$$i^1 = i, \quad i^2 = -1, \quad i^3 = -i, \quad i^4 = 1.$$
+
+So $i^n$ depends only on the remainder of $n$ on dividing by 4.
+
+```quiz
+Q: Which is $i^{23}$?
+- $1$
+- $i$
+- $-1$
++ $-i$
+Why: 23 leaves remainder 3 on dividing by 4.
+```
+
+### The Complex Plane {#complex-plane}
+kind: property
+prereqs: complex-numbers, coordinate-plane
+
+The number $a + bi$ is drawn as the point $(a, b)$, with the real numbers along the horizontal axis and the imaginary numbers along the vertical. Addition is vector addition, and the conjugate is the reflection in the real axis.
+
+### Rectangular Form {#complex-rectangular-form}
+kind: form
+prereqs: complex-numbers
+
+$$z = a + bi, \quad a, b \in \mathbb{R}.$$
+
+| Reads off | From |
+| --- | --- |
+| real part | $a$ |
+| imaginary part | $b$ |
+| point in the complex plane | $(a, b)$ |
+| modulus | $\sqrt{a^2 + b^2}$ |
+
+For [[polar-complex|polar form]], $r(\cos\theta + i\sin\theta)$, see Trigonometry. It is the form for products and powers.
+
 ### Complex Arithmetic
 kind: skill
 prereqs: complex-numbers, polynomial-multiplication
@@ -1518,46 +3073,36 @@ Add like terms and multiply like binomials, replacing $i^2$ with $-1$:
 $$(2 + i)(3 - i) = 6 + i - i^2 = 7 + i.$$
 Divide using the conjugate.
 
-### Complex Roots of Quadratics {#complex-roots}
-prereqs: complex-arithmetic, discriminant
+### Dividing Complex Numbers {#complex-division}
+kind: skill
+prereqs: conjugate-product
 
-When the discriminant is negative the quadratic formula still works:
-$$x^2 + 2x + 5 = 0 \implies x = \frac{-2 \pm \sqrt{-16}}{2} = -1 \pm 2i,$$
-a conjugate pair.
+Multiply top and bottom by the conjugate of the bottom:
+$$\frac{3 + i}{1 + i} \cdot \frac{1 - i}{1 - i} = \frac{4 - 2i}{2} = 2 - i.$$
+
+```quiz
+Q: $\frac{10}{3 + i} = a + bi$. What is $a$?
+A: 3
+Why: $\frac{10(3 - i)}{10} = 3 - i$.
+```
+
+### Factoring over the Complex Numbers {#complex-factoring}
+kind: skill
+prereqs: complex-roots
+
+A sum of squares factors over $\mathbb{C}$:
+$$x^2 + 4 = (x + 2i)(x - 2i).$$
+Find the roots with the quadratic formula, and write the factors.
 
 ## Sequences & Series
+flow: down
+rows: kinds
+wrap: 6
 
 Lists of numbers that follow a rule, and what you get by adding them up.
 
-### Sequences
-kind: definition
-prereqs: function-notation
-
-An ordered list $a_1, a_2, a_3, \ldots$, which is a function whose inputs are the counting numbers. Given by a formula for $a_n$ or by a rule linking each term to the last.
-
-### Arithmetic Sequences
-prereqs: sequences
-
-Add the same difference each time: $3, 7, 11, 15, \ldots$ has
-$$a_n = 3 + 4(n - 1).$$
-A linear function, sampled at whole numbers.
-
-### Geometric Sequences
-prereqs: sequences, exponents
-
-Multiply by the same ratio each time: $2, 6, 18, 54, \ldots$ has
-$$a_n = 2 \cdot 3^{n-1}.$$
-An exponential function, sampled at whole numbers.
-
-### Sigma Notation
-kind: definition
-prereqs: sequences
-
-A capital sigma means "add up":
-$$\sum_{k=1}^{4} k^2 = 1 + 4 + 9 + 16 = 30.$$
-
 ### Arithmetic Series
-kind: formula
+kind: theorem
 prereqs: arithmetic-sequences, sigma-notation
 
 For an arithmetic sequence with first term $a_1$ and $n$-th term $a_n$:
@@ -1566,7 +3111,7 @@ In particular,
 $$\sum_{k=1}^{n} k = \frac{n(n + 1)}{2}.$$
 
 ### Geometric Series
-kind: formula
+kind: theorem
 prereqs: geometric-sequences, sigma-notation
 
 For $r \ne 1$:
@@ -1580,6 +3125,67 @@ If $|r| < 1$ then
 $$\sum_{k=0}^{\infty} a r^k = \frac{a}{1 - r};$$
 if $|r| \ge 1$ and $a \ne 0$, the series diverges.
 
+### Sequences
+kind: definition
+prereqs: function-notation
+
+An ordered list $a_1, a_2, a_3, \ldots$, which is a function whose inputs are the counting numbers. Given by a formula for $a_n$ or by a rule linking each term to the last.
+
+### Arithmetic Sequences
+kind: definition
+prereqs: sequences
+
+Add the same difference each time: $3, 7, 11, 15, \ldots$ has
+$$a_n = 3 + 4(n - 1).$$
+A linear function, sampled at whole numbers.
+
+### Geometric Sequences
+kind: definition
+prereqs: sequences, exponents
+
+Multiply by the same ratio each time: $2, 6, 18, 54, \ldots$ has
+$$a_n = 2 \cdot 3^{n-1}.$$
+An exponential function, sampled at whole numbers.
+
+### Sigma Notation
+kind: definition
+prereqs: sequences
+
+A capital sigma means "add up":
+$$\sum_{k=1}^{4} k^2 = 1 + 4 + 9 + 16 = 30.$$
+
+### Average of an Arithmetic Series {#arithmetic-sum-idea}
+kind: property
+prereqs: arithmetic-series
+
+Pairing the first and last terms, the second and second-last, and so on, gives equal sums, so
+$$S_n = \frac{n(a_1 + a_n)}{2}.$$
+The average of the terms is the average of the first and the last.
+
+### Sequences as Functions {#sequences-as-functions}
+kind: property
+prereqs: sequences, function-notation
+
+A sequence is a function whose domain is the positive integers. An arithmetic sequence is a linear function, sampled at the integers, and a geometric sequence an exponential one.
+
+### Convergence of Geometric Series {#geometric-convergence}
+kind: property
+prereqs: infinite-geometric-series
+
+The infinite series $a + ar + ar^2 + \cdots$ with $a \ne 0$ converges if $|r| < 1$ and diverges if $|r| \ge 1$.
+
+### Explicit & Recursive Forms {#sequence-forms}
+kind: form
+prereqs: arithmetic-sequences, geometric-sequences
+
+| Sequence | Explicit | Recursive |
+| --- | --- | --- |
+| arithmetic | $a_n = a_1 + (n - 1)d$ | $a_{n+1} = a_n + d$ |
+| geometric | $a_n = a_1r^{n-1}$ | $a_{n+1} = ra_n$ |
+| Fibonacci | | $a_{n+2} = a_{n+1} + a_n$ |
+
+The explicit form gives any term at once. The recursive form shows how each term comes from the last, and needs a first term.
+
 ### Proof by Induction {#induction}
 kind: technique
 prereqs: sigma-notation, arithmetic-series
@@ -1589,3 +3195,40 @@ Two steps prove a statement for every $n \ge 1$:
 2. the inductive step: show that whenever it holds for $n$, it holds for $n + 1$.
 
 Like dominoes, every case falls.
+
+### Finding the nth Term {#finding-nth-term}
+kind: skill
+prereqs: sequence-forms
+
+Test the differences, then the ratios. A constant difference gives an arithmetic sequence; a constant ratio a geometric one; constant [[second-differences|second differences]] a quadratic.
+
+```quiz
+Q: What is the 10th term of $5, 8, 11, 14, \dots$?
+A: 32
+Why: $5 + 9 \cdot 3 = 32$.
+
+Q: What is the 6th term of $3, 6, 12, \dots$?
+A: 96
+Why: $3 \cdot 2^5 = 96$.
+```
+
+### Evaluating Sums {#evaluating-series}
+kind: skill
+prereqs: arithmetic-series, geometric-series, sigma-notation
+
+Write out the first terms to see the type of the series, find $a_1$ and the number of terms, and apply the formula.
+
+```quiz
+Q: What is $\sum_{k=1}^{4} 2^k$?
+A: 30
+Why: $2 + 4 + 8 + 16$.
+```
+
+### Loan & Annuity Payments {#finance-series}
+kind: skill
+prereqs: geometric-series, compound-interest
+
+A sum paid in regularly is a geometric series. Payments of $P$ per period at rate $i$ per period grow, after $n$ periods, to
+$$A = P\frac{(1 + i)^n - 1}{i},$$
+and a loan of $L$ is repaid by payments of
+$$P = \frac{Li}{1 - (1 + i)^{-n}}.$$
