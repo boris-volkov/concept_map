@@ -18,6 +18,7 @@
   <link rel="modulepreload" href="js/graph.js">
   <link rel="modulepreload" href="js/deck.js">
   <link rel="modulepreload" href="js/flashcards.js">
+  <link rel="modulepreload" href="js/qr.js">
   <link rel="modulepreload" href="js/model.js">
   <link rel="modulepreload" href="js/layout.js">
   <link rel="modulepreload" href="js/camera.js">
@@ -97,9 +98,16 @@
         <h2 id="deck-title">Flashcards</h2>
         <span class="deck-count"></span>
         <button type="button" class="deck-shuffle">Shuffle</button>
+        <button type="button" class="deck-share-btn" title="A link and a QR code that open this deck" aria-controls="deck-share" aria-expanded="false">Share</button>
         <button type="button" class="shut" title="Close (Esc)" aria-label="Close the flashcards">×</button>
       </header>
+      <!-- Over a deck opened from a link. -->
+      <div class="deck-shared" hidden>
+        <span class="deck-shared-text"></span>
+        <button type="button" class="deck-keep">Add them to my deck</button>
+      </div>
       <div class="deck-card" tabindex="0" aria-live="polite"></div>
+      <div class="deck-share" id="deck-share" hidden></div>
       <footer class="deck-foot">
         <button type="button" class="deck-prev" title="Previous card (←)">‹ Previous</button>
         <button type="button" class="deck-flip" title="Turn the card over (Space)">Turn over</button>

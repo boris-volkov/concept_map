@@ -5,7 +5,7 @@ import { AtlasMap } from './map.js'
 import { Search } from './search.js'
 import { esc } from './markdown.js'
 import { index } from './docs.js'
-import { Flashcards } from './flashcards.js'
+import { Flashcards, sharedIds } from './flashcards.js'
 
 const CONTENT = 'content/'
 const VIEW_KEY = 'concept-atlas:view'
@@ -21,6 +21,7 @@ let atlas, map, search, cards, sourceKey
 start()
 
 async function start() {
+  const shared = sharedIds() // read now: the map rewrites the address as it selects things
   let sources
   try {
     sources = await loadSources(CONTENT)
@@ -49,13 +50,15 @@ async function start() {
   $('loading').remove()
   const n = atlas.nodes.get(hashId())
   if (n) map.reveal(n)
-  hint()
+  if (shared) cards.openShared(shared)
+  else hint()
   if (LOCAL) watch()
 }
 
 // The map selected something (or nothing): show it in the address bar, and the key to its colours.
 function selected(n) {
   $('key').hidden = !n
+  if (cards?.shared) return // the address is the shared deck's while it is shown
   const id = n ? n.id : ''
   if (hashId() !== id) history.replaceState(null, '', id ? `#${encodeURIComponent(id)}` : location.pathname + location.search)
 }
@@ -84,6 +87,8 @@ function wire() {
   $('btn-zoom-out').onclick = () => map.zoomBy(1 / 1.3)
   $('btn-fit').onclick = () => map.fitAll()
   window.addEventListener('popstate', () => {
+    const shared = sharedIds()
+    if (shared) return cards.openShared(shared) // a link to a deck, pasted into this tab
     const n = atlas.nodes.get(hashId())
     if (n) map.reveal(n)
     else map.select(null)

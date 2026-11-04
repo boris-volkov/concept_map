@@ -31,6 +31,15 @@ export function toggle(id) {
   changed()
 }
 
+/** Adds every one of `list` not in the deck already, at the end, in the order given. */
+export function addAll(list) {
+  const fresh = list.filter((id, i) => !has(id) && list.indexOf(id) === i)
+  if (!fresh.length) return
+  ids = [...ids, ...fresh]
+  write()
+  changed()
+}
+
 export function remove(id) {
   if (!has(id)) return
   ids = ids.filter(x => x !== id)
