@@ -43,8 +43,10 @@ export function countIn(node) {
 export const isReady = node => !node.children.length && !mastered.has(node.id) &&
   node.prereqs.length > 0 && node.prereqs.every(p => leaves(p).every(l => mastered.has(l.id)))
 
+/** Calls `f` on every change, until the function it returns is called. */
 export function onChange(f) {
   listeners.add(f)
+  return () => listeners.delete(f)
 }
 
 window.addEventListener('storage', e => {

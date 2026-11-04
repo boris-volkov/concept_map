@@ -9,7 +9,7 @@
 // it builds on. The "i" on it opens a band under its head with those connections spelled out.
 
 import { renderMarkdown, renderInline, esc } from './markdown.js'
-import { learningPath, externalPrereqs, externalDependents, leaves } from './model.js'
+import { learningPath, externalPrereqs, externalDependents, leaves, finder } from './model.js'
 import { KINDS } from './content.js'
 import * as progress from './progress.js'
 import * as deck from './deck.js'
@@ -17,16 +17,22 @@ import * as deck from './deck.js'
 // A playing card, with a + on it: the button on an open concept's head that adds it to the deck.
 const CARD_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="1.5" width="9" height="13" rx="1.5"/>' +
   '<path d="M8 5.5v5M5.5 8h5"/></svg>'
+// Two things leading to a third: the button that pops out what leads up to a concept.
+const TREE_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="3.5" r="2"/><circle cx="12.5" cy="3.5" r="2"/>' +
+  '<circle cx="8" cy="12.5" r="2"/><path d="M4.6 5.2 6.9 10.8M11.4 5.2 9.1 10.8"/></svg>'
 
 /** A concept, open: its content and its exercises. `info`: with the band its "i" opens. */
 export function conceptDoc(n, atlas, { info = false } = {}) {
-  const resolve = id => atlas.nodes.get(id)
+  const resolve = finder(atlas)
   const kind = `${KINDS[n.kind] ?? esc(n.kind)}<span class="doc-check" title="Mastered"> ✓</span>`
+  const pop = `<button type="button" class="pop" ${n.requires.length
+    ? `title="Pop out what leads up to this" aria-label="Pop out what leads up to ${esc(n.plainTitle)}"`
+    : 'title="A starting point: nothing leads up to this" disabled'}>${TREE_ICON}</button>`
   const card = `<button type="button" class="card-add" aria-label="Add ${esc(n.plainTitle)} to the flashcards" ` +
     `aria-pressed="false">${CARD_ICON}</button>`
   const about = `<button type="button" class="about${info ? ' is-on' : ''}" title="What it builds on, and what builds on it" ` +
     `aria-label="About ${esc(n.plainTitle)}" aria-expanded="${info}">i</button>`
-  return `${head(kind, renderInline(n.title), n.plainTitle, card + about)}
+  return `${head(kind, renderInline(n.title), n.plainTitle, pop + card + about)}
     ${info ? conceptInfo(n) : ''}
     <div class="doc-body">
       ${entry(n, resolve)}
@@ -129,7 +135,7 @@ export function refresh(el, n = null) {
   }
 }
 
-// A file's head: what it is, its title, and the × that closes it (and on a concept, its "i").
+// A file's head: what it is, its title, the × that closes it, and on a concept its other buttons.
 const head = (label, title, name, extra) => `<header class="doc-head">
     <span class="doc-kind">${label}</span>${extra}
     <button type="button" class="shut" title="Close (Esc)" aria-label="Close ${esc(name)}">×</button>
@@ -156,10 +162,14 @@ function entry(n, resolve) {
 }
 
 function chip(c) {
-  const where = c.parent ? `<span class="chip-where">${renderInline(c.parent.title)}</span>` : ''
+  const home = homeOf(c)
+  const where = home ? `<span class="chip-where">${renderInline(home.title)}</span>` : ''
   return `<a class="chip" href="#${esc(c.id)}" data-id="${esc(c.id)}" style="--c:${c.color}">` +
     `<span class="chip-title">${renderInline(c.title)}</span>${where}</a>`
 }
+
+// The topic a concept stands in. A copy in a sheet stands in none, so it says where its original does.
+const homeOf = c => c.home ?? c.parent
 
 const twins = n => (n.twins?.length
   ? `<section class="links twins"><h3>Intertwined with <span class="note">each builds on part of the other</span></h3><div class="chips">${n.twins.map(chip).join('')}</div></section>`
@@ -190,7 +200,7 @@ function pathSection(n, path) {
       <summary>Full chain of prerequisites <span class="count">${path.length}</span></summary>
       <p class="note">In an order they can be learned, foundations first.</p>
       <ol>${path.map(p => `<li><a href="#${esc(p.id)}" data-id="${esc(p.id)}" style="--c:${p.color}">${renderInline(p.title)}</a>` +
-        `${p.parent ? ` <span class="where">${renderInline(p.parent.title)}</span>` : ''}</li>`).join('')}</ol>
+        `${homeOf(p) ? ` <span class="where">${renderInline(homeOf(p).title)}</span>` : ''}</li>`).join('')}</ol>
     </details>
   </section>`
 }

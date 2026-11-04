@@ -6,6 +6,7 @@ import { Search } from './search.js'
 import { esc } from './markdown.js'
 import { index } from './docs.js'
 import { Flashcards, sharedIds } from './flashcards.js'
+import { popOut, showSheets, redrawSheets } from './sheet.js'
 
 const CONTENT = 'content/'
 const VIEW_KEY = 'concept-atlas:view'
@@ -17,6 +18,7 @@ const LOCAL = /^(localhost|127\.0\.0\.1|\[::1\])$|\.localhost$/.test(location.ho
 const NARROW = matchMedia('(max-width: 760px)')
 
 let atlas, map, search, cards, sourceKey
+let lastUsed // the map, or the sheet, where something was last selected: Esc goes to it
 
 start()
 
@@ -33,7 +35,10 @@ async function start() {
   const view = readView()
   // Before the map is made, so that it starts out the size it keeps.
   if (view?.index) showIndex(true)
-  map = new AtlasMap({ viewport: $('viewport'), world: $('world'), svg: $('edges'), grid: $('grid'), atlas, onSelect: selected, onView: saveView })
+  map = new AtlasMap({
+    viewport: $('viewport'), world: $('world'), svg: $('edges'), grid: $('grid'), atlas,
+    onSelect: selected, onView: saveView, onPop: n => popOut(map, n, $('pop')),
+  })
   search = new Search($('search'), $('search-results'), { onPick: n => go(n.id) })
   search.setAtlas(atlas)
   cards = new Flashcards($('deck'), $('btn-deck'))
@@ -44,6 +49,7 @@ async function start() {
 
   if (view?.open) map.restore(view)
   map.relayout()
+  showSheets(map, view?.sheets)
   await map.camera.ready()
   if (view?.camera) map.camera.set(view.camera.x, view.camera.y, view.camera.k)
   else map.fitAll()
@@ -55,13 +61,17 @@ async function start() {
   if (LOCAL) watch()
 }
 
-// The map selected something (or nothing): show it in the address bar, and the key to its colours.
-function selected(n) {
-  $('key').hidden = !n
-  if (cards?.shared) return // the address is the shared deck's while it is shown
+// The map or a sheet selected something (or nothing): show the key to its colours, and on the map
+// show it in the address bar too.
+function selected(n, board = map) {
+  if (n) lastUsed = board
+  $('key').hidden = !boards().some(b => b.selected)
+  if (board !== map || cards?.shared) return // the address is the shared deck's while it is shown
   const id = n ? n.id : ''
   if (hashId() !== id) history.replaceState(null, '', id ? `#${encodeURIComponent(id)}` : location.pathname + location.search)
 }
+
+const boards = () => [map, ...map.sheets]
 
 // Navigation that should be undoable with the back button: links, search results.
 function go(id) {
@@ -103,13 +113,14 @@ function wire() {
     go(id)
   })
   document.addEventListener('keydown', e => {
-    if (e.target.closest?.('input, textarea, select, [contenteditable]') || e.ctrlKey || e.metaKey || e.altKey) return
+    if (e.target.closest?.('input, textarea, select, [contenteditable], dialog') || e.ctrlKey || e.metaKey || e.altKey) return
     if (cards.key(e)) return e.preventDefault()
     const actions = {
       '/': () => $('search').focus(),
       escape: () => {
         $('issues-list').hidden = true
-        map.escape()
+        const board = lastUsed?.selected ? lastUsed : boards().find(b => b.selected)
+        board?.escape()
       },
       '+': () => map.zoomBy(1.3),
       '=': () => map.zoomBy(1.3),
@@ -184,6 +195,7 @@ function watch() {
       atlas = buildAtlas(sources)
       map.setAtlas(atlas)
       map.relayout()
+      redrawSheets(map)
       search.setAtlas(atlas)
       cards.setAtlas(atlas)
       titles()
@@ -216,7 +228,9 @@ function writeView() {
   clearTimeout(saveTimer)
   try {
     const { x, y, k } = map.camera
-    localStorage.setItem(VIEW_KEY, JSON.stringify({ open: [...map.open], readmes: [...map.readmes], camera: { x, y, k }, index: !$('panel').hidden }))
+    localStorage.setItem(VIEW_KEY, JSON.stringify({
+      open: [...map.open], readmes: [...map.readmes], camera: { x, y, k }, index: !$('panel').hidden, sheets: map.sheets.map(s => s.saved()),
+    }))
   } catch { /* storage unavailable: the view just isn't remembered */ }
 }
 

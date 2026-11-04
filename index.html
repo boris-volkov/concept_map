@@ -10,6 +10,7 @@
   <!-- Fetch every script at once, instead of each only after the one that imports it. -->
   <link rel="modulepreload" href="js/content.js">
   <link rel="modulepreload" href="js/map.js">
+  <link rel="modulepreload" href="js/sheet.js">
   <link rel="modulepreload" href="js/docs.js">
   <link rel="modulepreload" href="js/search.js">
   <link rel="modulepreload" href="js/markdown.js">
@@ -116,6 +117,18 @@
       </footer>
     </div>
   </div>
+
+  <!-- Asks before a concept's prerequisites are popped out onto the canvas (sheet.js). -->
+  <dialog id="pop" aria-labelledby="pop-title">
+    <form method="dialog">
+      <h2 id="pop-title">Pop out what leads up to <span class="pop-name"></span>?</h2>
+      <p>This draws a copy of the concept and the <span class="pop-count"></span> behind it beside the map, joined by their arrows. What you open in the copy stays in the copy.</p>
+      <footer>
+        <button type="submit">Cancel</button>
+        <button type="submit" class="pop-yes" autofocus>Pop out</button>
+      </footer>
+    </form>
+  </dialog>
 
   <button id="issues" type="button" hidden></button>
   <div id="issues-list" hidden></div>

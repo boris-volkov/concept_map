@@ -295,6 +295,70 @@ export function learningPath(n) {
   return path
 }
 
+/** Finds a concept by id. A sheet holds only a few, and what they say can link to any on the map. */
+export const finder = atlas => id => atlas.nodes.get(id) ?? atlas.whole?.nodes.get(id)
+
+// The concepts `c` needs directly: a topic stands for what it holds, and for what it needs itself.
+function conceptsNeeded(c) {
+  const out = new Set()
+  const seen = new Set()
+  const todo = [...c.requires]
+  while (todo.length) {
+    const r = todo.pop()
+    if (seen.has(r)) continue
+    seen.add(r)
+    if (r.children.length) todo.push(...r.requires)
+    else out.add(r)
+  }
+  out.delete(c)
+  return [...out]
+}
+
+/**
+ * An atlas of its own for `n` and the concepts that lead up to it, for a sheet to draw (see
+ * sheet.js). They are copies: each reads through to its original for all that it says, but
+ * stands in no topic and is joined only to the other copies, so that everything which walks the
+ * graph stays among them. What the topics around a concept need counts for the concept, as does
+ * everything in a topic it names. Arrows run between concepts, wherever those stand on the map,
+ * one being left out when another of the same concept's prerequisites already leads to it.
+ * `whole` is the atlas they came from.
+ */
+export function sheetAtlas(whole, n) {
+  const concepts = [...learningPath(n), n].sort((a, b) => a.order - b.order)
+  const copies = new Map(concepts.map(c => [c, Object.create(c)]))
+  const needs = new Map(concepts.map(c => [c, conceptsNeeded(c).filter(p => copies.has(p))]))
+  const behind = new Map()
+  const reach = c => {
+    let out = behind.get(c)
+    if (out) return out
+    out = new Set()
+    behind.set(c, out)
+    for (const p of needs.get(c)) {
+      out.add(p)
+      for (const q of reach(p)) out.add(q)
+    }
+    return out
+  }
+  for (const [c, copy] of copies) {
+    copy.parent = null
+    copy.home = c.parent // where the original stands, to say so in the copy's links
+    copy.directDependents = []
+    copy.requiredBy = copy.directDependents
+  }
+  const localEdges = []
+  for (const [c, copy] of copies) {
+    const direct = needs.get(c).filter(p => !needs.get(c).some(q => q !== p && reach(q).has(p)))
+    copy.directPrereqs = direct.map(p => copies.get(p))
+    copy.requires = copy.directPrereqs // what these need follows from them
+    for (const from of copy.directPrereqs) {
+      from.directDependents.push(copy)
+      localEdges.push({ key: `${from.id}>${copy.id}`, from, to: copy, within: null, weight: 1, pairs: [[from, copy]] })
+    }
+  }
+  const roots = [...copies.values()]
+  return { root: { isRoot: true, children: roots, localEdges }, roots, nodes: new Map(roots.map(c => [c.id, c])), whole }
+}
+
 /** The node that stands for `n` on screen: `n` itself, or the closed topic it's hidden in. */
 export function visibleRep(n, isOpen) {
   const chain = [n, ...ancestors(n)]

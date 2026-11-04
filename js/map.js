@@ -11,10 +11,10 @@
 // A new layout is applied at once, without any animation, so the map stays quick however much
 // of it is open.
 
-import { computeLayout, flowOf, FRAME_PAD } from './layout.js'
+import { computeLayout, flowOf, FRAME_PAD, DOMAINS } from './layout.js'
 import {
   ancestors, isAncestor, descendants, visibleRep, visibleEdges, prerequisitesOf, dependentsOf,
-  externalPrereqs, externalDependents,
+  externalPrereqs, externalDependents, finder,
 } from './model.js'
 import { renderInline, plainText, esc } from './markdown.js'
 import { KINDS } from './content.js'
@@ -35,13 +35,17 @@ const tetherKey = n => 'tether:' + n.id // the line from it to its frame
 const r1 = v => Math.round(v * 10) / 10
 
 export class AtlasMap {
-  constructor({ viewport, world, svg, grid, atlas, onSelect, onView }) {
+  // A sheet (see sheet.js) is one of these too, with its frame for a viewport and a world, and
+  // the main map's camera.
+  constructor({ viewport, world, svg, grid, atlas, camera, onSelect, onView, onPop }) {
     this.viewport = viewport
     this.world = world
     this.svg = svg
     this.grid = grid
     this.onSelect = onSelect
     this.onView = onView
+    this.onPop = onPop
+    this.sheets = [] // the trees of prerequisites popped out of this map
     this.open = new Set() // ids of what is open: domains and topics, and concepts
     this.readmes = new Set() // ids of the topics whose README is open, and of the open concepts whose "i" is
     this.els = new Map() // key → element, for everything on screen; a README's key is "readme:" and its topic's id
@@ -56,12 +60,12 @@ export class AtlasMap {
     this.tethers = new Map() // domain id → the <path> tying its card to its open frame
     this.selected = null
     this.hl = null
-    this.camera = new Camera(viewport, world, () => this.cameraMoved())
+    this.camera = camera ?? new Camera(viewport, world, () => this.cameraMoved())
     // An open file changes size when its quiz moves on, a list in it unfolds, or a font arrives.
     this.resizes = new ResizeObserver(entries => this.resized(entries))
     viewport.addEventListener('click', e => this.click(e))
     viewport.addEventListener('pointerover', e => {
-      const el = e.target.closest?.('.node.leaf, .node.group:not(.is-open)')
+      const el = !this.inSheet(e) && e.target.closest?.('.node.leaf, .node.group:not(.is-open)')
       this.hover(el ? this.atlas.nodes.get(el.dataset.node ?? el.dataset.id) : null)
     })
     viewport.addEventListener('pointerleave', () => this.hover(null))
@@ -71,8 +75,8 @@ export class AtlasMap {
         this.click(e)
       }
     })
-    progress.onChange(() => this.refreshProgress())
-    deck.onChange(() => this.refreshProgress()) // the flashcard buttons on open concepts
+    const refresh = () => this.refreshProgress()
+    this.listening = [progress.onChange(refresh), deck.onChange(refresh)] // deck: the flashcard buttons on open concepts
     this.setAtlas(atlas)
   }
 
@@ -163,7 +167,7 @@ export class AtlasMap {
       const mount = el.querySelector('.quiz-mount')
       if (mount) {
         mountQuiz(mount, n.quiz, {
-          resolve: id => this.atlas.nodes.get(id),
+          resolve: finder(this.atlas),
           onFinish: (right, total) => { if (right === total) progress.setMastered(n.id, true) },
         })
       }
@@ -288,7 +292,7 @@ export class AtlasMap {
     }
     if (!changed.length) return
     const active = document.activeElement
-    const inView = k => this.boxes.has(k) && this.camera.sees(this.boxes.get(k))
+    const inView = k => this.boxes.has(k) && this.camera.sees(this.onCanvas(this.boxes.get(k)))
     const key = changed.find(k => this.els.get(k).contains(active)) ?? changed.find(inView)
     const before = key && this.boxes.get(key)
     this.relayout()
@@ -320,8 +324,7 @@ export class AtlasMap {
       el.classList.toggle('is-current', n === this.current) // the topic opened last, outlined in its colour
       if (n.children.length) el.querySelector('.frame-head .about').classList.toggle('is-on', this.hasReadme(n))
     }
-    const layout = computeLayout(this.atlas.root, n => this.isOpen(n), n => this.sizeOf(n), n => this.heads.get(n.id),
-      n => (this.hasReadme(n) ? this.fileSizes.get(readmeKey(n)) : null))
+    const layout = this.lay()
     const boxes = layout.boxes
     this.spine = layout.spine
     for (const d of stubs) boxes.set(stubKey(d), layout.spine.get(d.id))
@@ -342,13 +345,41 @@ export class AtlasMap {
       el.style.height = `${r1(b.h)}px`
     }
     this.boxes = boxes
-    const g = this.grid.style
-    g.transform = `translate(${-GRID_MARGIN}px, ${-GRID_MARGIN}px)`
-    g.width = `${Math.ceil(layout.width) + 2 * GRID_MARGIN}px`
-    g.height = `${Math.ceil(layout.height) + 2 * GRID_MARGIN}px`
+    this.laidOut()
     this.drawEdges()
     this.highlight()
     return boxes
+  }
+
+  lay() {
+    return computeLayout(this.atlas.root, n => this.isOpen(n), n => this.sizeOf(n), n => this.heads.get(n.id),
+      n => (this.hasReadme(n) ? this.fileSizes.get(readmeKey(n)) : null))
+  }
+
+  laidOut() {
+    this.placeSheets()
+  }
+
+  // Sheets stand in a row to the right of the map, so whatever opens on the map only pushes them
+  // further right, and they never lie over it. The canvas, and the grid, reach as far as they do.
+  placeSheets() {
+    let w = this.bounds.w
+    let h = this.bounds.h
+    for (const s of this.sheets) {
+      s.place(w + DOMAINS.float, 0)
+      w += DOMAINS.float + s.width
+      h = Math.max(h, s.height)
+    }
+    this.canvas = { x: 0, y: 0, w, h }
+    const g = this.grid.style
+    g.transform = `translate(${-GRID_MARGIN}px, ${-GRID_MARGIN}px)`
+    g.width = `${Math.ceil(w) + 2 * GRID_MARGIN}px`
+    g.height = `${Math.ceil(h) + 2 * GRID_MARGIN}px`
+  }
+
+  /** Where a box of this map stands on the canvas, which the camera works in. A sheet's are inside its frame. */
+  onCanvas(box) {
+    return box
   }
 
   // ---- arrows ----
@@ -506,7 +537,7 @@ export class AtlasMap {
     this.onSelect?.(n)
     if (n && pan) {
       const box = this.boxes.get(visibleRep(n, x => this.isOpen(x)).id)
-      if (box && !this.camera.shows(box)) this.camera.moveTo(this.camera.centre(box))
+      if (box && !this.camera.shows(this.onCanvas(box))) this.camera.moveTo(this.camera.centre(this.onCanvas(box)))
     }
   }
 
@@ -583,10 +614,15 @@ export class AtlasMap {
     }
   }
 
+  /** Whether an event belongs to a sheet of this map, which takes care of it itself. */
+  inSheet(e) {
+    return this.sheets.some(s => e.composedPath().includes(s.viewport))
+  }
+
   click(e) {
     // A double click, as on a file, opens with its first click; the second would land on the
     // open file's head, where the card was, and close it again.
-    if (e.detail > 1) return
+    if (e.detail > 1 || this.inSheet(e)) return
     // Look along the event's path rather than with e.target.closest(): a quiz redraws itself on
     // click, detaching the button that was clicked.
     const path = e.composedPath()
@@ -614,6 +650,7 @@ export class AtlasMap {
       return this.expand(n)
     }
     if (!this.isFileOpen(n)) return this.openFile(n, { at: hit('.quiz-badge') ? '.practice' : null, keyboard })
+    if (hit('.doc-head .pop')) return this.onPop?.(n)
     if (hit('.doc-head .card-add')) return deck.toggle(n.id)
     if (hit('.doc-head .about')) return this.toggleInfo(n)
     // Only the × closes an open concept; a click anywhere else on it, its head included, selects it.
@@ -783,7 +820,7 @@ export class AtlasMap {
     if (!box) return
     if (before) c.set(c.x - (box.x - before.x) * c.k, c.y - (box.y - before.y) * c.k, c.k)
     const part = at && this.els.get(key)?.querySelector(at)
-    if (part) c.moveTo(c.nudge({ x: box.x, y: box.y + part.offsetTop, w: box.w, h: part.offsetHeight }))
+    if (part) c.moveTo(c.nudge(this.onCanvas({ x: box.x, y: box.y + part.offsetTop, w: box.w, h: part.offsetHeight })))
   }
 
   /**
@@ -801,7 +838,7 @@ export class AtlasMap {
     this.onSelect?.(n)
     const c = this.camera
     const box = topic ? this.readmeView(n) : boxes.get(n.id)
-    c.moveTo(c.frame(box, { k: Math.min(1.15, Math.max(c.k, 0.9)) }))
+    c.moveTo(c.frame(this.onCanvas(box), { k: Math.min(1.15, Math.max(c.k, 0.9)) }))
     this.onView?.()
   }
 
@@ -815,12 +852,13 @@ export class AtlasMap {
     const boxes = this.relayout()
     this.select(n, { pan: false })
     const all = [n, ...others].map(t => boxes.get(t.id)).filter(Boolean)
-    this.camera.moveTo(this.camera.fit(union(all), { pad: 60, maxK: 1.1 }))
+    this.camera.moveTo(this.camera.fit(this.onCanvas(union(all)), { pad: 60, maxK: 1.1 }))
     this.onView?.()
   }
 
-  /** Closes everything: every topic, every open file. */
+  /** Closes everything: every topic, every open file, every sheet. */
   overview() {
+    for (const s of [...this.sheets]) s.close()
     this.open.clear()
     this.readmes.clear()
     this.current = null
@@ -853,7 +891,7 @@ export class AtlasMap {
   }
 
   fitAll() {
-    this.camera.moveTo(this.camera.fit(this.bounds, { maxK: 1 }))
+    this.camera.moveTo(this.camera.fit(this.canvas, { maxK: 1 }))
   }
 
   zoomBy(f) {

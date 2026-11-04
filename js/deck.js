@@ -47,8 +47,10 @@ export function remove(id) {
   changed()
 }
 
+/** Calls `f` on every change, until the function it returns is called. */
 export function onChange(f) {
   listeners.add(f)
+  return () => listeners.delete(f)
 }
 
 // Another tab of the atlas changed the deck.
