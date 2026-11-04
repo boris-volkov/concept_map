@@ -12,4 +12,5 @@ The map is assembled from the files below, in this order. Each file is one domai
 - [Trigonometry](trigonometry.md)
 - [Probability & Statistics](statistics.md)
 - [Linear Algebra](linear-algebra.md)
+- [Graph Theory](graph-theory.md)
 - [Calculus](calculus.md)

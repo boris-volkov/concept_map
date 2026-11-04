@@ -646,6 +646,40 @@ math { font-family: var(--math); font-size: 1.04em; }
 .graph .axis-name { font-style: italic; fill: var(--ink-2); }
 .graph-error { color: var(--wrong); font-size: 14px; }
 
+/* Diagrams of vertices and edges (network.js): bare on the page, with the colour of the domain kept
+   for what a diagram points out, and six colours of their own for colourings. */
+.network { --tone1: #b8433a; --tone2: #2f6fa8; --tone3: #d9a520; --tone4: #3d8a55; --tone5: #7a4f9e; --tone6: #c4702b; }
+.network .tie { fill: none; stroke: var(--ink-2); stroke-width: 1.5; stroke-linecap: round; }
+.network .tie.quiet { stroke-opacity: 0.4; }
+.network .tie.heavy { stroke: var(--c, var(--ink)); stroke-width: 3; }
+.network .tie.dashed { stroke-dasharray: 5 4; }
+.network .tie.tone1 { stroke: var(--tone1); stroke-width: 2.4; }
+.network .tie.tone2 { stroke: var(--tone2); stroke-width: 2.4; }
+.network .tie.tone3 { stroke: var(--tone3); stroke-width: 2.4; }
+.network .tie.tone4 { stroke: var(--tone4); stroke-width: 2.4; }
+.network .tie.tone5 { stroke: var(--tone5); stroke-width: 2.4; }
+.network .tie.tone6 { stroke: var(--tone6); stroke-width: 2.4; }
+.network .arc-head { fill: var(--ink-2); }
+.network .arc-head.quiet { fill-opacity: 0.4; }
+.network .arc-head.heavy { fill: var(--c, var(--ink)); }
+.network .vertex { fill: var(--ink-2); stroke: var(--card); stroke-width: 1; }
+.network .vertex.named { fill: var(--card); stroke: var(--ink-2); stroke-width: 1.3; }
+.network .vertex.marked { fill: var(--c, var(--ink)); stroke: var(--c, var(--ink)); }
+.network .vertex.tone1 { fill: var(--tone1); stroke: var(--tone1); }
+.network .vertex.tone2 { fill: var(--tone2); stroke: var(--tone2); }
+.network .vertex.tone3 { fill: var(--tone3); stroke: var(--tone3); }
+.network .vertex.tone4 { fill: var(--tone4); stroke: var(--tone4); }
+.network .vertex.tone5 { fill: var(--tone5); stroke: var(--tone5); }
+.network .vertex.tone6 { fill: var(--tone6); stroke: var(--tone6); }
+.network text { stroke: var(--card); }
+.network text.name { stroke: none; font-style: italic; font-size: 12.5px; }
+.network text.name.on-fill { fill: #fff; font-style: normal; font-weight: 600; }
+.network text.name.tiny { font-size: 9.5px; }
+.network text.weight { font-size: 12px; stroke-width: 4px; }
+.network figcaption { margin-top: 4px; text-align: center; font-size: 14px; color: var(--ink-2); }
+.network-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 6px 26px; margin: 0.5em 0 1.1em; }
+.network-row .graph { margin: 0; }
+
 /* ---------- open files: a concept's entry, and a topic's README ---------- */
 
 /* An open concept is its card grown into its entry, in the card's place: the card's colour down its
@@ -721,7 +755,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 .doc-body > :first-child { margin-top: 0; }
 /* A long entry runs in columns (see spread in map.js). What can't be read in two pieces stays whole. */
 .in-columns > .doc-body:not(.doc-info) { column-count: var(--columns); column-gap: 32px; column-rule: 1px solid var(--rule); padding-bottom: 22px; }
-.in-columns > .doc-body :is(.statement, .math-block, .table-wrap, .graph, .practice .quiz, li) { break-inside: avoid; }
+.in-columns > .doc-body :is(.statement, .math-block, .table-wrap, .graph, .network-row, .practice .quiz, li) { break-inside: avoid; }
 .in-columns > .doc-body :is(h3, .statement-label) { break-after: avoid; }
 .in-columns > .doc-body .table-wrap + p { break-before: avoid; }
 /* What the "i" on an open concept shows, in a band under its head: how it joins the map. */
@@ -834,6 +868,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 .prose .identities td { padding: 5px 4px; }
 .prose td .graph { margin: 0; width: 96px; max-width: none; }
 .prose td .graph svg { max-width: none; }
+.prose td .network { width: 84px; }
 .concept-link { text-decoration-color: color-mix(in srgb, var(--c, var(--ink)) 40%, transparent); text-underline-offset: 2px; }
 .broken-link { color: var(--wrong); border-bottom: 1px dashed; }
 

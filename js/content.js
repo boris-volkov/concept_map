@@ -9,8 +9,9 @@
 // collected in atlas.issues rather than thrown, so a typo never blanks the map.
 
 import { parseQuiz } from './quiz.js'
-import { plainText, THUMBNAIL, thumbnail } from './markdown.js'
+import { plainText, THUMBNAIL, thumbnail, SMALL_NETWORK, smallNetwork } from './markdown.js'
 import { graphError } from './graph.js'
+import { networkError } from './network.js'
 import { prepare } from './model.js'
 
 export const KINDS = {
@@ -143,8 +144,8 @@ export function buildAtlas({ index, files }) {
 
     const { body, quizzes, graphs } = splitBody(n.bodyLines)
     for (const g of graphs) {
-      const problem = graphError(g.src)
-      if (problem) report('error', n.file, g.line ?? n.line, `Graph in “${n.title}”: ${problem}`, n.id)
+      const problem = (g.network ? networkError : graphError)(g.src)
+      if (problem) report('error', n.file, g.line ?? n.line, `${g.network ? 'Network' : 'Graph'} in “${n.title}”: ${problem}`, n.id)
     }
     n.body = body
     n.quiz = quizzes.flatMap(lines => parseQuiz(lines, (line, msg) => report('error', n.file, line, `Quiz in “${n.title}”: ${msg}`, n.id)))
@@ -264,8 +265,12 @@ function splitBody(lines) {
   const kept = []
   const quizzes = []
   const graphs = []
+  const smallOnes = line => {
+    for (const [, src] of line.text.matchAll(THUMBNAIL)) graphs.push({ line: line.line, src: thumbnail(src) })
+    for (const [, src] of line.text.matchAll(SMALL_NETWORK)) graphs.push({ line: line.line, src: smallNetwork(src), network: true })
+  }
   for (let i = 0; i < lines.length; i++) {
-    const g = /^\s*(`{3,}|~{3,})\s*graph\s*$/i.exec(lines[i].text)
+    const g = /^\s*(`{3,}|~{3,})\s*(graph|network)\s*$/i.exec(lines[i].text)
     if (g) {
       // A graph stays in the text, where markdown.js draws it; here it is only set aside to be checked.
       const block = []
@@ -275,17 +280,20 @@ function splitBody(lines) {
         kept.push(lines[i].text)
       }
       if (i < lines.length) kept.push(lines[i].text)
-      graphs.push({ line: block[0]?.line, src: block.map(l => l.text).join('\n') })
+      graphs.push({ line: block[0]?.line, src: block.map(l => l.text).join('\n'), network: g[2].toLowerCase() === 'network' })
       continue
     }
     const m = /^\s*(`{3,}|~{3,})\s*quiz\s*$/i.exec(lines[i].text)
     if (!m) {
-      for (const [, src] of lines[i].text.matchAll(THUMBNAIL)) graphs.push({ line: lines[i].line, src: thumbnail(src) })
+      smallOnes(lines[i])
       kept.push(lines[i].text)
       continue
     }
     const block = []
-    for (i++; i < lines.length && !lines[i].text.trim().startsWith(m[1]); i++) block.push(lines[i])
+    for (i++; i < lines.length && !lines[i].text.trim().startsWith(m[1]); i++) {
+      block.push(lines[i])
+      smallOnes(lines[i])
+    }
     quizzes.push(block)
   }
   return { body: kept.join('\n').trim(), quizzes, graphs }

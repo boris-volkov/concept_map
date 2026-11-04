@@ -174,6 +174,46 @@ point: 1, 1 below-right
 
 Any number can be an expression, like `pi/2` or `cos(0.9)`. A graph that can't be read shows up in **content problems**, like a broken quiz.
 
+## Diagrams of graphs
+
+A graph in the other sense, of vertices and edges, is a fenced block marked `network`. For one of the usual graphs, its name is enough; otherwise list its edges:
+
+````markdown
+```network
+K5
+```
+
+```network
+edges: a-b-c-a c-d
+heavy: a-b b-c
+```
+````
+
+| Line | Meaning |
+| --- | --- |
+| `K5`, `K3,3`, `K2,2,2`, `C6`, `P4`, `W6`, `E4`, `Q3`, `grid 3,4`, `Petersen` | A family: complete, complete bipartite or multipartite, a cycle, a path, a wheel of 6 vertices, 4 vertices with no edges, a hypercube, a grid, the Petersen graph. `tetrahedron`, `cube`, `octahedron`, `dodecahedron` and `icosahedron` are drawn flattened, with no crossings. Vertices are numbered from 1. |
+| `edges: a-b b-c` | Edges. `a-b-c` is a path of them, `a>b` an arc, `a-a` a loop and `a-b:4` a weight. An edge listed twice is drawn twice, so a multigraph needs nothing special. With a family, these are added to it. |
+| `vertices: x y` | Vertices with no edges. |
+| `remove: 1-2 2-3` | Takes edges out of a family. |
+| `names: a b c d` | Renames a family's vertices in order, and shows the names. |
+| `layout: circle` | `circle`, the usual one, `line`, `tree` with the first vertex as the root, `two-rows` for the two sides of a bipartite graph, or `spring`, a force-directed drawing. |
+| `at: a(0,0) b(2,0) c(1,sqrt(3))` | Puts vertices exactly where they are wanted, with y upwards. Any number can be an expression. |
+| `heavy: a-b b-c` | Draws edges in the colour of the domain, and the others lighter. |
+| `path: a b c a` | The same, along a walk. |
+| `dashed: a-b` | Draws edges dashed. |
+| `mark: a c` | Picks out vertices in the colour of the domain. |
+| `classes: a c / b d` | Colours the vertices, class by class. |
+| `edge-classes: a-b c-d / b-c` | Colours the edges in the same way. |
+| `labels: all` or `labels: none` | Shows or hides the names of the vertices. They are shown for an edge list and hidden for a family. |
+| `label: 1, 0.5 "f₁" right` | Writes text on the diagram, such as the name of a face, as in a graph block. |
+| `size: 200, 120` | The size in pixels. Without it the diagram comes out at about 150 across. |
+| `caption: $C_5$` | A line under the diagram, which may hold math. |
+| `---` | Starts another diagram beside the first, in the same block. |
+
+A table cell or a quiz question can hold a small one, written with semicolons for line breaks, as in *Table of Graph Families*: `{{ network: K5 }}`. In a quiz, give it a line of its own, and a size if it should be larger: `{{ network: C5; size: 130, 120 }}`.
+
+An edge or a vertex that isn't in the graph shows up in **content problems**, so a `heavy:` or `path:` line can't quietly point at nothing. That makes it worth using `classes:` and `path:` for what a diagram claims: a colouring or a walk that is written out is checked.
+
 ## Quizzes
 
 A quiz is a fenced block marked `quiz`, anywhere in a concept's explanation. It is drawn at the end of the concept's entry, and a small **?** appears on the concept's card, which opens the concept right there, at its quiz.

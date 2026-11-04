@@ -25,7 +25,7 @@
 const W = 280 // the usual width; the height follows the window, so that x and y share a scale where they can
 const SAMPLES = 480
 const THUMB = 130 // a graph narrower than this is one in a table, such as those in Table of Parent Functions
-const PLACES = {
+export const PLACES = {
   right: [6, 4, 'start'], left: [-6, 4, 'end'], above: [0, -8, 'middle'], below: [0, 15, 'middle'],
   'above-right': [5, -6, 'start'], 'above-left': [-5, -6, 'end'],
   'below-right': [5, 14, 'start'], 'below-left': [-5, 14, 'end'],
@@ -103,7 +103,7 @@ function range(s) {
 }
 
 // Expressions separated by commas, outside brackets.
-function numbers(s, count) {
+export function numbers(s, count) {
   const parts = []
   let depth = 0
   let start = 0
@@ -122,7 +122,7 @@ function numbers(s, count) {
 
 // "x, y", then an optional "label" and an optional place.
 const MARKED = new RegExp(`^(.*?)\\s*(?:"([^"]*)")?\\s*(${Object.keys(PLACES).sort((a, b) => b.length - a.length).join('|')})?\\s*$`, 'i')
-function marked(s, count, point) {
+export function marked(s, count, point) {
   const [, coords, text, place = 'right'] = MARKED.exec(s)
   if (!point && text === undefined) throw new Error('a label needs its text in quotes: label: x, y "text"')
   const at = numbers(coords, count)

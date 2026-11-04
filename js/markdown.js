@@ -2,12 +2,15 @@
 //
 // It handles what explanations need: paragraphs, **bold**, *italic*, `code`,
 // [links](url), [[concept-id]] links, images, lists, > quotes, tables, math
-// between $...$ or $$...$$, and small graphs in ```graph blocks (see graph.js).
+// between $...$ or $$...$$, small graphs of functions in ```graph blocks (see
+// graph.js), and small diagrams of vertices and edges in ```network blocks (see
+// network.js).
 // Raw HTML such as an <iframe> passes through, so a Desmos graph or a video can
 // sit inside a concept's description.
 
 import { texToMathML } from './tex.js'
 import { graph } from './graph.js'
+import { network } from './network.js'
 
 const MATH = '\u0000' // brackets the index of a stashed formula
 const HELD = '\u0001' // brackets the index of a stashed inline fragment
@@ -37,6 +40,7 @@ export function plainText(src) {
       .replace(/\\(left|right|displaystyle|,|;|!)/g, '')
       .replace(/\\([a-zA-Z]+)/g, '$1')
       .replace(/[{}]/g, ''))
+    .replace(/\{\{[^}]*\}\}/g, '')
     .replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1')
     .replace(/\[\[([^\]|]+)\|?([^\]]*)\]\]/g, (_, id, t) => t || id)
     .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
@@ -104,9 +108,11 @@ const LIST_ITEM = /^( *)([-*+]|\d{1,9}[.)])( +|$)(.*)$/
 const TABLE_RULE = /^ *\|? *:?-+:? *(\| *:?-+:? *)*\|? *$/
 const HTML_BLOCK = /^ {0,3}<\/?(div|iframe|figure|table|details|video|audio|section|aside|center|ul|ol|pre|hr|img|p)\b/i
 
+const LONE_DIAGRAM = /^\s*\{\{\s*(?:y\s*=|network\s*:)[^}]*\}\}\s*$/
+
 const isTableStart = (lines, i) => lines[i].includes('|') && (lines[i + 1] ?? '').includes('|') && TABLE_RULE.test(lines[i + 1])
 const startsBlock = (lines, i) => FENCE.test(lines[i]) || RULE.test(lines[i]) || QUOTE.test(lines[i]) ||
-  LIST_ITEM.test(lines[i]) || HTML_BLOCK.test(lines[i]) || isTableStart(lines, i)
+  LIST_ITEM.test(lines[i]) || HTML_BLOCK.test(lines[i]) || LONE_DIAGRAM.test(lines[i]) || isTableStart(lines, i)
 
 function blocks(lines, opts) {
   let html = ''
@@ -119,7 +125,8 @@ function blocks(lines, opts) {
       const body = []
       for (i++; i < lines.length && !lines[i].trim().startsWith(m[1]); i++) body.push(lines[i])
       i++
-      html += /^\s*graph\s*$/i.test(m[2]) ? graph(body.join('\n')) : `<pre><code>${esc(body.join('\n'))}</code></pre>`
+      const kind = m[2].trim().toLowerCase()
+      html += kind === 'graph' ? graph(body.join('\n')) : kind === 'network' ? network(body.join('\n')) : `<pre><code>${esc(body.join('\n'))}</code></pre>`
     } else if (RULE.test(line)) {
       html += '<hr>'
       i++
@@ -139,6 +146,9 @@ function blocks(lines, opts) {
       const r = table(lines, i, opts)
       html += r.html
       i = r.next
+    } else if (LONE_DIAGRAM.test(line)) {
+      html += inline(line.trim(), opts) // a figure can't stand inside a paragraph
+      i++
     } else if (HTML_BLOCK.test(line)) {
       const body = []
       while (i < lines.length && lines[i].trim()) body.push(lines[i++])
@@ -228,6 +238,10 @@ function table(lines, i, opts, title = null) {
 export const THUMBNAIL = /\{\{\s*(y\s*=[^}]*)\}\}/g
 export const thumbnail = src => `size: 96, 72\n${src.replace(/;/g, '\n')}`
 
+// A small diagram of a graph in the same way: {{ network: K5 }}. See network.js.
+export const SMALL_NETWORK = /\{\{\s*network\s*:([^}]*)\}\}/g
+export const smallNetwork = src => `size: 84, 66\n${src.replace(/;/g, '\n')}`
+
 const ALLOWED_TAG = /<\/?(?:a|abbr|b|br|code|del|div|em|figcaption|figure|i|iframe|img|kbd|mark|small|span|strong|sub|sup|u|video|audio|source)\b[^<>]*>/gi
 
 function inline(s, opts) {
@@ -235,6 +249,7 @@ function inline(s, opts) {
   const hold = html => { held.push(html); return HELD + (held.length - 1) + HELD }
   s = s.replace(/(`+)([\s\S]*?[^`])\1(?!`)/g, (_, _ticks, code) => hold(`<code>${esc(code.trim())}</code>`))
   s = s.replace(THUMBNAIL, (_, src) => hold(graph(thumbnail(src))))
+  s = s.replace(SMALL_NETWORK, (_, src) => hold(network(smallNetwork(src))))
   s = s.replace(/\\([\\`*_{}[\]()#+\-.!$|~<>])/g, (_, ch) => hold(esc(ch)))
   s = s.replace(ALLOWED_TAG, tag => hold(tag))
   s = esc(s)
