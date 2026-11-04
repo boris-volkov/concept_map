@@ -9,7 +9,7 @@
 // collected in atlas.issues rather than thrown, so a typo never blanks the map.
 
 import { parseQuiz } from './quiz.js'
-import { plainText } from './markdown.js'
+import { plainText, THUMBNAIL, thumbnail } from './markdown.js'
 import { graphError } from './graph.js'
 import { prepare } from './model.js'
 
@@ -279,7 +279,11 @@ function splitBody(lines) {
       continue
     }
     const m = /^\s*(`{3,}|~{3,})\s*quiz\s*$/i.exec(lines[i].text)
-    if (!m) { kept.push(lines[i].text); continue }
+    if (!m) {
+      for (const [, src] of lines[i].text.matchAll(THUMBNAIL)) graphs.push({ line: lines[i].line, src: thumbnail(src) })
+      kept.push(lines[i].text)
+      continue
+    }
     const block = []
     for (i++; i < lines.length && !lines[i].text.trim().startsWith(m[1]); i++) block.push(lines[i])
     quizzes.push(block)

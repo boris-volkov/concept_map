@@ -306,21 +306,102 @@ $$\begin{aligned} \frac{d}{dx}\arcsin x &= \frac{1}{\sqrt{1 - x^2}}, \\ \frac{d}
 
 ### Table of Derivatives {#derivative-table}
 kind: formula
-prereqs: inverse-derivatives, trig-derivatives, exp-log-derivatives, product-rule, quotient-rule
+prereqs: inverse-derivatives, trig-derivatives, exp-log-derivatives, product-rule, quotient-rule, chain-rule, hyperbolic-definition
 
-The rules, for differentiable $f$, $g$ and a constant $c$:
-$$\begin{aligned} (cf)' &= cf' \\ (f + g)' &= f' + g' \\ (fg)' &= f'g + fg' \\ \left(\frac{f}{g}\right)' &= \frac{f'g - fg'}{g^2} \\ (f \circ g)' &= (f' \circ g)\, g' \\ (f^{-1})' &= \frac{1}{f' \circ f^{-1}} \end{aligned}$$
+Here $u$ and $v$ are differentiable functions of $x$, and $a$, $c$ and $n$ are constants. The last column of each table is the chain rule at work: the same derivative for an inside function $u$.
 
-| $f(x)$ | $f'(x)$ | | $f(x)$ | $f'(x)$ |
-| --- | --- | --- | --- | --- |
-| $c$ | $0$ | | $\sin x$ | $\cos x$ |
-| $x^n$ | $n x^{n-1}$ | | $\cos x$ | $-\sin x$ |
-| $\sqrt{x}$ | $\frac{1}{2\sqrt{x}}$ | | $\tan x$ | $\sec^2 x$ |
-| $\frac{1}{x}$ | $-\frac{1}{x^2}$ | | $\sec x$ | $\sec x \tan x$ |
-| $e^x$ | $e^x$ | | $\csc x$ | $-\csc x \cot x$ |
-| $a^x$ | $a^x \ln a$ | | $\cot x$ | $-\csc^2 x$ |
-| $\ln x$ | $\frac{1}{x}$ | | $\arcsin x$ | $\frac{1}{\sqrt{1 - x^2}}$ |
-| $\log_a x$ | $\frac{1}{x \ln a}$ | | $\arctan x$ | $\frac{1}{1 + x^2}$ |
+: Rules
+| Rule | Formula |
+| --- | --- |
+| constant multiple | $(cu)' = cu'$ |
+| sum and difference | $(u \pm v)' = u' \pm v'$ |
+| product | $(uv)' = u'v + uv'$ |
+| triple product | $(uvw)' = u'vw + uv'w + uvw'$ |
+| quotient | $\left(\dfrac{u}{v}\right)' = \dfrac{u'v - uv'}{v^2}$ |
+| reciprocal | $\left(\dfrac{1}{v}\right)' = -\dfrac{v'}{v^2}$ |
+| chain | $\big(f(u)\big)' = f'(u)\,u'$ |
+| power | $(u^n)' = nu^{n-1}u'$ |
+| inverse | $\big(f^{-1}\big)'(x) = \dfrac{1}{f'\big(f^{-1}(x)\big)}$ |
+| logarithmic | $(u^v)' = u^v\left(v'\ln u + \dfrac{vu'}{u}\right)$ |
+| repeated product | $(uv)^{(n)} = \displaystyle\sum_{k=0}^{n} \binom{n}{k} u^{(n-k)} v^{(k)}$ |
+
+: Powers and Roots
+| $f(x)$ | $f'(x)$ | $\dfrac{d}{dx} f(u)$ |
+| --- | --- | --- |
+| $c$ | $0$ | $0$ |
+| $x$ | $1$ | $u'$ |
+| $x^n$ | $nx^{n-1}$ | $nu^{n-1}u'$ |
+| $\dfrac{1}{x}$ | $-\dfrac{1}{x^2}$ | $-\dfrac{u'}{u^2}$ |
+| $\dfrac{1}{x^n}$ | $-\dfrac{n}{x^{n+1}}$ | $-\dfrac{nu'}{u^{n+1}}$ |
+| $\sqrt{x}$ | $\dfrac{1}{2\sqrt{x}}$ | $\dfrac{u'}{2\sqrt{u}}$ |
+| $\sqrt[3]{x}$ | $\dfrac{1}{3\sqrt[3]{x^2}}$ | $\dfrac{u'}{3\sqrt[3]{u^2}}$ |
+| $\lvert x \rvert$ | $\dfrac{x}{\lvert x \rvert}$ | $\dfrac{uu'}{\lvert u \rvert}$ |
+
+: Exponentials and Logarithms
+| $f(x)$ | $f'(x)$ | $\dfrac{d}{dx} f(u)$ |
+| --- | --- | --- |
+| $e^x$ | $e^x$ | $e^u u'$ |
+| $a^x$ | $a^x \ln a$ | $a^u u' \ln a$ |
+| $x^x$ | $x^x(1 + \ln x)$ | $u^u u'(1 + \ln u)$ |
+| $\ln x$ | $\dfrac{1}{x}$ | $\dfrac{u'}{u}$ |
+| $\ln\lvert x \rvert$ | $\dfrac{1}{x}$ | $\dfrac{u'}{u}$ |
+| $\log_a x$ | $\dfrac{1}{x \ln a}$ | $\dfrac{u'}{u \ln a}$ |
+
+: Trigonometric Functions
+| $f(x)$ | $f'(x)$ | $\dfrac{d}{dx} f(u)$ |
+| --- | --- | --- |
+| $\sin x$ | $\cos x$ | $u' \cos u$ |
+| $\cos x$ | $-\sin x$ | $-u' \sin u$ |
+| $\tan x$ | $\sec^2 x$ | $u' \sec^2 u$ |
+| $\cot x$ | $-\csc^2 x$ | $-u' \csc^2 u$ |
+| $\sec x$ | $\sec x \tan x$ | $u' \sec u \tan u$ |
+| $\csc x$ | $-\csc x \cot x$ | $-u' \csc u \cot u$ |
+
+: Inverse Trigonometric Functions
+| $f(x)$ | $f'(x)$ | $\dfrac{d}{dx} f(u)$ |
+| --- | --- | --- |
+| $\arcsin x$ | $\dfrac{1}{\sqrt{1 - x^2}}$ | $\dfrac{u'}{\sqrt{1 - u^2}}$ |
+| $\arccos x$ | $-\dfrac{1}{\sqrt{1 - x^2}}$ | $-\dfrac{u'}{\sqrt{1 - u^2}}$ |
+| $\arctan x$ | $\dfrac{1}{1 + x^2}$ | $\dfrac{u'}{1 + u^2}$ |
+| $\operatorname{arccot} x$ | $-\dfrac{1}{1 + x^2}$ | $-\dfrac{u'}{1 + u^2}$ |
+| $\operatorname{arcsec} x$ | $\dfrac{1}{\lvert x \rvert\sqrt{x^2 - 1}}$ | $\dfrac{u'}{\lvert u \rvert\sqrt{u^2 - 1}}$ |
+| $\operatorname{arccsc} x$ | $-\dfrac{1}{\lvert x \rvert\sqrt{x^2 - 1}}$ | $-\dfrac{u'}{\lvert u \rvert\sqrt{u^2 - 1}}$ |
+
+These hold where $\lvert x \rvert < 1$ for $\arcsin$ and $\arccos$, and $\lvert x \rvert > 1$ for $\operatorname{arcsec}$ and $\operatorname{arccsc}$.
+
+: Hyperbolic Functions
+| $f(x)$ | $f'(x)$ | $\dfrac{d}{dx} f(u)$ |
+| --- | --- | --- |
+| $\sinh x$ | $\cosh x$ | $u' \cosh u$ |
+| $\cosh x$ | $\sinh x$ | $u' \sinh u$ |
+| $\tanh x$ | $\operatorname{sech}^2 x$ | $u' \operatorname{sech}^2 u$ |
+| $\coth x$ | $-\operatorname{csch}^2 x$ | $-u' \operatorname{csch}^2 u$ |
+| $\operatorname{sech} x$ | $-\operatorname{sech} x \tanh x$ | $-u' \operatorname{sech} u \tanh u$ |
+| $\operatorname{csch} x$ | $-\operatorname{csch} x \coth x$ | $-u' \operatorname{csch} u \coth u$ |
+
+These are defined in [[hyperbolic-functions]].
+
+: Inverse Hyperbolic Functions
+| $f(x)$ | $f'(x)$ | $\dfrac{d}{dx} f(u)$ |
+| --- | --- | --- |
+| $\operatorname{arcsinh} x$ | $\dfrac{1}{\sqrt{x^2 + 1}}$ | $\dfrac{u'}{\sqrt{u^2 + 1}}$ |
+| $\operatorname{arccosh} x$ | $\dfrac{1}{\sqrt{x^2 - 1}}$ | $\dfrac{u'}{\sqrt{u^2 - 1}}$ |
+| $\operatorname{arctanh} x$ | $\dfrac{1}{1 - x^2}$ | $\dfrac{u'}{1 - u^2}$ |
+| $\operatorname{arccoth} x$ | $\dfrac{1}{1 - x^2}$ | $\dfrac{u'}{1 - u^2}$ |
+| $\operatorname{arcsech} x$ | $-\dfrac{1}{x\sqrt{1 - x^2}}$ | $-\dfrac{u'}{u\sqrt{1 - u^2}}$ |
+| $\operatorname{arccsch} x$ | $-\dfrac{1}{\lvert x \rvert\sqrt{1 + x^2}}$ | $-\dfrac{u'}{\lvert u \rvert\sqrt{1 + u^2}}$ |
+
+These hold where $x > 1$ for $\operatorname{arccosh}$, $\lvert x \rvert < 1$ for $\operatorname{arctanh}$, $\lvert x \rvert > 1$ for $\operatorname{arccoth}$, and $0 < x < 1$ for $\operatorname{arcsech}$.
+
+: The nth Derivative
+| $f(x)$ | $f^{(n)}(x)$ |
+| --- | --- |
+| $x^m$ | $\dfrac{m!}{(m - n)!}x^{m-n}$, for $n \le m$ |
+| $e^{ax}$ | $a^n e^{ax}$ |
+| $\sin ax$ | $a^n \sin\left(ax + \dfrac{n\pi}{2}\right)$ |
+| $\cos ax$ | $a^n \cos\left(ax + \dfrac{n\pi}{2}\right)$ |
+| $\ln x$ | $(-1)^{n-1}\dfrac{(n - 1)!}{x^n}$ |
+| $\dfrac{1}{x}$ | $(-1)^n\dfrac{n!}{x^{n+1}}$ |
 
 ### Higher Derivatives
 prereqs: power-rule

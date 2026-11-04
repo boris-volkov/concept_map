@@ -44,7 +44,7 @@ const IDENTIFIERS = {
 const BIG_OPERATORS = { sum: '∑', prod: '∏', coprod: '∐', bigcup: '⋃', bigcap: '⋂', bigoplus: '⨁' }
 const INTEGRALS = { int: '∫', iint: '∬', iiint: '∭', oint: '∮' }
 const FUNCTIONS = new Set(['sin', 'cos', 'tan', 'sec', 'csc', 'cot', 'arcsin', 'arccos', 'arctan',
-  'sinh', 'cosh', 'tanh', 'coth', 'log', 'ln', 'lg', 'exp', 'det', 'gcd', 'deg', 'arg', 'dim',
+  'sinh', 'cosh', 'tanh', 'coth', 'sech', 'csch', 'log', 'ln', 'lg', 'exp', 'det', 'gcd', 'deg', 'arg', 'dim',
   'ker', 'hom', 'Pr'])
 const LIMIT_OPERATORS = { lim: 'lim', max: 'max', min: 'min', sup: 'sup', inf: 'inf',
   limsup: 'lim sup', liminf: 'lim inf', argmax: 'arg max', argmin: 'arg min' }

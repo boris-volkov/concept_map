@@ -724,6 +724,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 .in-columns > .doc-body:not(.doc-info) { column-count: var(--columns); column-gap: 32px; column-rule: 1px solid var(--rule); padding-bottom: 22px; }
 .in-columns > .doc-body :is(.statement, .math-block, .table-wrap, .graph, .practice .quiz, li) { break-inside: avoid; }
 .in-columns > .doc-body :is(h3, .statement-label) { break-after: avoid; }
+.in-columns > .doc-body .table-wrap + p { break-before: avoid; }
 /* What the "i" on an open concept shows, in a band under its head: how it joins the map. */
 .doc-info {
   padding-bottom: 14px;
@@ -815,6 +816,25 @@ math { font-family: var(--math); font-size: 1.04em; }
 .prose table { border-collapse: collapse; font-size: 15px; }
 .prose th, .prose td { padding: 4px 12px; border-bottom: 1px solid var(--card-edge); }
 .prose th { font-weight: normal; font-variant-caps: all-small-caps; letter-spacing: 0.06em; color: var(--ink-2); text-align: left; }
+/* A reference table: a title, rules above and below as in a book, and hairlines between the rows.
+   The row under the pointer lights up, for following a formula across with a student. */
+.prose table.ruled { width: 100%; border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
+.prose table.ruled caption {
+  caption-side: top;
+  padding: 0 0 5px;
+  text-align: left;
+  font-size: 17px;
+  font-variant-caps: small-caps;
+  letter-spacing: 0.04em;
+  color: var(--c);
+}
+.prose .ruled th { border-bottom: 1px solid var(--ink); }
+.prose .ruled td { padding: 5px 12px; border-bottom: 1px solid color-mix(in srgb, var(--rule) 45%, transparent); vertical-align: middle; }
+.prose .ruled tbody tr:last-child td { border-bottom: 0; }
+.prose .ruled tbody tr:hover { background: color-mix(in srgb, var(--c) 7%, transparent); }
+.prose .identities td { padding: 5px 4px; }
+.prose td .graph { margin: 0; width: 96px; max-width: none; }
+.prose td .graph svg { max-width: none; }
 .concept-link { text-decoration-color: color-mix(in srgb, var(--c, var(--ink)) 40%, transparent); text-underline-offset: 2px; }
 .broken-link { color: var(--wrong); border-bottom: 1px dashed; }
 

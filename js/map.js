@@ -28,7 +28,7 @@ const SVG = 'http://www.w3.org/2000/svg'
 const GRID_MARGIN = 4000 // how far the survey grid runs past the edges of the map
 const readmeKey = n => 'readme:' + n.id
 const ENTRY_COLUMN = 620 // about how tall a column of an open entry may run
-const MAX_COLUMNS = 3
+const MAX_COLUMNS = 4
 const ENTRY_COLUMN_GAP = 32 // as in the stylesheet
 const stubKey = n => 'spine:' + n.id // an open domain's card, left in its place among the domains
 const tetherKey = n => 'tether:' + n.id // the line from it to its frame
@@ -931,8 +931,11 @@ function widen(el) {
 function spread(el) {
   const body = el.querySelector(':scope.leaf > .doc-body:not(.doc-info)')
   if (!body) return
+  // A table is never split, so an entry that is mostly one table has nothing to run into columns.
+  const tallest = Math.max(0, ...[...body.querySelectorAll('.table-wrap')].map(t => t.offsetHeight))
+  if (tallest > body.offsetHeight * 0.6) return
   const width = el.offsetWidth
-  const columns = Math.min(MAX_COLUMNS, Math.ceil(body.offsetHeight / ENTRY_COLUMN), Math.floor(innerWidth / width))
+  const columns = Math.min(MAX_COLUMNS, Math.ceil(body.offsetHeight / ENTRY_COLUMN), Math.round(innerWidth / width))
   if (columns < 2) return
   const inner = body.clientWidth - parseFloat(getComputedStyle(body).paddingLeft) * 2
   el.style.setProperty('--columns', columns)

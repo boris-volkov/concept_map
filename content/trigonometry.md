@@ -452,14 +452,167 @@ $$\begin{aligned} \sin 2\theta &= 2\sin\theta\cos\theta \\ \cos 2\theta &= \cos^
 kind: formula
 prereqs: double-angle-formulas
 
-The identities worth knowing by heart:
-$$\begin{aligned} \sin^2\theta + \cos^2\theta &= 1 \\ 1 + \tan^2\theta &= \sec^2\theta \\ \tan\theta &= \frac{\sin\theta}{\cos\theta} \\ \sec\theta &= \frac{1}{\cos\theta} \\ \csc\theta &= \frac{1}{\sin\theta} \\ \sin(-\theta) &= -\sin\theta \\ \cos(-\theta) &= \cos\theta \\ \sin\left(\tfrac{\pi}{2} - \theta\right) &= \cos\theta \\ \cos\left(\tfrac{\pi}{2} - \theta\right) &= \sin\theta \\ \sin(a \pm b) &= \sin a \cos b \pm \cos a \sin b \\ \cos(a \pm b) &= \cos a \cos b \mp \sin a \sin b \\ \sin 2\theta &= 2 \sin\theta \cos\theta \\ \cos 2\theta &= \cos^2\theta - \sin^2\theta \\ \sin^2\theta &= \tfrac{1}{2}(1 - \cos 2\theta) \\ \cos^2\theta &= \tfrac{1}{2}(1 + \cos 2\theta) \end{aligned}$$
+Each identity holds for every angle at which both sides are defined. Where $\pm$ and $\mp$ appear, read all the upper signs together or all the lower ones.
 
-| $\theta$ | $0$ | $\frac{\pi}{6}$ | $\frac{\pi}{4}$ | $\frac{\pi}{3}$ | $\frac{\pi}{2}$ |
+: Reciprocal
+| | | |
+| ---: | :-: | :--- |
+| $\csc\theta$ | $=$ | $\dfrac{1}{\sin\theta}$ |
+| $\sec\theta$ | $=$ | $\dfrac{1}{\cos\theta}$ |
+| $\cot\theta$ | $=$ | $\dfrac{1}{\tan\theta}$ |
+
+: Quotient
+| | | |
+| ---: | :-: | :--- |
+| $\tan\theta$ | $=$ | $\dfrac{\sin\theta}{\cos\theta}$ |
+| $\cot\theta$ | $=$ | $\dfrac{\cos\theta}{\sin\theta}$ |
+
+: Pythagorean
+| | | |
+| ---: | :-: | :--- |
+| $\sin^2\theta + \cos^2\theta$ | $=$ | $1$ |
+| $1 + \tan^2\theta$ | $=$ | $\sec^2\theta$ |
+| $1 + \cot^2\theta$ | $=$ | $\csc^2\theta$ |
+
+: Even and Odd
+| | | |
+| ---: | :-: | :--- |
+| $\sin(-\theta)$ | $=$ | $-\sin\theta$ |
+| $\cos(-\theta)$ | $=$ | $\cos\theta$ |
+| $\tan(-\theta)$ | $=$ | $-\tan\theta$ |
+| $\csc(-\theta)$ | $=$ | $-\csc\theta$ |
+| $\sec(-\theta)$ | $=$ | $\sec\theta$ |
+| $\cot(-\theta)$ | $=$ | $-\cot\theta$ |
+
+: Cofunction
+| | | |
+| ---: | :-: | :--- |
+| $\sin\left(\dfrac{\pi}{2} - \theta\right)$ | $=$ | $\cos\theta$ |
+| $\cos\left(\dfrac{\pi}{2} - \theta\right)$ | $=$ | $\sin\theta$ |
+| $\tan\left(\dfrac{\pi}{2} - \theta\right)$ | $=$ | $\cot\theta$ |
+| $\cot\left(\dfrac{\pi}{2} - \theta\right)$ | $=$ | $\tan\theta$ |
+| $\sec\left(\dfrac{\pi}{2} - \theta\right)$ | $=$ | $\csc\theta$ |
+| $\csc\left(\dfrac{\pi}{2} - \theta\right)$ | $=$ | $\sec\theta$ |
+
+: Periods and Shifts
+| | | |
+| ---: | :-: | :--- |
+| $\sin(\theta + 2\pi)$ | $=$ | $\sin\theta$ |
+| $\cos(\theta + 2\pi)$ | $=$ | $\cos\theta$ |
+| $\tan(\theta + \pi)$ | $=$ | $\tan\theta$ |
+| $\sin(\theta + \pi)$ | $=$ | $-\sin\theta$ |
+| $\cos(\theta + \pi)$ | $=$ | $-\cos\theta$ |
+| $\sin(\pi - \theta)$ | $=$ | $\sin\theta$ |
+| $\cos(\pi - \theta)$ | $=$ | $-\cos\theta$ |
+| $\sin\left(\theta + \dfrac{\pi}{2}\right)$ | $=$ | $\cos\theta$ |
+| $\cos\left(\theta + \dfrac{\pi}{2}\right)$ | $=$ | $-\sin\theta$ |
+
+: Sum and Difference
+| | | |
+| ---: | :-: | :--- |
+| $\sin(\alpha \pm \beta)$ | $=$ | $\sin\alpha\cos\beta \pm \cos\alpha\sin\beta$ |
+| $\cos(\alpha \pm \beta)$ | $=$ | $\cos\alpha\cos\beta \mp \sin\alpha\sin\beta$ |
+| $\tan(\alpha \pm \beta)$ | $=$ | $\dfrac{\tan\alpha \pm \tan\beta}{1 \mp \tan\alpha\tan\beta}$ |
+
+: Double Angle
+| | | |
+| ---: | :-: | :--- |
+| $\sin 2\theta$ | $=$ | $2\sin\theta\cos\theta$ |
+| | $=$ | $\dfrac{2\tan\theta}{1 + \tan^2\theta}$ |
+| $\cos 2\theta$ | $=$ | $\cos^2\theta - \sin^2\theta$ |
+| | $=$ | $2\cos^2\theta - 1$ |
+| | $=$ | $1 - 2\sin^2\theta$ |
+| | $=$ | $\dfrac{1 - \tan^2\theta}{1 + \tan^2\theta}$ |
+| $\tan 2\theta$ | $=$ | $\dfrac{2\tan\theta}{1 - \tan^2\theta}$ |
+
+: Triple Angle
+| | | |
+| ---: | :-: | :--- |
+| $\sin 3\theta$ | $=$ | $3\sin\theta - 4\sin^3\theta$ |
+| $\cos 3\theta$ | $=$ | $4\cos^3\theta - 3\cos\theta$ |
+| $\tan 3\theta$ | $=$ | $\dfrac{3\tan\theta - \tan^3\theta}{1 - 3\tan^2\theta}$ |
+
+: Half Angle
+| | | |
+| ---: | :-: | :--- |
+| $\sin\dfrac{\theta}{2}$ | $=$ | $\pm\sqrt{\dfrac{1 - \cos\theta}{2}}$ |
+| $\cos\dfrac{\theta}{2}$ | $=$ | $\pm\sqrt{\dfrac{1 + \cos\theta}{2}}$ |
+| $\tan\dfrac{\theta}{2}$ | $=$ | $\pm\sqrt{\dfrac{1 - \cos\theta}{1 + \cos\theta}}$ |
+| | $=$ | $\dfrac{1 - \cos\theta}{\sin\theta}$ |
+| | $=$ | $\dfrac{\sin\theta}{1 + \cos\theta}$ |
+
+The sign is the sign of the function at $\dfrac{\theta}{2}$, found from its quadrant.
+
+: Power Reduction
+| | | |
+| ---: | :-: | :--- |
+| $\sin^2\theta$ | $=$ | $\dfrac{1 - \cos 2\theta}{2}$ |
+| $\cos^2\theta$ | $=$ | $\dfrac{1 + \cos 2\theta}{2}$ |
+| $\tan^2\theta$ | $=$ | $\dfrac{1 - \cos 2\theta}{1 + \cos 2\theta}$ |
+| $\sin^3\theta$ | $=$ | $\dfrac{3\sin\theta - \sin 3\theta}{4}$ |
+| $\cos^3\theta$ | $=$ | $\dfrac{3\cos\theta + \cos 3\theta}{4}$ |
+
+: Product to Sum
+| | | |
+| ---: | :-: | :--- |
+| $\sin\alpha\sin\beta$ | $=$ | $\dfrac{\cos(\alpha - \beta) - \cos(\alpha + \beta)}{2}$ |
+| $\cos\alpha\cos\beta$ | $=$ | $\dfrac{\cos(\alpha - \beta) + \cos(\alpha + \beta)}{2}$ |
+| $\sin\alpha\cos\beta$ | $=$ | $\dfrac{\sin(\alpha + \beta) + \sin(\alpha - \beta)}{2}$ |
+| $\cos\alpha\sin\beta$ | $=$ | $\dfrac{\sin(\alpha + \beta) - \sin(\alpha - \beta)}{2}$ |
+
+: Sum to Product
+| | | |
+| ---: | :-: | :--- |
+| $\sin\alpha + \sin\beta$ | $=$ | $2\sin\dfrac{\alpha + \beta}{2}\cos\dfrac{\alpha - \beta}{2}$ |
+| $\sin\alpha - \sin\beta$ | $=$ | $2\cos\dfrac{\alpha + \beta}{2}\sin\dfrac{\alpha - \beta}{2}$ |
+| $\cos\alpha + \cos\beta$ | $=$ | $2\cos\dfrac{\alpha + \beta}{2}\cos\dfrac{\alpha - \beta}{2}$ |
+| $\cos\alpha - \cos\beta$ | $=$ | $-2\sin\dfrac{\alpha + \beta}{2}\sin\dfrac{\alpha - \beta}{2}$ |
+
+: In Terms of Tangent of the Half Angle
+| | | |
+| ---: | :-: | :--- |
+| $\sin\theta$ | $=$ | $\dfrac{2\tan\frac{\theta}{2}}{1 + \tan^2\frac{\theta}{2}}$ |
+| $\cos\theta$ | $=$ | $\dfrac{1 - \tan^2\frac{\theta}{2}}{1 + \tan^2\frac{\theta}{2}}$ |
+| $\tan\theta$ | $=$ | $\dfrac{2\tan\frac{\theta}{2}}{1 - \tan^2\frac{\theta}{2}}$ |
+
+: Sine and Cosine Combined
+| | | |
+| ---: | :-: | :--- |
+| $a\sin\theta + b\cos\theta$ | $=$ | $R\sin(\theta + \varphi)$ |
+
+Here $R = \sqrt{a^2 + b^2}$, and $\varphi$ is the angle with $\cos\varphi = \dfrac{a}{R}$ and $\sin\varphi = \dfrac{b}{R}$.
+
+: Inverse Functions
+| | | |
+| ---: | :-: | :--- |
+| $\arcsin x + \arccos x$ | $=$ | $\dfrac{\pi}{2}$ |
+| $\arctan x + \arctan\dfrac{1}{x}$ | $=$ | $\dfrac{\pi}{2}$, for $x > 0$ |
+| $\arcsin(-x)$ | $=$ | $-\arcsin x$ |
+| $\arccos(-x)$ | $=$ | $\pi - \arccos x$ |
+| $\arctan(-x)$ | $=$ | $-\arctan x$ |
+| $\cos(\arcsin x)$ | $=$ | $\sqrt{1 - x^2}$ |
+| $\sin(\arccos x)$ | $=$ | $\sqrt{1 - x^2}$ |
+| $\tan(\arcsin x)$ | $=$ | $\dfrac{x}{\sqrt{1 - x^2}}$ |
+| $\sin(\arctan x)$ | $=$ | $\dfrac{x}{\sqrt{1 + x^2}}$ |
+| $\cos(\arctan x)$ | $=$ | $\dfrac{1}{\sqrt{1 + x^2}}$ |
+
+: Complex Form
+| | | |
+| ---: | :-: | :--- |
+| $e^{i\theta}$ | $=$ | $\cos\theta + i\sin\theta$ |
+| $\cos\theta$ | $=$ | $\dfrac{e^{i\theta} + e^{-i\theta}}{2}$ |
+| $\sin\theta$ | $=$ | $\dfrac{e^{i\theta} - e^{-i\theta}}{2i}$ |
+
+: Exact Values
+| $\theta$ | $0$ | $\dfrac{\pi}{6}$ | $\dfrac{\pi}{4}$ | $\dfrac{\pi}{3}$ | $\dfrac{\pi}{2}$ |
 | --- | --- | --- | --- | --- | --- |
-| $\sin\theta$ | $0$ | $\frac{1}{2}$ | $\frac{\sqrt{2}}{2}$ | $\frac{\sqrt{3}}{2}$ | $1$ |
-| $\cos\theta$ | $1$ | $\frac{\sqrt{3}}{2}$ | $\frac{\sqrt{2}}{2}$ | $\frac{1}{2}$ | $0$ |
-| $\tan\theta$ | $0$ | $\frac{\sqrt{3}}{3}$ | $1$ | $\sqrt{3}$ | undefined |
+| degrees | $0^\circ$ | $30^\circ$ | $45^\circ$ | $60^\circ$ | $90^\circ$ |
+| $\sin\theta$ | $0$ | $\dfrac{1}{2}$ | $\dfrac{\sqrt{2}}{2}$ | $\dfrac{\sqrt{3}}{2}$ | $1$ |
+| $\cos\theta$ | $1$ | $\dfrac{\sqrt{3}}{2}$ | $\dfrac{\sqrt{2}}{2}$ | $\dfrac{1}{2}$ | $0$ |
+| $\tan\theta$ | $0$ | $\dfrac{\sqrt{3}}{3}$ | $1$ | $\sqrt{3}$ | undefined |
+| $\csc\theta$ | undefined | $2$ | $\sqrt{2}$ | $\dfrac{2\sqrt{3}}{3}$ | $1$ |
+| $\sec\theta$ | $1$ | $\dfrac{2\sqrt{3}}{3}$ | $\sqrt{2}$ | $2$ | undefined |
+| $\cot\theta$ | undefined | $\sqrt{3}$ | $1$ | $\dfrac{\sqrt{3}}{3}$ | $0$ |
 
 ### Solving Trig Equations
 kind: skill
@@ -624,3 +777,180 @@ prereqs: parametric-equations
 
 Solve one equation for $t$ and substitute into the other:
 $$x = t + 1,\ y = t^2 \implies y = (x - 1)^2.$$
+
+## Hyperbolic Functions {#hyperbolic-functions}
+flow: down
+rows: kinds
+wrap: 6
+
+Functions built from $e^x$ that behave like sine and cosine, with a hyperbola in place of the circle.
+
+### Hyperbola Identity {#hyperbola-identity}
+kind: theorem
+prereqs: hyperbolic-definition
+
+For every real $t$:
+$$\cosh^2 t - \sinh^2 t = 1,$$
+so the point $(\cosh t, \sinh t)$ lies on the hyperbola $x^2 - y^2 = 1$.
+
+*Proof.* Expand both squares:
+$$\begin{aligned} \cosh^2 t - \sinh^2 t &= \frac{e^{2t} + 2 + e^{-2t}}{4} - \frac{e^{2t} - 2 + e^{-2t}}{4} \\ &= \frac{4}{4} = 1. \end{aligned}$$
+$\square$
+
+This is why they are called hyperbolic: $\cosh$ and $\sinh$ do for the hyperbola what $\cos$ and $\sin$ do for the [[unit-circle|unit circle]].
+
+### Hyperbolic Functions {#hyperbolic-definition}
+kind: definition
+prereqs: exponential-functions
+
+For every real $x$:
+$$\sinh x = \frac{e^x - e^{-x}}{2}, \qquad \cosh x = \frac{e^x + e^{-x}}{2}.$$
+The other four follow as the trigonometric functions do:
+$$\tanh x = \frac{\sinh x}{\cosh x}, \quad \coth x = \frac{\cosh x}{\sinh x}, \quad \operatorname{sech} x = \frac{1}{\cosh x}, \quad \operatorname{csch} x = \frac{1}{\sinh x}.$$
+
+Their derivatives are in the [[derivative-table|table of derivatives]].
+
+```quiz
+Q: What is $\cosh 0$?
+A: 1
+Why: $\frac{1 + 1}{2} = 1$.
+
+Q: What is $\sinh(\ln 2)$?
+A: 3/4
+Why: $\frac{2 - \frac{1}{2}}{2} = \frac{3}{4}$.
+```
+
+### Table of Hyperbolic Functions {#hyperbolic-function-table}
+kind: property
+prereqs: hyperbolic-definition
+
+The six functions, and how they look.
+
+: The Six Functions
+| Function | Graph | Domain | Range | Symmetry |
+| --- | --- | --- | --- | --- |
+| $y = \sinh x$ | {{ y = sinh(x); x: -3, 3; y: -4, 4 }} | $\mathbb{R}$ | $\mathbb{R}$ | odd |
+| $y = \cosh x$ | {{ y = cosh(x); x: -3, 3; y: -1, 5 }} | $\mathbb{R}$ | $[1, \infty)$ | even |
+| $y = \tanh x$ | {{ y = tanh(x); x: -4, 4; y: -2, 2 }} | $\mathbb{R}$ | $(-1, 1)$ | odd |
+| $y = \coth x$ | {{ y = cosh(x)/sinh(x); x: -4, 4; y: -4, 4 }} | $x \ne 0$ | $\lvert y \rvert > 1$ | odd |
+| $y = \operatorname{sech} x$ | {{ y = 1/cosh(x); x: -4, 4; y: -1, 2 }} | $\mathbb{R}$ | $(0, 1]$ | even |
+| $y = \operatorname{csch} x$ | {{ y = 1/sinh(x); x: -4, 4; y: -4, 4 }} | $x \ne 0$ | $y \ne 0$ | odd |
+
+### The Catenary {#catenary}
+kind: property
+prereqs: hyperbolic-definition
+
+A chain or cable hanging freely under its own weight takes the shape of
+$$y = a\cosh\frac{x}{a},$$
+where $a > 0$ is the ratio of the tension at the lowest point to the weight per unit of length.
+
+It looks like a parabola but is not one, since it grows exponentially. Turned upside down, it is the shape of the Gateway Arch in St. Louis, near enough.
+```graph
+y = cosh(x)
+y = 1 + x^2/2 | dashed
+x: -3, 3
+y: 0, 7
+```
+
+The dashed curve is the parabola that matches it at the bottom.
+
+### Osborn's Rule {#osborns-rule}
+kind: heuristic
+prereqs: hyperbolic-identity-table, trig-identity-table
+
+To turn a trigonometric identity into a hyperbolic one, replace each function with its hyperbolic version, and change the sign of every term holding a product of two sines. Remember that $\tan^2$ holds such a product too.
+
+So $\cos^2\theta + \sin^2\theta = 1$ gives $\cosh^2 x - \sinh^2 x = 1$, and $1 + \tan^2\theta = \sec^2\theta$ gives $1 - \tanh^2 x = \operatorname{sech}^2 x$. It works because $\cos(i x) = \cosh x$ and $\sin(i x) = i\sinh x$, but check the result, as it is a memory aid rather than a proof.
+
+### Table of Hyperbolic Identities {#hyperbolic-identity-table}
+kind: formula
+prereqs: hyperbola-identity
+
+Each identity holds for every real value at which both sides are defined. Where $\pm$ appears, read all the upper signs together or all the lower ones.
+
+: Pythagorean
+| | | |
+| ---: | :-: | :--- |
+| $\cosh^2 x - \sinh^2 x$ | $=$ | $1$ |
+| $1 - \tanh^2 x$ | $=$ | $\operatorname{sech}^2 x$ |
+| $\coth^2 x - 1$ | $=$ | $\operatorname{csch}^2 x$ |
+
+: Even and Odd
+| | | |
+| ---: | :-: | :--- |
+| $\sinh(-x)$ | $=$ | $-\sinh x$ |
+| $\cosh(-x)$ | $=$ | $\cosh x$ |
+| $\tanh(-x)$ | $=$ | $-\tanh x$ |
+
+: Exponential Form
+| | | |
+| ---: | :-: | :--- |
+| $\cosh x + \sinh x$ | $=$ | $e^x$ |
+| $\cosh x - \sinh x$ | $=$ | $e^{-x}$ |
+
+: Sum and Difference
+| | | |
+| ---: | :-: | :--- |
+| $\sinh(\alpha \pm \beta)$ | $=$ | $\sinh\alpha\cosh\beta \pm \cosh\alpha\sinh\beta$ |
+| $\cosh(\alpha \pm \beta)$ | $=$ | $\cosh\alpha\cosh\beta \pm \sinh\alpha\sinh\beta$ |
+| $\tanh(\alpha \pm \beta)$ | $=$ | $\dfrac{\tanh\alpha \pm \tanh\beta}{1 \pm \tanh\alpha\tanh\beta}$ |
+
+: Double Angle
+| | | |
+| ---: | :-: | :--- |
+| $\sinh 2x$ | $=$ | $2\sinh x\cosh x$ |
+| $\cosh 2x$ | $=$ | $\cosh^2 x + \sinh^2 x$ |
+| | $=$ | $2\cosh^2 x - 1$ |
+| | $=$ | $1 + 2\sinh^2 x$ |
+| $\tanh 2x$ | $=$ | $\dfrac{2\tanh x}{1 + \tanh^2 x}$ |
+
+: Power Reduction
+| | | |
+| ---: | :-: | :--- |
+| $\sinh^2 x$ | $=$ | $\dfrac{\cosh 2x - 1}{2}$ |
+| $\cosh^2 x$ | $=$ | $\dfrac{\cosh 2x + 1}{2}$ |
+
+: Links to the Trigonometric Functions
+| | | |
+| ---: | :-: | :--- |
+| $\cos(i x)$ | $=$ | $\cosh x$ |
+| $\sin(i x)$ | $=$ | $i\sinh x$ |
+| $\cosh(i x)$ | $=$ | $\cos x$ |
+| $\sinh(i x)$ | $=$ | $i\sin x$ |
+
+### Inverse Hyperbolic Functions {#inverse-hyperbolic}
+kind: formula
+prereqs: hyperbolic-definition, inverse-functions, natural-log
+
+Since the hyperbolic functions are built from $e^x$, their inverses are logarithms.
+
+: Logarithmic Forms
+| | | | |
+| ---: | :-: | :--- | :--- |
+| $\operatorname{arcsinh} x$ | $=$ | $\ln\left(x + \sqrt{x^2 + 1}\right)$ | all $x$ |
+| $\operatorname{arccosh} x$ | $=$ | $\ln\left(x + \sqrt{x^2 - 1}\right)$ | $x \ge 1$ |
+| $\operatorname{arctanh} x$ | $=$ | $\dfrac{1}{2}\ln\dfrac{1 + x}{1 - x}$ | $\lvert x \rvert < 1$ |
+| $\operatorname{arccoth} x$ | $=$ | $\dfrac{1}{2}\ln\dfrac{x + 1}{x - 1}$ | $\lvert x \rvert > 1$ |
+| $\operatorname{arcsech} x$ | $=$ | $\ln\dfrac{1 + \sqrt{1 - x^2}}{x}$ | $0 < x \le 1$ |
+| $\operatorname{arccsch} x$ | $=$ | $\ln\left(\dfrac{1}{x} + \dfrac{\sqrt{1 + x^2}}{\lvert x \rvert}\right)$ | $x \ne 0$ |
+
+*Proof for arcsinh.* Set $y = \sinh^{-1} x$, so that $e^y - e^{-y} = 2x$. Multiplying by $e^y$ gives a quadratic in $e^y$,
+$$(e^y)^2 - 2x\,e^y - 1 = 0,$$
+whose positive root is $e^y = x + \sqrt{x^2 + 1}$. $\square$
+
+### Proving Hyperbolic Identities {#proving-hyperbolic-identities}
+kind: skill
+prereqs: hyperbolic-definition, exponent-laws
+
+1. replace each function on the more complicated side by its exponential form;
+2. expand and simplify, using the laws of exponents;
+3. recognise the other side.
+
+**Example.** For $\sinh 2x = 2\sinh x\cosh x$:
+$$2 \cdot \frac{e^x - e^{-x}}{2} \cdot \frac{e^x + e^{-x}}{2} = \frac{e^{2x} - e^{-2x}}{2}.$$
+
+```quiz
+Q: What is $\cosh^2 5 - \sinh^2 5$?
+A: 1
+Why: It is the hyperbola identity, for any value.
+```

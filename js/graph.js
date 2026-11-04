@@ -18,10 +18,13 @@
 // `| dashed`), `arc: x, y, r, from, to`, angles in radians, and `label: x, y "text" place`.
 // Every number may be an expression, such as pi/2 or sqrt(2).
 //
+// In a table, {{ y = x^2; x: -3, 3; y: -1, 5 }} draws a small one: the same lines, with ; between them.
+//
 // The graph is drawn once, when the entry holding it opens, so it costs the map nothing.
 
 const W = 280 // the usual width; the height follows the window, so that x and y share a scale where they can
 const SAMPLES = 480
+const THUMB = 130 // a graph narrower than this is one in a table, such as those in Table of Parent Functions
 const PLACES = {
   right: [6, 4, 'start'], left: [-6, 4, 'end'], above: [0, -8, 'middle'], below: [0, 15, 'middle'],
   'above-right': [5, -6, 'start'], 'above-left': [-5, -6, 'end'],
@@ -141,7 +144,8 @@ function value(s) {
 const FUNCTIONS = {
   sqrt: Math.sqrt, cbrt: Math.cbrt, abs: Math.abs, exp: Math.exp, ln: Math.log, log: Math.log10, log2: Math.log2,
   sin: Math.sin, cos: Math.cos, tan: Math.tan, arcsin: Math.asin, arccos: Math.acos, arctan: Math.atan,
-  asin: Math.asin, acos: Math.acos, atan: Math.atan, floor: Math.floor, ceil: Math.ceil,
+  asin: Math.asin, acos: Math.acos, atan: Math.atan, sinh: Math.sinh, cosh: Math.cosh, tanh: Math.tanh,
+  floor: Math.floor, ceil: Math.ceil,
 }
 const CONSTANTS = { pi: Math.PI, e: Math.E }
 
@@ -223,6 +227,7 @@ function draw(g) {
   const X = x => r1(((x - x0) / (x1 - x0)) * w)
   const Y = y => r1(h - ((y - y0) / (y1 - y0)) * h)
   const id = `graph-clip-${++seq}`
+  const small = w < THUMB // too small for the names of the axes
   const out = [`<rect class="plot" width="${w}" height="${h}"/>`]
 
   // Grid lines, then the axes with an arrowhead each and their names.
@@ -241,12 +246,12 @@ function draw(g) {
   if (y0 < 0 && y1 > 0) {
     const y = Y(0)
     out.push(`<path class="axis" d="M0,${y}H${w}"/>`, `<path class="axis-head" d="M${w},${y}l-7,-3.5v7z"/>`,
-      `<text class="axis-name" x="${w - 4}" y="${r1(y + 14)}" text-anchor="end">x</text>`)
+      small ? '' : `<text class="axis-name" x="${w - 4}" y="${r1(y + 14)}" text-anchor="end">x</text>`)
   }
   if (x0 < 0 && x1 > 0) {
     const x = X(0)
     out.push(`<path class="axis" d="M${x},${h}V0"/>`, `<path class="axis-head" d="M${x},0l-3.5,7h7z"/>`,
-      `<text class="axis-name" x="${r1(x + 8)}" y="11">y</text>`)
+      small ? '' : `<text class="axis-name" x="${r1(x + 8)}" y="11">y</text>`)
   }
 
   const shapes = []

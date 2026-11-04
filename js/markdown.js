@@ -131,6 +131,10 @@ function blocks(lines, opts) {
       const r = list(lines, i, opts)
       html += r.html
       i = r.next
+    } else if (line.startsWith(': ') && i + 1 < lines.length && isTableStart(lines, i + 1)) {
+      const r = table(lines, i + 1, opts, line.slice(2).trim())
+      html += r.html
+      i = r.next
     } else if (isTableStart(lines, i)) {
       const r = table(lines, i, opts)
       html += r.html
@@ -201,19 +205,28 @@ function cells(line) {
   return s.split(/(?<!\\)\|/).map(c => c.trim().replace(/\\\|/g, '|'))
 }
 
-function table(lines, i, opts) {
+// A line ": Title" right above a table is its caption. A table with an empty head is a list of
+// identities: it shows no head, and sets its columns close together.
+function table(lines, i, opts, title = null) {
   const head = cells(lines[i])
   const align = cells(lines[i + 1]).map(c =>
     c.startsWith(':') && c.endsWith(':') ? 'center' : c.endsWith(':') ? 'right' : c.startsWith(':') ? 'left' : '')
   const rows = []
   for (i += 2; i < lines.length && lines[i].trim() && lines[i].includes('|'); i++) rows.push(cells(lines[i]))
   const cell = (tag, c, j) => `<${tag}${align[j] ? ` style="text-align:${align[j]}"` : ''}>${inline(c, opts)}</${tag}>`
-  const html = `<div class="table-wrap"><table><thead><tr>${head.map((c, j) => cell('th', c, j)).join('')}</tr></thead>` +
+  const bare = head.every(c => !c)
+  const html = `<div class="table-wrap"><table${title || bare ? ` class="${[title && 'ruled', bare && 'identities'].filter(Boolean).join(' ')}"` : ''}>` +
+    (title ? `<caption>${inline(title, opts)}</caption>` : '') +
+    (bare ? '' : `<thead><tr>${head.map((c, j) => cell('th', c, j)).join('')}</tr></thead>`) +
     `<tbody>${rows.map(r => `<tr>${r.map((c, j) => cell('td', c, j)).join('')}</tr>`).join('')}</tbody></table></div>`
   return { html, next: i }
 }
 
 // ---- inline ----
+
+// A small graph in a table cell: {{ y = x^2; x: -3, 3; y: -1, 5 }}. See graph.js.
+export const THUMBNAIL = /\{\{\s*(y\s*=[^}]*)\}\}/g
+export const thumbnail = src => `size: 96, 72\n${src.replace(/;/g, '\n')}`
 
 const ALLOWED_TAG = /<\/?(?:a|abbr|b|br|code|del|div|em|figcaption|figure|i|iframe|img|kbd|mark|small|span|strong|sub|sup|u|video|audio|source)\b[^<>]*>/gi
 
@@ -221,6 +234,7 @@ function inline(s, opts) {
   const held = []
   const hold = html => { held.push(html); return HELD + (held.length - 1) + HELD }
   s = s.replace(/(`+)([\s\S]*?[^`])\1(?!`)/g, (_, _ticks, code) => hold(`<code>${esc(code.trim())}</code>`))
+  s = s.replace(THUMBNAIL, (_, src) => hold(graph(thumbnail(src))))
   s = s.replace(/\\([\\`*_{}[\]()#+\-.!$|~<>])/g, (_, ch) => hold(esc(ch)))
   s = s.replace(ALLOWED_TAG, tag => hold(tag))
   s = esc(s)

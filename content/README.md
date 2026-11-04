@@ -106,6 +106,17 @@ $$\begin{aligned} 3(x - 2) &= x + 4 \\ 3x - 6 &= x + 4 \\ x &= 5 \end{aligned}$$
 
 Anything that is a list is written as one: `1.` for steps and numbered axioms, `-` for the rest.
 
+**Reference tables**: a line starting `: ` right above a table is its title, and makes it a ruled reference table, as in *Table of Derivatives*. Leave the head row empty for a list of identities, with no head and its columns set close, and line the equals signs up in a column of their own. Keep each table short, since a table is never split between columns: several small titled tables read better than one long one. Inside a table, write absolute values with `\lvert` and `\rvert`, as a `|` starts a new column.
+
+```markdown
+: Pythagorean
+| | | |
+| ---: | :-: | :--- |
+| $\sin^2\theta + \cos^2\theta$ | $=$ | $1$ |
+```
+
+A table cell can hold a small graph, written with semicolons for line breaks: `{{ y = x^2; x: -3, 3; y: -1, 5 }}`. It takes the same lines as a graph block, as in *Table of Parent Functions*.
+
 **Methods** with a standard procedure state it as numbered steps, as the first thing in the entry, so that it is set in the box. A warning goes straight after, as a quote starting with `**!**`, and an example after that:
 
 ```markdown

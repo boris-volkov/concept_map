@@ -916,19 +916,41 @@ The features read from a graph are:
 kind: property
 prereqs: function-graphs
 
-Each family of functions is a [[graph-transformations|transformation]] of its simplest member:
+Each family of functions is a [[graph-transformations|transformation]] of its simplest member.
 
-| Family | Parent | Domain | Range |
-| --- | --- | --- | --- |
-| linear | $y = x$ | $\mathbb{R}$ | $\mathbb{R}$ |
-| quadratic | $y = x^2$ | $\mathbb{R}$ | $[0, \infty)$ |
-| cubic | $y = x^3$ | $\mathbb{R}$ | $\mathbb{R}$ |
-| absolute value | $y = \lvert x \rvert$ | $\mathbb{R}$ | $[0, \infty)$ |
-| square root | $y = \sqrt{x}$ | $[0, \infty)$ | $[0, \infty)$ |
-| cube root | $y = \sqrt[3]{x}$ | $\mathbb{R}$ | $\mathbb{R}$ |
-| reciprocal | $y = \frac{1}{x}$ | $x \ne 0$ | $y \ne 0$ |
-| exponential | $y = 2^x$ | $\mathbb{R}$ | $(0, \infty)$ |
-| logarithmic | $y = \log_2 x$ | $(0, \infty)$ | $\mathbb{R}$ |
+: Polynomials
+| Function | Graph | Domain | Range | Notes |
+| --- | --- | --- | --- | --- |
+| constant<br>$y = c$ | {{ y = 1; x: -3, 3; y: -2, 3 }} | $\mathbb{R}$ | $\{c\}$ | even |
+| linear<br>$y = x$ | {{ y = x; x: -3, 3; y: -3, 3 }} | $\mathbb{R}$ | $\mathbb{R}$ | odd |
+| quadratic<br>$y = x^2$ | {{ y = x^2; x: -3, 3; y: -1, 5 }} | $\mathbb{R}$ | $[0, \infty)$ | even |
+| cubic<br>$y = x^3$ | {{ y = x^3; x: -2.5, 2.5; y: -4, 4 }} | $\mathbb{R}$ | $\mathbb{R}$ | odd |
+
+: Roots and Absolute Value
+| Function | Graph | Domain | Range | Notes |
+| --- | --- | --- | --- | --- |
+| absolute value<br>$y = \lvert x \rvert$ | {{ y = abs(x); x: -3, 3; y: -1, 3 }} | $\mathbb{R}$ | $[0, \infty)$ | even; corner at $0$ |
+| square root<br>$y = \sqrt{x}$ | {{ y = sqrt(x); x: -1, 5; y: -1, 3 }} | $[0, \infty)$ | $[0, \infty)$ | starts at $0$ |
+| cube root<br>$y = \sqrt[3]{x}$ | {{ y = cbrt(x); x: -5, 5; y: -2.5, 2.5 }} | $\mathbb{R}$ | $\mathbb{R}$ | odd |
+
+: Rational
+| Function | Graph | Domain | Range | Notes |
+| --- | --- | --- | --- | --- |
+| reciprocal<br>$y = \dfrac{1}{x}$ | {{ y = 1/x; x: -4, 4; y: -3, 3 }} | $x \ne 0$ | $y \ne 0$ | odd; asymptotes: both axes |
+| reciprocal square<br>$y = \dfrac{1}{x^2}$ | {{ y = 1/x^2; x: -4, 4; y: -1, 5 }} | $x \ne 0$ | $(0, \infty)$ | even; asymptotes: both axes |
+
+: Exponential and Logarithmic
+| Function | Graph | Domain | Range | Notes |
+| --- | --- | --- | --- | --- |
+| exponential<br>$y = e^x$ | {{ y = exp(x); x: -3, 3; y: -1, 5 }} | $\mathbb{R}$ | $(0, \infty)$ | asymptote $y = 0$ |
+| logarithm<br>$y = \ln x$ | {{ y = ln(x); x: -1, 5; y: -3, 3 }} | $(0, \infty)$ | $\mathbb{R}$ | asymptote $x = 0$ |
+
+: Trigonometric
+| Function | Graph | Domain | Range | Notes |
+| --- | --- | --- | --- | --- |
+| sine<br>$y = \sin x$ | {{ y = sin(x); x: -7, 7; y: -2, 2; grid: none }} | $\mathbb{R}$ | $[-1, 1]$ | odd; period $2\pi$ |
+| cosine<br>$y = \cos x$ | {{ y = cos(x); x: -7, 7; y: -2, 2; grid: none }} | $\mathbb{R}$ | $[-1, 1]$ | even; period $2\pi$ |
+| tangent<br>$y = \tan x$ | {{ y = tan(x); x: -7, 7; y: -4, 4; grid: none }} | $x \ne \dfrac{\pi}{2} + k\pi$ | $\mathbb{R}$ | odd; period $\pi$ |
 
 #### General Transformation Form {#transformation-form}
 kind: form
@@ -1341,16 +1363,50 @@ prereqs: polynomial-functions
 
 A polynomial of degree $n$ has at most $n$ real zeros and at most $n - 1$ turning points.
 
-#### Leading Term & End Behaviour {#end-behavior-table}
+#### Table of End Behaviour {#end-behavior-table}
 kind: property
 prereqs: polynomial-functions
 
-The leading term $ax^n$ sets what the graph does at both ends:
+The leading term $ax^n$ sets what the graph of a polynomial does at both ends.
 
-| Degree | $a > 0$ | $a < 0$ |
-| --- | --- | --- |
-| even | up on both sides | down on both sides |
-| odd | down on the left, up on the right | up on the left, down on the right |
+: By Degree and Leading Coefficient
+| Degree | $a$ | Graph | As $x \to -\infty$ | As $x \to \infty$ | Example |
+| --- | --- | --- | --- | --- | --- |
+| even | $a > 0$ | {{ y = x^2 - 1; x: -2.5, 2.5; y: -2, 4 }} | $y \to \infty$ | $y \to \infty$ | $x^2 - 1$ |
+| even | $a < 0$ | {{ y = 1 - x^2; x: -2.5, 2.5; y: -4, 2 }} | $y \to -\infty$ | $y \to -\infty$ | $1 - x^2$ |
+| odd | $a > 0$ | {{ y = x^3 - x; x: -2.5, 2.5; y: -3, 3 }} | $y \to -\infty$ | $y \to \infty$ | $x^3 - x$ |
+| odd | $a < 0$ | {{ y = x - x^3; x: -2.5, 2.5; y: -3, 3 }} | $y \to \infty$ | $y \to -\infty$ | $x - x^3$ |
+
+An even degree sends both ends the same way, and an odd degree sends them opposite ways. The sign of $a$ sets the right end: up if $a > 0$, down if $a < 0$.
+
+: By Degree, with $a > 0$
+| Degree | Name | Graph | Real zeros | Turning points |
+| --- | --- | --- | --- | --- |
+| $0$ | constant | {{ y = 1; x: -2.5, 2.5; y: -2, 3 }} | none | $0$ |
+| $1$ | linear | {{ y = x; x: -2.5, 2.5; y: -2.5, 2.5 }} | $1$ | $0$ |
+| $2$ | quadratic | {{ y = x^2 - 1; x: -2.5, 2.5; y: -2, 4 }} | $0$ to $2$ | $1$ |
+| $3$ | cubic | {{ y = x^3 - 2x; x: -2.5, 2.5; y: -3, 3 }} | $1$ to $3$ | $0$ or $2$ |
+| $4$ | quartic | {{ y = x^4 - 3x^2 + 1; x: -2.5, 2.5; y: -2, 3 }} | $0$ to $4$ | $1$ or $3$ |
+| $5$ | quintic | {{ y = x^5 - 4x^3 + 3x; x: -2.5, 2.5; y: -3, 3 }} | $1$ to $5$ | $0$, $2$ or $4$ |
+| $n$ | | | at most $n$ | at most $n - 1$ |
+
+A polynomial of odd degree always has a real zero, because its ends lie on opposite sides of the $x$-axis.
+
+The picture at each zero is in [[zeros-and-multiplicity]].
+
+```quiz
+Q: As $x \to -\infty$, where does $y = -2x^5 + x$ go?
+- $y \to -\infty$
++ $y \to \infty$
+- $y \to 0$
+Why: The degree is odd and $a < 0$, so the left end goes up.
+
+Q: As $x \to \infty$, where does $y = -x^4 + 100x^3$ go?
++ $y \to -\infty$
+- $y \to \infty$
+- $y \to 100$
+Why: The leading term decides: even degree with $a < 0$.
+```
 
 #### Special Products
 kind: formula
