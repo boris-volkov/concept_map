@@ -29,6 +29,8 @@ const GRID_MARGIN = 4000 // how far the survey grid runs past the edges of the m
 const readmeKey = n => 'readme:' + n.id
 const ENTRY_COLUMN = 620 // about how tall a column of an open entry may run
 const MAX_COLUMNS = 4
+const README_VIEW = 440 // how much of a README a view of it takes in, from its left edge
+const PHONE = matchMedia('(max-width: 760px)') // as in the stylesheet: a README stays as wide as the phone
 const ENTRY_COLUMN_GAP = 32 // as in the stylesheet
 const stubKey = n => 'spine:' + n.id // an open domain's card, left in its place among the domains
 const tetherKey = n => 'tether:' + n.id // the line from it to its frame
@@ -274,6 +276,25 @@ export class AtlasMap {
     return this.isFileOpen(n) ? { ...this.fileSizes.get(n.id), file: true } : this.sizes.get(n.id)
   }
 
+  // A README spans its frame, never narrower than it first measured. It is measured again only
+  // when the frame's width has changed. Something opening in the frame can widen it, and so shorten
+  // the README by a line, but what stands under the README must not move up for that: it keeps
+  // the room it had, until what the README shows changes (see resized).
+  fitReadme(n, width) {
+    const key = readmeKey(n)
+    const size = this.fileSizes.get(key)
+    if (PHONE.matches) return size
+    const least = size.least ?? size.w
+    const w = Math.max(least, Math.floor(width))
+    if (w === size.w) return { w, h: size.room ?? size.h }
+    const el = this.els.get(key)
+    el.style.width = `${w}px`
+    const h = el.offsetHeight
+    const room = Math.max(h, size.room ?? 0)
+    this.fileSizes.set(key, { w, h, least, room })
+    return { w, h: room }
+  }
+
   // An open file grew or shrank: make room for it. The file in use (the one holding the focus, or
   // else the first one in view) stays still on the screen while the map moves around it, so the
   // text being read never jumps.
@@ -287,7 +308,7 @@ export class AtlasMap {
       const w = el.offsetWidth
       const h = el.offsetHeight
       if (w === was.w && h === was.h) continue
-      this.fileSizes.set(key, { w, h })
+      this.fileSizes.set(key, { ...was, w, h, room: h })
       changed.push(key)
     }
     if (!changed.length) return
@@ -353,7 +374,7 @@ export class AtlasMap {
 
   lay() {
     return computeLayout(this.atlas.root, n => this.isOpen(n), n => this.sizeOf(n), n => this.heads.get(n.id),
-      n => (this.hasReadme(n) ? this.fileSizes.get(readmeKey(n)) : null))
+      (n, width) => (this.hasReadme(n) ? this.fitReadme(n, width) : null))
   }
 
   laidOut() {
@@ -783,7 +804,7 @@ export class AtlasMap {
   readmeView(n) {
     const frame = this.boxes.get(n.id)
     const note = this.boxes.get(readmeKey(n))
-    return { x: frame.x, y: frame.y, w: note.w + FRAME_PAD.left + FRAME_PAD.right, h: FRAME_PAD.top + note.h }
+    return { x: frame.x, y: frame.y, w: Math.min(note.w, README_VIEW) + FRAME_PAD.left + FRAME_PAD.right, h: FRAME_PAD.top + note.h }
   }
 
   closeReadme(n) {

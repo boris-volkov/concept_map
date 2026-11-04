@@ -838,6 +838,8 @@ math { font-family: var(--math); font-size: 1.04em; }
 .readme .doc-head .shut { grid-column: 3; }
 .readme .topic-progress { grid-column: 2; grid-row: 1; font-size: 13px; }
 .readme .doc-foot { justify-content: flex-end; }
+/* A README spans its frame (see fitReadme in map.js), which can be wider than a line of text can be read across. */
+.readme .prose { max-width: 860px; }
 
 /* Selection: the selected card or file, what it builds on, what builds on it; everything else fades.
    (After the open files, so these rings win over their shadows.) */

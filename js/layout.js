@@ -50,26 +50,32 @@ export const flowOf = node => (node.balanced ? 'down' : plannedFlow(node))
 /**
  * root: the atlas root; isOpen(node); cardSize(node) → {w, h}, with `file: true` for an open
  * file (a domain's is the size of its card, open or not); headerWidth(node) → minimum frame
- * width; readmeSize(node) → {w, h} of an open topic's README, or null when it has none showing.
+ * width; readmeSize(node, width) → {w, h} of an open topic's README at the width its frame has to
+ * give, or null when it has none showing.
  * Returns absolute boxes {x, y, w, h} by node id (an open domain's is its frame), each domain
  * card's place by id (`spine`), the route of each arrow between domains by key (see
  * layoutDomains), and the overall size.
  */
 export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = () => null) {
   const rel = new Map()
+  const notes = new Map() // open topic → the size of its README
   const open = n => n.children.length > 0 && isOpen(n)
   // An open topic's contents start under its head, and under its README when that is open.
   const top = n => {
-    const r = readmeSize(n)
+    const r = notes.get(n)
     return FRAME_PAD.top + (r ? r.h + README_GAP : 0)
   }
 
   const measure = n => {
     if (!open(n)) return cardSize(n)
     const inner = arrange(n)
-    const r = readmeSize(n)
-    const w = Math.max(inner.w + FRAME_PAD.left + FRAME_PAD.right, headerWidth(n), r ? r.w + FRAME_PAD.left + FRAME_PAD.right : 0)
-    return { w, h: inner.h + top(n) + FRAME_PAD.bottom, frame: true }
+    const pad = FRAME_PAD.left + FRAME_PAD.right
+    const wide = Math.max(inner.w + pad, headerWidth(n))
+    // A README spans its frame, so it is sized after what the frame holds. It only widens a frame
+    // too narrow to read it in.
+    const r = readmeSize(n, wide - pad)
+    if (r) notes.set(n, r)
+    return { w: Math.max(wide, r ? r.w + pad : 0), h: inner.h + top(n) + FRAME_PAD.bottom, frame: true }
   }
 
   const arrange = container => {
