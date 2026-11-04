@@ -34,6 +34,10 @@ const OPERATORS = {
 }
 const OPENERS = { langle: '⟨', lfloor: '⌊', lceil: '⌈', lbrace: '{', '{': '{', lvert: '|', lVert: '‖' }
 const CLOSERS = { rangle: '⟩', rfloor: '⌋', rceil: '⌉', rbrace: '}', '}': '}', rvert: '|', rVert: '‖' }
+// A bar's glyph is also an operator's, and the browser spaces it as one wherever it isn't first or
+// last in its row, so it is told to keep close, as a plain | is below.
+const isBar = d => d === '|' || d === '‖'
+const delimiter = d => `<mo stretchy="false"${isBar(d) ? ' lspace="0" rspace="0"' : ''}>${esc(d)}</mo>`
 
 // Commands drawn as upright symbols (<mi>).
 const IDENTIFIERS = {
@@ -109,7 +113,8 @@ function join(atoms) {
     // A sign where a value starts is a sign, not a subtraction: "c = −2", not "c = − 2"; "|−5|".
     out += a.sign && before && starts ? a.ml.replace('<mo>', '<mo form="prefix">') : a.ml
     if (!next) return
-    if (a.kind === 'fn' && next.kind !== 'open' && next.kind !== 'op' && next.kind !== 'space') out += THIN
+    // Only a bracket sits tight against a function: "ln(x)", but "ln |x|", however the bar is written.
+    if (a.kind === 'fn' && (next.kind !== 'open' || next.opensBar) && next.kind !== 'op' && next.kind !== 'space') out += THIN
     else if (a.kind === 'ord' && next.kind === 'fn') out += THIN
   })
   return out
@@ -243,8 +248,8 @@ class TexParser {
       const upright = /^[A-Z]/.test(name) ? ' mathvariant="normal"' : ''
       return { ml: `<mi${upright}>${GREEK[name]}</mi>`, kind: 'ord' }
     }
-    if (name in OPENERS) return { ml: `<mo stretchy="false">${esc(OPENERS[name])}</mo>`, kind: 'open' }
-    if (name in CLOSERS) return { ml: `<mo stretchy="false">${esc(CLOSERS[name])}</mo>`, kind: 'close' }
+    if (name in OPENERS) return { ml: delimiter(OPENERS[name]), kind: 'open', opensBar: isBar(OPENERS[name]) }
+    if (name in CLOSERS) return { ml: delimiter(CLOSERS[name]), kind: 'close' }
     if (name in OPERATORS) return { ml: `<mo>${esc(OPERATORS[name])}</mo>`, kind: 'op', sign: name === 'pm' || name === 'mp' }
     if (name in IDENTIFIERS) return { ml: `<mi mathvariant="normal">${esc(IDENTIFIERS[name])}</mi>`, kind: 'ord' }
     if (name in SPACES) return space(SPACES[name])
@@ -270,7 +275,10 @@ class TexParser {
 
     switch (name) {
       case 'frac': case 'dfrac': case 'tfrac': case 'cfrac': {
-        const f = `<mfrac>${this.parseArg()}${this.parseArg()}</mfrac>`
+        const top = this.parseArg()
+        const bottom = this.parseArg()
+        // A root in the denominator needs room under the bar (see .tex-over-root).
+        const f = `<mfrac${bottom.includes('tex-radical') ? ' class="tex-over-root"' : ''}>${top}${bottom}</mfrac>`
         if (name === 'dfrac' || name === 'cfrac') return { ml: `<mstyle displaystyle="true" scriptlevel="0">${f}</mstyle>`, kind: 'ord' }
         if (name === 'tfrac') return { ml: `<mstyle displaystyle="false">${f}</mstyle>`, kind: 'ord' }
         return { ml: f, kind: 'ord' }
@@ -430,7 +438,7 @@ class TexParser {
     let close = ''
     if (this.lookingAtCommand('right')) { this.pos += 6; close = this.readDelimiter() }
     const fence = (d, form) => (d ? `<mo fence="true" stretchy="true" symmetric="true" form="${form}">${esc(d)}</mo>` : '')
-    return { ml: `<mrow>${fence(open, 'prefix')}${inner}${fence(close, 'postfix')}</mrow>`, kind: 'open' }
+    return { ml: `<mrow>${fence(open, 'prefix')}${inner}${fence(close, 'postfix')}</mrow>`, kind: 'open', opensBar: isBar(open) }
   }
 
   parseEnvironment() {

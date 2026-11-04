@@ -1236,6 +1236,9 @@ math .tex-radical {
   background-size: calc(100% - 0.55em) 0.052em, 0.58em 100%, 0.22em 0.4em;
   background-position: 100% 0, 0 0, 0 100%;
 }
+/* A root's bar would lie almost on the bar of a fraction it stands under, and read as a double line.
+   A margin, as a root's own padding is what draws it. */
+math .tex-over-root > :last-child { margin-top: 0.16em; }
 math .tex-overline { border-top: 0.06em solid currentColor; padding-top: 0.08em; }
 math .tex-underline { border-bottom: 0.06em solid currentColor; padding-bottom: 0.06em; }
 math .tex-boxed { border: 1px solid currentColor; padding: 0.15em 0.3em; }
