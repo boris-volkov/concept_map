@@ -303,6 +303,90 @@ A: 336
 Why: $8 \cdot 7 \cdot 6$; here the order matters.
 ```
 
+### Counting Poker Hands {#poker-hands}
+kind: skill
+prereqs: counting-probability
+
+To count the 5-card hands of one kind, from a deck of 13 ranks in 4 suits:
+1. choose the ranks, together when they play the same part;
+2. choose the suits for each rank;
+3. multiply the stages, and take away any hands that belong to a better kind;
+4. divide by the $\binom{52}{5} = 2{,}598{,}960$ hands in all, to find the probability.
+
+> **!** Ranks that play the same part are chosen together. Two pair takes $\binom{13}{2}$ for the ranks of its pairs, not $13 \cdot 12$, since kings and fours is the same hand as fours and kings. A full house takes $13 \cdot 12$, since three kings and two fours differs from three fours and two kings.
+
+**Example.** A full house is three cards of one rank and two of another. Choose the rank of the three and 3 of its 4 suits, then the rank of the pair and 2 of its 4 suits:
+$$\binom{13}{1}\binom{4}{3}\binom{12}{1}\binom{4}{2} = 13 \cdot 4 \cdot 12 \cdot 6 = 3{,}744.$$
+Its probability is
+$$\frac{3{,}744}{2{,}598{,}960} \approx 0.1441\%,$$
+or about 1 hand in 694.
+
+A straight is five ranks in a row, with the ace high or low, so its high card is one of the 10 from 5 to ace. Each hand counts only as the best kind it qualifies for.
+
+: What to Choose
+| Hand | Choose |
+| --- | --- |
+| Royal flush | a suit |
+| Straight flush | a high card from 5 to king, and a suit |
+| Four of a kind | a rank and its 4 suits; a rank and a suit for the last card |
+| Full house | a rank and 3 suits; a rank and 2 suits |
+| Flush | 5 ranks and a suit, less the 40 straight and royal flushes |
+| Straight | a high card from 5 to ace and a suit for each card, less the same 40 |
+| Three of a kind | a rank and 3 suits; 2 other ranks, and a suit for each |
+| Two pair | 2 ranks, and 2 suits for each; another rank and a suit |
+| One pair | a rank and 2 suits; 3 other ranks, and a suit for each |
+| High card | 5 ranks that are not a straight; suits that are not all the same |
+
+: Counting Each Hand
+| Hand | Count | Ways |
+| --- | --- | --- |
+| Royal flush | $\binom{4}{1}$ | $4$ |
+| Straight flush | $9\binom{4}{1}$ | $9 \cdot 4 = 36$ |
+| Four of a kind | $\binom{13}{1}\binom{4}{4}\binom{12}{1}\binom{4}{1}$ | $13 \cdot 1 \cdot 12 \cdot 4 = 624$ |
+| Full house | $\binom{13}{1}\binom{4}{3}\binom{12}{1}\binom{4}{2}$ | $13 \cdot 4 \cdot 12 \cdot 6 = 3{,}744$ |
+| Flush | $\binom{13}{5}\binom{4}{1} - 40$ | $1{,}287 \cdot 4 - 40 = 5{,}108$ |
+| Straight | $10 \cdot 4^5 - 40$ | $10{,}240 - 40 = 10{,}200$ |
+| Three of a kind | $\binom{13}{1}\binom{4}{3}\binom{12}{2}\binom{4}{1}^2$ | $13 \cdot 4 \cdot 66 \cdot 16 = 54{,}912$ |
+| Two pair | $\binom{13}{2}\binom{4}{2}^2\binom{11}{1}\binom{4}{1}$ | $78 \cdot 36 \cdot 11 \cdot 4 = 123{,}552$ |
+| One pair | $\binom{13}{1}\binom{4}{2}\binom{12}{3}\binom{4}{1}^3$ | $13 \cdot 6 \cdot 220 \cdot 64 = 1{,}098{,}240$ |
+| High card | $\left(\binom{13}{5} - 10\right)\left(4^5 - 4\right)$ | $1{,}277 \cdot 1{,}020 = 1{,}302{,}540$ |
+
+: Probability of Each Hand
+| Hand | Example | Ways | Probability | About 1 in |
+| --- | --- | ---: | ---: | ---: |
+| Royal flush | A♠ K♠ Q♠ J♠ 10♠ | 4 | 0.0001539% | 649,740 |
+| Straight flush | 9♥ 8♥ 7♥ 6♥ 5♥ | 36 | 0.001385% | 72,193 |
+| Four of a kind | 7♣ 7♦ 7♥ 7♠ K♦ | 624 | 0.02401% | 4,165 |
+| Full house | Q♠ Q♥ Q♦ 4♣ 4♠ | 3,744 | 0.1441% | 694 |
+| Flush | K♦ 10♦ 8♦ 5♦ 2♦ | 5,108 | 0.1965% | 509 |
+| Straight | 9♣ 8♦ 7♠ 6♥ 5♣ | 10,200 | 0.3925% | 255 |
+| Three of a kind | J♣ J♦ J♠ 9♥ 3♣ | 54,912 | 2.113% | 47 |
+| Two pair | K♠ K♦ 4♥ 4♣ 9♠ | 123,552 | 4.754% | 21 |
+| One pair | 10♥ 10♠ A♦ 6♣ 3♥ | 1,098,240 | 42.26% | 2.4 |
+| High card | A♣ J♦ 8♠ 6♥ 2♣ | 1,302,540 | 50.12% | 2.0 |
+| All hands | | 2,598,960 | 100% | 1 |
+
+```quiz
+Q: How many 5-card hands hold all four aces?
+A: 48
+Why: The four aces are fixed, and the fifth card is any of the other 48.
+
+Q: How many 5-card hands are all hearts, straight flushes included?
+A: 1287
+Why: $\binom{13}{5} = 1{,}287$.
+
+Q: Why does two pair use $\binom{13}{2}$ for its two ranks, where a full house uses $13 \cdot 12$?
++ Its two pairs play the same part, so their order doesn't count
+- It has fewer ranks to choose from
+- It holds more cards of one rank
+Why: Kings and fours is the same hand as fours and kings, but three kings and two fours differs from three fours and two kings.
+
+Q: Which is the more likely hand?
+- a flush
++ a straight
+Why: There are 10,200 straights and 5,108 flushes.
+```
+
 ## Axioms {#probability-axioms}
 
 The axioms of probability, from which every rule of chance is derived.
@@ -422,7 +506,7 @@ prereqs: combinations, probability-basics
 
 Counting favourable and total outcomes with combinations. The chance of a particular 5-card hand is
 $$\frac{1}{\binom{52}{5}},$$
-about 1 in 2.6 million.
+about 1 in 2.6 million. Every kind of hand is worked through in [[poker-hands]].
 
 ### Tree Diagrams {#tree-diagrams}
 kind: skill
