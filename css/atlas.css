@@ -824,6 +824,9 @@ math { font-family: var(--math); font-size: 1.04em; }
 /* Selection: the selected card or file, what it builds on, what builds on it; everything else fades.
    (After the open files, so these rings win over their shadows.) */
 .node.is-selected { z-index: 35; box-shadow: 0 0 0 2px var(--ink), var(--lift); }
+/* A card's thin edge runs across the ends of its coloured bar, so the outline lies over that edge
+   rather than outside it. It reaches as far out as the ring above, 2px past the card. */
+.node.leaf.is-selected { box-shadow: var(--lift); outline: 3px solid var(--ink); outline-offset: -1px; }
 .node.is-pre { box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--pre) 55%, transparent), var(--shadow); }
 .node.is-pre-direct { box-shadow: 0 0 0 2.5px var(--pre), var(--lift); }
 .node.is-post { box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--post) 50%, transparent), var(--shadow); }
