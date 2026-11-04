@@ -819,7 +819,12 @@ has domain $[0, \infty)$, because negatives have no real square root.
 kind: definition
 prereqs: function-notation, coordinate-plane
 
-The picture of a function: every point $(x, f(x))$. A curve is a function's graph exactly when no vertical line crosses it twice.
+The graph of a function $f$ with domain $A$ is the set of points
+$$\{(x, f(x)) : x \in A\}.$$
+
+The graph is not a picture of the function. It is the [[functions-as-sets|set of pairs]] that make up the function, so the graph *is* the function, just as a circle is not a picture of a circle but is itself the set of points at one distance from a centre.
+
+A curve is a function's graph exactly when no vertical line crosses it twice.
 
 #### Composition of Functions {#composition}
 kind: definition
