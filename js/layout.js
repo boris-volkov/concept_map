@@ -6,10 +6,10 @@
 // An open domain keeps its card in place and floats its frame out to the right of all
 // the cards, level with its row, so the arrows between domains never cross a frame.
 //
-// Inside a domain, each open topic lays out its own children, inside out, as a
-// layered (or "Sugiyama") drawing: prerequisites first, what builds on them after.
-// The flow alternates with depth: each domain's topics run down, each topic's
-// concepts run across, and so on.
+// Inside a domain, each open topic lays out its own children, inside out. Topics
+// holding topics fill columns across the page, in the order written (see placeColumns).
+// Topics holding concepts make a layered (or "Sugiyama") drawing, prerequisites first
+// and what builds on them after, running across.
 //
 // The order of a topic's children, and how they wrap, depend only on the arrows among
 // them and how many there are, not on what is open. Boxes line up at the start of their
@@ -29,15 +29,17 @@ const GAP = {
 }
 const ASPECT = 1.5 // a crowded layer wraps until its topic is about this wide for its height
 const NOMINAL = { w: 190, h: 64 } // what a box counts as when wrapping, open or not
+const COLUMN_ASPECT = 1.6 // the more of this, the more columns a topic of topics gets
+const COLUMN_GAP = 32 // between the columns of a topic of topics, and the boxes in them
 // The rows of a topic marked "rows: kinds": what is proved, what is true of the thing, how it is written, what to do with it.
 const KIND_ROW = { axiom: 0, theorem: 0, rule: 0, formula: 2, form: 2, skill: 3, technique: 3 }
 const kindRow = n => KIND_ROW[n.kind] ?? 1
 
-/** Which way a topic's contents flow, by its depth: domains (0) down, topics (1) across… (the domains themselves: see layoutDomains). */
-export const direction = depth => (depth % 2 === 0 ? 'down' : 'right')
+/** Whether a topic lays its contents out in columns: one holding topics, unless it asks for something else. */
+const inColumns = node => !node.flow && !node.wrap && node.children.some(k => k.children.length)
 
-/** The way a topic's contents flow: its own "flow:" if it has one, otherwise by depth. */
-export const flowOf = node => node.flow ?? direction(node.depth)
+/** The way a topic's contents flow: its own "flow:" if it has one; concepts run across, topics down. */
+export const flowOf = node => node.flow ?? (node.children.some(k => k.children.length) ? 'down' : 'right')
 
 /**
  * root: the atlas root; isOpen(node); cardSize(node) → {w, h}, with `file: true` for an open
@@ -71,7 +73,9 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
     // Rows by kind leave the arrows out of it: the cards keep the order they are written in.
     const rows = container.rowsByKind ? kids.map(kindRow) : null
     const edges = rows ? [] : container.localEdges.map(e => ({ a: at.get(e.from), b: at.get(e.to), w: e.weight, twin: e.twin }))
-    const pos = placeLayered(size, edges, flowOf(container), container.wrap, rows)
+    const pos = inColumns(container)
+      ? placeColumns(size, kids.map(k => k.leafCount))
+      : placeLayered(size, edges, flowOf(container), container.wrap, rows)
     kids.forEach((k, i) => rel.set(k, { x: pos.x[i], y: pos.y[i], w: size[i].w, h: size[i].h }))
     return { w: pos.w, h: pos.h }
   }
@@ -107,9 +111,9 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
  * don't build on one another stand side by side. An arrow that skips rows passes each row
  * between at a point of its own, set into the row like a very narrow card, so it runs down a gap
  * between the cards rather than behind one. An open domain's frame floats out to the right of
- * all the cards, level with its row; frames out of one row stack, the rightmost card's first,
- * so the lines that tie them to their cards don't cross. A row is as tall as its cards, or as
- * the frames beside it.
+ * all the cards, level with its row; frames out of one row stand side by side, the rightmost card's first,
+ * so that the page stays wide. A row is as tall as its cards, or as
+ * the tallest frame beside it.
  * slot: {w, h}, the size of a domain's card; frames: domain → {w, h} of its open frame.
  * Returns { places: id → card box, frames: domain → frame box, routes: edge key → { upper,
  * lower, pass: [{x, y0, y1}], back }, width, height }. An arrow runs from the bottom of its upper
@@ -205,7 +209,7 @@ function layoutDomains(root, slot, frames) {
   const right = Math.max(...items.map((_, i) => px[i] + breadth(i))) - lo
   for (let i = 0; i < items.length; i++) px[i] -= lo
 
-  // 5. Down: each row as tall as its cards, or as the frames floating out beside it, stacked.
+  // 5. Down: each row as tall as its cards, or as the frames floating out beside it, side by side.
   const fx = right + DOMAINS.float
   const places = new Map()
   const boxes = new Map()
@@ -214,17 +218,19 @@ function layoutDomains(root, slot, frames) {
   let y = 0
   for (let r = 0; r < rows; r++) {
     const cards = layers[r].filter(isCard)
-    let fy = y
+    let cx = fx
+    let high = slot.h
     for (const i of [...cards].reverse()) {
       const k = kids[items[i].card]
       const f = frames.get(k)
       if (!f) continue
-      boxes.set(k, { x: fx, y: fy, w: f.w, h: f.h })
-      fy += f.h + DOMAINS.stack
+      boxes.set(k, { x: cx, y, w: f.w, h: f.h })
+      cx += f.w + DOMAINS.stack
+      high = Math.max(high, f.h)
     }
     for (const i of cards) places.set(kids[items[i].card].id, { x: px[i], y, w: slot.w, h: slot.h })
     top.push(y)
-    tall.push(Math.max(slot.h, fy - DOMAINS.stack - y))
+    tall.push(high)
     y += tall[r] + DOMAINS.gap
   }
   const routes = new Map(edges.map(t => [t.e.key, {
@@ -235,6 +241,38 @@ function layoutDomains(root, slot, frames) {
   }]))
   const width = Math.max(right, ...[...boxes.values()].map(b => b.x + b.w))
   return { places, frames: boxes, routes, width, height: rows ? y - DOMAINS.gap : 0 }
+}
+
+// Lays boxes out in columns across the page, as text fills a newspaper, so that what they hold
+// spreads wide rather than tall. Each box, in the order written, goes to the column holding the
+// fewest concepts so far. That is reckoned from what the boxes hold, never from their sizes, so
+// a box always keeps its column: opening one moves only what is below it, or in columns to its right.
+function placeColumns(size, weight) {
+  const n = size.length
+  const count = Math.max(1, Math.round(Math.sqrt(n * COLUMN_ASPECT)))
+  const load = new Array(count).fill(0)
+  const columns = load.map(() => [])
+  size.forEach((_, k) => {
+    const c = load.indexOf(Math.min(...load))
+    load[c] += weight[k]
+    columns[c].push(k)
+  })
+  const x = new Array(n)
+  const y = new Array(n)
+  let cx = 0
+  let h = 0
+  for (const column of columns) {
+    if (!column.length) continue
+    let cy = 0
+    for (const k of column) {
+      x[k] = cx
+      y[k] = cy
+      cy += size[k].h + COLUMN_GAP
+    }
+    h = Math.max(h, cy - COLUMN_GAP)
+    cx += Math.max(...column.map(k => size[k].w)) + COLUMN_GAP
+  }
+  return { x, y, w: cx - COLUMN_GAP, h }
 }
 
 // Lays out boxes of the given sizes, with weighted arrows a → b between them, flowing `dir`.
