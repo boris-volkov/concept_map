@@ -11,9 +11,9 @@
 // The flow alternates with depth: each domain's topics run down, each topic's
 // concepts run across, and so on.
 //
-// The order of a topic's children depends only on the arrows among them, not on
-// what else is open, so opening a topic makes room for it without reshuffling
-// the rest of the map.
+// The order of a topic's children, and how they wrap, depend only on the arrows among
+// them and how many there are, not on what is open. Boxes line up at the start of their
+// rows and columns, so whatever opens pushes only what lies after it, right and down.
 
 export const FRAME_PAD = { top: 54, right: 22, bottom: 22, left: 22 }
 /**
@@ -27,9 +27,8 @@ const GAP = {
   right: { layer: 78, wrap: 22, card: 14 }, // layer: between the columns an arrow runs across
   down: { layer: 58, wrap: 26, card: 18 },
 }
-const GAP_FRAME = 26 // beside an open topic or an open file
 const ASPECT = 1.5 // a crowded layer wraps until its topic is about this wide for its height
-const TALL = 1600 // a column of boxes taller than this, as one of open files soon is, wraps into another beside it
+const NOMINAL = { w: 190, h: 64 } // what a box counts as when wrapping, open or not
 // The rows of a topic marked "rows: kinds": what is proved, what is true of the thing, how it is written, what to do with it.
 const KIND_ROW = { axiom: 0, theorem: 0, rule: 0, formula: 2, form: 2, skill: 3, technique: 3 }
 const kindRow = n => KIND_ROW[n.kind] ?? 1
@@ -57,14 +56,11 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
     return FRAME_PAD.top + (r ? r.h + README_GAP : 0)
   }
 
-  // A frame wider than what it holds, for its title or its README, centres what it holds.
-  const indent = new Map()
   const measure = n => {
     if (!open(n)) return cardSize(n)
     const inner = arrange(n)
     const r = readmeSize(n)
     const w = Math.max(inner.w + FRAME_PAD.left + FRAME_PAD.right, headerWidth(n), r ? r.w + FRAME_PAD.left + FRAME_PAD.right : 0)
-    indent.set(n, (w - inner.w - FRAME_PAD.left - FRAME_PAD.right) / 2)
     return { w, h: inner.h + top(n) + FRAME_PAD.bottom, frame: true }
   }
 
@@ -97,7 +93,7 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
       const r = rel.get(k)
       const box = { x: ox + r.x, y: oy + r.y, w: r.w, h: r.h }
       boxes.set(k.id, box)
-      if (open(k)) place(k, box.x + FRAME_PAD.left + indent.get(k), box.y + top(k))
+      if (open(k)) place(k, box.x + FRAME_PAD.left, box.y + top(k))
     }
   }
   place(root, 0, 0)
@@ -160,20 +156,17 @@ function layoutDomains(root, slot, frames) {
   const isCard = i => items[i].card !== undefined
 
   // 3. Order each row to uncross the arrows: by the weighted average place of what each thing
-  // connects to, sweeping down and up a few times; ties keep the order of index.md. An open
-  // domain's card goes to the end of its row, next to the frames, so the line tying it to its
-  // frame passes nothing on the way.
+  // connects to, sweeping down and up a few times; ties keep the order of index.md.
   const layers = Array.from({ length: rows }, () => [])
   items.forEach((it, i) => layers[it.row].push(i))
   const pos = new Array(items.length)
   layers.forEach(list => list.forEach((i, j) => { pos[i] = (j + 0.5) / list.length }))
-  const last = i => isCard(i) && frames.has(kids[items[i].card])
   const sortBy = (list, nbrs) => {
     const key = new Map(list.map(i => {
       const total = nbrs[i].reduce((s, t) => s + t.w, 0)
       return [i, total ? nbrs[i].reduce((s, t) => s + pos[t.v] * t.w, 0) / total : pos[i]]
     }))
-    list.sort((p, q) => last(p) - last(q) || key.get(p) - key.get(q) || pos[p] - pos[q])
+    list.sort((p, q) => key.get(p) - key.get(q) || pos[p] - pos[q])
     list.forEach((i, j) => { pos[i] = (j + 0.5) / list.length })
   }
   for (let sweep = 0; sweep < 4; sweep++) {
@@ -254,8 +247,6 @@ function placeLayered(size, edges, dir, wrap = 0, rows = null) {
   const length = k => (across ? size[k].w : size[k].h) // along the flow
   const breadth = k => (across ? size[k].h : size[k].w) // across the flow
   const gap = GAP[dir]
-  const big = k => size[k].frame || size[k].file
-  const between = (p, q) => (big(p) || big(q) ? GAP_FRAME : gap.card)
 
   // A two-way arrow counts as one from its first end to its second, like any other (see
   // markIntertwined in model.js), so two boxes that build on each other follow one another.
@@ -304,76 +295,39 @@ function placeLayered(size, edges, dir, wrap = 0, rows = null) {
   }
 
   // 4. Wrap crowded layers: a topic of twelve unconnected axioms becomes a grid, not a tower.
-  const stack = list => list.reduce((s, v, i) => s + breadth(v) + (i ? between(list[i - 1], v) : 0), 0)
-  const area = size.reduce((s, z) => s + (z.w + gap.wrap) * (z.h + gap.card), 0)
-  const limit = Math.max(across ? Math.sqrt(area / ASPECT) : Math.sqrt(area * ASPECT), ...size.map((_, k) => breadth(k)))
-  // Splits boxes, in order, into `parts` lanes of about equal length.
-  const split = (list, parts) => {
-    const share = stack(list) / parts
-    const out = []
-    let lane = []
-    for (const v of list) {
-      if (lane.length && out.length < parts - 1 && stack([...lane, v]) > share * 1.08) {
-        out.push(lane)
-        lane = []
-      }
-      lane.push(v)
-    }
-    out.push(lane)
-    return out
-  }
+  // How is worked out from the number of boxes alone, never their sizes, so that opening one
+  // leaves every other where it was: what grows only pushes what comes after it.
+  const unit = across ? NOMINAL.h : NOMINAL.w
+  const stack = list => list.reduce((s, k, i) => s + breadth(k) + (i ? gap.card : 0), 0)
+  const area = n * (NOMINAL.w + gap.wrap) * (NOMINAL.h + gap.card)
+  const limit = Math.max(across ? Math.sqrt(area / ASPECT) : Math.sqrt(area * ASPECT), unit)
   const lanes = [] // a layer's boxes, split into one or more lanes side by side
   layers.forEach((list, l) => {
     // A topic's "wrap: n" fixes the length of a line, keeping its authors' order (CANI / CANI / D).
-    const lines = []
-    if (wrap) for (let i = 0; i < list.length; i += wrap) lines.push(list.slice(i, i + wrap))
-    else lines.push(...split(list, Math.max(1, Math.round(stack(list) / limit))))
-    // A line down the page that has grown too tall, as a column of open files soon does, wraps
-    // again into columns side by side, still in order. Lines across the page are left to use the width.
-    for (const line of lines) {
-      const parts = across ? Math.ceil(stack(line) / TALL) : 1
-      for (const nodes of parts > 1 ? split(line, parts) : [line]) lanes.push({ layer: l, nodes })
-    }
+    const parts = Math.max(1, Math.round(list.length * (unit + gap.card) / limit))
+    const line = wrap || Math.ceil(list.length / parts)
+    for (let i = 0; i < list.length; i += line) lanes.push({ layer: l, nodes: list.slice(i, i + line) })
   })
 
-  // 5. Coordinates: lanes one after another along the flow, each box centred in its lane, so that
-  // a small card beside an open file sits level with its middle; each box then nudged across the
-  // flow toward the boxes it connects to. The arrows follow the boxes wherever they end up.
+  // 5. Coordinates: lanes one after another along the flow, and the boxes of each from its start.
+  // Nothing is centred, so a box that grows moves only what lies after it.
   const u = new Array(n)
   const v = new Array(n)
   let cu = 0
   lanes.forEach((lane, i) => {
     if (i) cu += lanes[i - 1].layer === lane.layer ? gap.wrap : gap.layer
-    const extent = Math.max(...lane.nodes.map(length))
-    for (const k of lane.nodes) u[k] = cu + (extent - length(k)) / 2
-    cu += extent
-    let cv = -stack(lane.nodes) / 2
+    let cv = 0
     lane.nodes.forEach((k, j) => {
-      if (j) cv += between(lane.nodes[j - 1], k)
+      if (j) cv += gap.card
+      u[k] = cu
       v[k] = cv
       cv += breadth(k)
     })
+    cu += Math.max(...lane.nodes.map(length))
   })
-  const middle = k => v[k] + breadth(k) / 2
-  const settle = (lane, nbrs) => {
-    const want = lane.nodes.map(k => {
-      const ns = nbrs[k]
-      if (!ns.length) return v[k]
-      const total = ns.reduce((s, e) => s + e.w, 0)
-      return ns.reduce((s, e) => s + middle(e.v) * e.w, 0) / total - breadth(k) / 2
-    })
-    stackNear(lane.nodes, want, v, breadth, between)
-  }
-  for (let pass = 0; pass < 3; pass++) {
-    for (const lane of lanes) settle(lane, preds)
-    for (const lane of [...lanes].reverse()) settle(lane, succs)
-  }
-  for (const lane of lanes) settle(lane, preds)
 
-  const lo = Math.min(...v)
   const hi = Math.max(...v.map((t, k) => t + breadth(k)))
-  for (let k = 0; k < n; k++) v[k] -= lo
-  return across ? { x: u, y: v, w: cu, h: hi - lo } : { x: v, y: u, w: hi - lo, h: cu }
+  return across ? { x: u, y: v, w: cu, h: hi } : { x: v, y: u, w: hi, h: cu }
 }
 
 // Places a lane's boxes, in order and without overlap, as close as possible to where

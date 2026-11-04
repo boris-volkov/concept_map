@@ -600,12 +600,12 @@ export class AtlasMap {
       if (hit('.frame-head .open-all')) return this.openInside(n)
       if (hit('.frame-head .about')) return this.toggleReadme(n)
       if (hit('.frame-head .shut')) return this.collapse(n)
-      // The head of an open frame, or the frame itself from the keyboard, selects what it holds;
-      // only the × closes it.
-      if (hit('.frame-head') || (this.isOpen(n) && keyboard)) {
+      // An open frame from the keyboard selects what it holds; only the × closes it.
+      if (this.isOpen(n) && keyboard) {
         if (this.selected !== n) this.select(n, { pan: false })
         return
       }
+      // Its head, like the empty space inside it, lets go of the selection, so that it lights up.
       if (this.isOpen(n)) return this.background()
       return this.expand(n)
     }
@@ -654,8 +654,8 @@ export class AtlasMap {
   collapse(n) {
     // Closed with the keyboard, from its frame or from its card: the focus goes to its card.
     const focused = [n.id, stubKey(n)].some(key => this.els.get(key)?.contains(document.activeElement))
-    // Where its card will be: an open domain's card stands in for it; a topic folds up into the
-    // corner of its frame.
+    // Where its card will be: an open domain's card stands in for it, and stays still; a topic
+    // folds up into the corner of its frame.
     const before = this.boxes.get(n.depth === 0 ? stubKey(n) : n.id)
     for (const d of [n, ...descendants(n)]) {
       this.open.delete(d.id)
@@ -669,6 +669,8 @@ export class AtlasMap {
     this.relayout()
     if (lost) this.onSelect?.(null)
     this.settle(n.id, before)
+    // A domain closed from its frame, far from its card: the map moves only as far as shows the card.
+    if (n.depth === 0) this.camera.moveTo(this.camera.nudge(this.boxes.get(n.id)))
     if (focused) this.els.get(n.id)?.focus({ preventScroll: true })
     this.onView?.()
   }
