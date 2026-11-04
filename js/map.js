@@ -27,6 +27,9 @@ import * as docs from './docs.js'
 const SVG = 'http://www.w3.org/2000/svg'
 const GRID_MARGIN = 4000 // how far the survey grid runs past the edges of the map
 const readmeKey = n => 'readme:' + n.id
+const ENTRY_COLUMN = 620 // about how tall a column of an open entry may run
+const MAX_COLUMNS = 3
+const ENTRY_COLUMN_GAP = 32 // as in the stylesheet
 const stubKey = n => 'spine:' + n.id // an open domain's card, left in its place among the domains
 const tetherKey = n => 'tether:' + n.id // the line from it to its frame
 const r1 = v => Math.round(v * 10) / 10
@@ -256,6 +259,7 @@ export class AtlasMap {
     for (const key of files) {
       const el = this.els.get(key)
       widen(el)
+      spread(el)
       this.fileSizes.set(key, { w: el.offsetWidth, h: el.offsetHeight })
     }
     frames.forEach((n, i) => this.heads.set(n.id, probes[i].firstElementChild.scrollWidth + 4))
@@ -920,6 +924,20 @@ function widen(el) {
   for (const box of el.querySelectorAll('.math-block, .table-wrap, pre')) extra = Math.max(extra, box.scrollWidth - box.clientWidth)
   // A pixel to spare: the widths are whole pixels, and a fraction left over would bring the scroll bar back.
   if (extra > 0) el.style.width = `${el.offsetWidth + extra + 1}px`
+}
+
+// A long entry runs in columns, as a newspaper does, so that it fills a wide screen rather than
+// a tall stack. Called once, as it opens; a quiz being worked through doesn't change the columns.
+function spread(el) {
+  const body = el.querySelector(':scope.leaf > .doc-body:not(.doc-info)')
+  if (!body) return
+  const width = el.offsetWidth
+  const columns = Math.min(MAX_COLUMNS, Math.ceil(body.offsetHeight / ENTRY_COLUMN), Math.floor(innerWidth / width))
+  if (columns < 2) return
+  const inner = body.clientWidth - parseFloat(getComputedStyle(body).paddingLeft) * 2
+  el.style.setProperty('--columns', columns)
+  el.classList.add('in-columns')
+  el.style.width = `${width + (columns - 1) * (inner + ENTRY_COLUMN_GAP)}px`
 }
 
 function addTo(map, key, item) {

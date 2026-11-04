@@ -339,11 +339,14 @@ $$P(A \text{ or } B) = P(A) + P(B) - P(A \text{ and } B).$$
 Subtract the overlap so it isn't counted twice.
 
 ### Independent Events
-kind: theorem
+kind: definition
 prereqs: sample-spaces, multiplying-fractions
 
-Events that don't affect each other multiply:
+Events $A$ and $B$ are independent if
 $$P(A \text{ and } B) = P(A)\,P(B).$$
+
+Equivalently, when $P(B) > 0$, knowing that $B$ happened does not change the probability of $A$:
+$$P(A \mid B) = P(A).$$
 
 Two heads in a row:
 $$\frac{1}{2} \cdot \frac{1}{2} = \frac{1}{4}.$$

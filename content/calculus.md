@@ -147,10 +147,48 @@ Why: $\frac{5(x + h) + 2 - (5x + 2)}{h} = 5$.
 ```
 
 ### Differentiability
-kind: theorem
-prereqs: derivative-definition, continuity
+kind: definition
+prereqs: derivative-definition
 
-If $f$ is differentiable at $a$, then $f$ is continuous at $a$. The converse is false: $|x|$ is continuous but not differentiable at $0$.
+A function $f$ is differentiable at $a$ if the limit
+$$f'(a) = \lim_{h \to 0} \frac{f(a + h) - f(a)}{h}$$
+exists as a finite number. It is differentiable on an open interval if it is differentiable at every point of the interval.
+
+On the graph, differentiable means that near $a$ the curve looks like a single non-vertical line. A function fails to be differentiable at $a$ where it has
+- a corner, as $|x|$ does at $0$, where the slopes from the two sides differ;
+- a cusp, as $x^{2/3}$ does at $0$;
+- a vertical tangent, as $\sqrt[3]{x}$ does at $0$;
+- a discontinuity.
+
+The function $|x|$ has slope $-1$ to the left of $0$ and $1$ to the right, so the limit does not exist there:
+```graph
+y = abs(x)
+x: -2, 2
+y: -0.5, 2
+point: 0, 0 below-right
+```
+
+```quiz
+Q: Is $f(x) = |x|$ differentiable at $x = 0$? Answer yes or no.
+A: no
+Why: The difference quotient tends to $-1$ from the left and $1$ from the right.
+
+Q: Is $f(x) = x^2$ differentiable at $x = 0$? Answer yes or no.
+A: yes
+Why: $f'(0) = 0$.
+```
+
+### Differentiable Implies Continuous {#differentiable-implies-continuous}
+kind: theorem
+prereqs: differentiability, continuity, limit-laws
+
+If $f$ is differentiable at $a$, then $f$ is continuous at $a$. The converse is false.
+
+*Proof.* For $x \ne a$,
+$$f(x) - f(a) = \frac{f(x) - f(a)}{x - a} \cdot (x - a).$$
+As $x \to a$, the first factor tends to $f'(a)$ and the second to $0$, so $f(x) \to f(a)$ by the [[limit-laws|limit laws]]. $\square$
+
+The function $|x|$ shows that the converse fails: it is continuous at $0$ but not [[differentiability|differentiable]] there.
 
 ### Tangent Lines
 kind: skill
@@ -326,9 +364,17 @@ Let $c$ be a critical point of a continuous $f$. If, at $c$, $f'$
 - changes from negative to positive, $f(c)$ is a local minimum;
 - keeps its sign, $f(c)$ is neither.
 
+### Concavity {#concave-up-and-down}
+kind: definition
+prereqs: derivative-definition
+
+A differentiable function is concave up on an interval if $f'$ is increasing there, and concave down if $f'$ is decreasing there. A point where the concavity changes is an inflection point.
+
+Concave up, the graph bends upward and lies above its tangent lines; concave down, it bends downward and lies below them.
+
 ### Concavity & the Second Derivative {#concavity}
 kind: theorem
-prereqs: higher-derivatives, first-derivative-test
+prereqs: concave-up-and-down, higher-derivatives, first-derivative-test
 
 For a twice-differentiable $f$:
 - where $f'' > 0$ on an interval, $f$ is concave up;

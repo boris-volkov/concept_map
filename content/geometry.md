@@ -280,7 +280,7 @@ The undefined terms and first definitions that everything else in geometry is bu
 
 ### Parallel Lines & Transversals {#parallel-lines}
 kind: theorem
-prereqs: angle-pairs, parallel-postulate
+prereqs: angle-pairs, parallel-definition, parallel-postulate
 
 When a line crosses two parallel lines, the following hold, and each of them, conversely, proves two lines parallel:
 - corresponding angles are equal;
@@ -321,6 +321,15 @@ Angles that come in pairs:
 - complementary angles add to $90^\circ$;
 - supplementary angles add to $180^\circ$;
 - when two lines cross, the vertical angles opposite each other are equal.
+
+### Parallel Lines {#parallel-definition}
+kind: definition
+prereqs: points-lines-planes
+
+Two lines in a plane are parallel if they do not meet, however far they are extended. A transversal is a line that crosses two other lines at different points, and the angles it makes with them come in pairs:
+- corresponding angles sit in matching positions at the two crossings;
+- alternate interior angles lie between the two lines, on opposite sides of the transversal;
+- co-interior angles lie between the two lines, on the same side of the transversal.
 
 ### Perpendicular Lines
 kind: definition

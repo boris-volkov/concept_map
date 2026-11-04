@@ -193,6 +193,11 @@ class TexParser {
     const ch = String.fromCodePoint(this.src.codePointAt(this.pos))
     this.pos += ch.length
     if (/\p{L}/u.test(ch)) return { ml: this.mi(ch), kind: 'ord' }
+    // := is one symbol, ≔, its colon snug against its equals sign and centred on it.
+    if (ch === ':' && this.src[this.pos] === '=') {
+      this.pos++
+      return { ml: '<mo>≔</mo>', kind: 'op' }
+    }
     return operator(ch)
   }
 
@@ -210,10 +215,11 @@ class TexParser {
       if (this.lookingAtCommand('limits')) { this.pos += 7; base.limits = true; continue }
       if (this.lookingAtCommand('nolimits')) { this.pos += 9; base.limits = false; continue }
       const c = this.src[this.pos]
-      if (c === "'" && sup === null) {
+      // A prime is already raised, in the font: set as a superscript, it comes out small and adrift.
+      if (c === "'") {
         let n = 0
         while (this.src[this.pos] === "'") { n++; this.pos++ }
-        sup = `<mo>${['′', '″', '‴', '⁗'][Math.min(n, 4) - 1]}</mo>`
+        base = { ...base, ml: `<mrow>${base.ml}<mo lspace="0" rspace="0">${['′', '″', '‴', '⁗'][Math.min(n, 4) - 1]}</mo></mrow>` }
         continue
       }
       if (c === '^' && sup === null) { this.pos++; sup = this.parseArg(); continue }
@@ -453,7 +459,7 @@ function operator(ch) {
     case '+': return { ml: '<mo>+</mo>', kind: 'op', sign: true }
     case '*': return { ml: '<mo>∗</mo>', kind: 'op' }
     case '/': return { ml: '<mo lspace="0" rspace="0">/</mo>', kind: 'op' }
-    case "'": return { ml: '<mo>′</mo>', kind: 'ord' }
+    case "'": return { ml: '<mo lspace="0" rspace="0">′</mo>', kind: 'ord' }
     default: return { ml: `<mo>${esc(ch)}</mo>`, kind: 'op' }
   }
 }

@@ -706,6 +706,10 @@ math { font-family: var(--math); font-size: 1.04em; }
 
 .doc-body { padding: 14px 18px 2px; }
 .doc-body > :first-child { margin-top: 0; }
+/* A long entry runs in columns (see spread in map.js). What can't be read in two pieces stays whole. */
+.in-columns > .doc-body:not(.doc-info) { column-count: var(--columns); column-gap: 32px; column-rule: 1px solid var(--rule); padding-bottom: 22px; }
+.in-columns > .doc-body :is(.statement, .math-block, .table-wrap, .graph, .practice .quiz, li) { break-inside: avoid; }
+.in-columns > .doc-body :is(h3, .statement-label) { break-after: avoid; }
 /* What the "i" on an open concept shows, in a band under its head: how it joins the map. */
 .doc-info {
   padding-bottom: 14px;
