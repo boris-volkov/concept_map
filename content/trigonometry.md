@@ -216,6 +216,261 @@ A: -1/2
 Why: The reference angle is $60^\circ$, and cosine is negative in quadrant II.
 ```
 
+## Angular Motion {#angular-motion}
+flow: down
+rows: kinds
+wrap: 6
+
+How fast things turn, how fast their rims move, and how one wheel drives another.
+
+### Linear & Angular Speed {#linear-angular-speed}
+kind: theorem
+prereqs: angular-speed, radian-arc-length
+
+A point at distance $r$ from the axis of a body turning at angular speed $\omega$, in radians per unit time, moves at linear speed
+$$v = r\omega.$$
+
+> **!** $\omega$ must be in radians. Convert revolutions or degrees first.
+
+*Proof.* In time $t$ the body turns through the angle $\theta = \omega t$, so the point travels an arc of length
+$$s = r\theta = r\omega t.$$
+Its speed is $\frac{s}{t} = r\omega$. $\square$
+
+### Angular Speed
+kind: definition
+prereqs: radians, unit-rates
+
+A body that turns through the angle $\theta$ in time $t$ has angular speed
+$$\omega = \frac{\theta}{t}.$$
+
+It is measured in radians per second, degrees per second or revolutions per minute (rpm). Every point of a rigid body has the same angular speed. Its linear speed, the distance it travels per unit time, depends on how far it is from the axis.
+
+### Frequency & Period of Rotation {#rotation-frequency}
+kind: definition
+prereqs: angular-speed
+
+A body turning steadily has frequency $f$, the revolutions per unit time, and period $T$, the time for one revolution:
+$$\begin{aligned} T &= \frac{1}{f}, \\ \omega &= 2\pi f = \frac{2\pi}{T}. \end{aligned}$$
+
+**Example.** At 3 revolutions per second,
+$$T = \frac{1}{3}\ \text{s}, \qquad \omega = 6\pi\ \frac{\text{rad}}{\text{s}}.$$
+
+```quiz
+Q: A wheel makes one revolution every 4 seconds. What is its angular speed?
+- $\frac{\pi}{4}$ rad/s
++ $\frac{\pi}{2}$ rad/s
+- $2\pi$ rad/s
+- $8\pi$ rad/s
+Why: $\omega = \frac{2\pi}{T} = \frac{2\pi}{4} = \frac{\pi}{2}$.
+```
+
+### Joined Wheels {#joined-wheels}
+kind: property
+prereqs: linear-angular-speed
+
+Two wheels of radii $r_1$ and $r_2$, turning at $\omega_1$ and $\omega_2$ with nothing slipping, share one speed, and what joins them decides which.
+
+: What Joined Wheels Share
+| Joined by | Same for both | Relation |
+| --- | --- | --- |
+| an axle | angular speed | $\omega_1 = \omega_2$ |
+| a chain or belt | rim speed | $r_1\omega_1 = r_2\omega_2$ |
+| meshing teeth | rim speed | $r_1\omega_1 = r_2\omega_2$ |
+
+On an axle, the larger wheel has the faster rim. Across a chain, belt or teeth, the smaller wheel turns faster. Meshing gears turn in opposite directions.
+
+Teeth are evenly spaced, so the number of teeth $N$ on a gear is proportional to its radius, and
+$$N_1\omega_1 = N_2\omega_2.$$
+
+*Proof.* Wheels on one axle are a single rigid body. A chain or belt does not stretch, so all of it moves at one speed, and each rim moves with it. Meshing teeth carry the two rims along together. Then $v = r\omega$ for each wheel. $\square$
+
+### Rolling Without Slipping {#rolling-without-slipping}
+kind: property
+prereqs: linear-angular-speed
+
+A wheel of radius $r$ rolling without slipping at angular speed $\omega$ moves along the ground at speed
+$$v = r\omega,$$
+and goes one circumference, $2\pi r$, in each revolution.
+
+*Proof.* Nothing slips, so the distance rolled is the length of rim that has touched the ground, the arc $s = r\theta$. Dividing by the time gives $v = r\omega$. $\square$
+
+### Table of Angular Motion {#angular-motion-table}
+kind: formula
+prereqs: linear-angular-speed, rotation-frequency
+
+For steady turning, with angles in radians and $r$ the distance from the axis.
+
+: Linear and Angular
+| | Linear | Angular | Relation |
+| --- | :-: | :-: | :-: |
+| distance | $s$ | $\theta$ | $s = r\theta$ |
+| speed | $v$ | $\omega$ | $v = r\omega$ |
+| in time $t$ | $s = vt$ | $\theta = \omega t$ | |
+| in one revolution | $2\pi r$ | $2\pi$ | |
+
+: Frequency and Period
+| | | |
+| ---: | :-: | :--- |
+| $T$ | $=$ | $\dfrac{1}{f}$ |
+| $\omega$ | $=$ | $2\pi f$ |
+| $\omega$ | $=$ | $\dfrac{2\pi}{T}$ |
+| $v$ | $=$ | $2\pi r f$ |
+| $v$ | $=$ | $\dfrac{2\pi r}{T}$ |
+
+: Units of Turning
+| | | |
+| ---: | :-: | :--- |
+| $1$ rev | $=$ | $2\pi$ rad |
+| $1$ rev | $=$ | $360^\circ$ |
+| $1$ rev/s | $=$ | $2\pi$ rad/s |
+| $1$ rpm | $=$ | $\dfrac{\pi}{30}$ rad/s |
+| $1$ rad/s | $=$ | $\dfrac{30}{\pi}$ rpm |
+
+### Circular Motion {#circular-motion}
+kind: form
+prereqs: unit-circle, rotation-frequency
+
+A point turning counterclockwise about the origin stands at time $t$ at
+$$\begin{aligned} x &= r\cos(\omega t + \varphi), \\ y &= r\sin(\omega t + \varphi). \end{aligned}$$
+
+| Reads off | From |
+| --- | --- |
+| radius | $r$ |
+| angular speed | $\omega$ |
+| period | $\frac{2\pi}{\omega}$ |
+| starting angle | $\varphi$ |
+
+Each coordinate is a [[sinusoid-form|sinusoid]] of amplitude $r$, so the height of a seat on a Ferris wheel is a sine wave.
+
+```quiz
+Q: A point starts at $(2, 0)$ and turns counterclockwise about the origin at $\frac{\pi}{2}$ rad/s. Where is it after 1 second?
+- $(2, 0)$
++ $(0, 2)$
+- $(-2, 0)$
+- $(0, -2)$
+Why: It has turned through $\frac{\pi}{2}$, a quarter of a revolution.
+```
+
+### Converting Angular Speed {#converting-angular-speed}
+kind: skill
+prereqs: angular-speed, unit-conversion
+
+Multiply by fractions equal to 1, built from $1\ \text{rev} = 2\pi\ \text{rad}$ and $1\ \text{min} = 60\ \text{s}$.
+
+**Example.**
+$$45\ \frac{\text{rev}}{\text{min}} \cdot \frac{2\pi\ \text{rad}}{1\ \text{rev}} \cdot \frac{1\ \text{min}}{60\ \text{s}} = \frac{3\pi}{2}\ \frac{\text{rad}}{\text{s}}.$$
+
+```quiz
+Q: What is 120 rpm in radians per second?
+- $2\pi$
++ $4\pi$
+- $12\pi$
+- $60\pi$
+Why: $120 \cdot \frac{2\pi}{60} = 4\pi$.
+
+Q: How many rpm is $5\pi$ rad/s?
+A: 150
+Why: $5\pi \cdot \frac{60}{2\pi} = 150$.
+```
+
+### Finding Linear Speed {#finding-linear-speed}
+kind: skill
+prereqs: linear-angular-speed, converting-angular-speed
+
+1. write the angular speed in radians per unit time;
+2. multiply by the distance from the axis: $v = r\omega$;
+3. convert to the units wanted.
+
+**Example.** A horse 4 m from the centre of a merry-go-round making 6 rpm has
+$$\begin{aligned} \omega &= 6 \cdot \frac{2\pi}{60} = \frac{\pi}{5}\ \frac{\text{rad}}{\text{s}}, \\ v &= 4 \cdot \frac{\pi}{5} \approx 2.5\ \frac{\text{m}}{\text{s}}. \end{aligned}$$
+
+```quiz
+Q: The rim of a wheel of radius 10 in turns at 3 rad/s. What is the speed of the rim, in inches per second?
+A: 30
+Why: $v = r\omega = 10 \cdot 3$.
+
+Q: The Earth turns once in 24 hours, and the radius of the equator is about 3960 miles. How fast does a point on the equator move, in miles per hour?
+A: 1037 ± 5
+Hint: In 24 hours the point goes once around the equator.
+Why: $v = \frac{2\pi \cdot 3960}{24} = 330\pi \approx 1037$.
+
+Q: One horse on a merry-go-round is twice as far from the centre as another. Compared with the other, it moves
+- at the same speed
++ twice as fast
+- four times as fast
+Why: They share $\omega$, and $v = r\omega$.
+```
+
+### Solving Gear & Chain Problems {#gear-chain-problems}
+kind: skill
+prereqs: joined-wheels, rolling-without-slipping, finding-linear-speed
+
+1. write the known angular speed in radians per unit time;
+2. across a chain, belt or meshing teeth, keep the rim speed: $r_1\omega_1 = r_2\omega_2$;
+3. along an axle, keep the angular speed;
+4. at the last wheel, $v = r\omega$ is the speed of its rim, and of whatever rolls on it.
+
+**Example.** A bicycle has a pedal gear of radius 5 in, a wheel gear of radius 3 in and a wheel of radius 16 in. The rider pedals twice per second. How fast does the bicycle go?
+
+```graph
+x: 0, 52
+y: 0, 38
+grid: none
+circle: 20, 20, 16
+circle: 20, 20, 3
+circle: 44, 20, 5
+segment: 19.75, 22.99, 43.583, 24.983
+segment: 19.75, 17.01, 43.583, 15.017
+segment: 20, 20, 12, 33.856
+segment: 20, 20, 17, 20
+segment: 44, 20, 44, 25
+segment: 0, 4, 52, 4
+label: 15.5, 27.5 "16 in" left
+label: 16.5, 20 "3 in" left
+label: 44, 25.2 "5 in" above
+label: 20, 15 "wheel gear" below
+label: 44, 13.5 "pedal gear" below
+label: 22, 30 "wheel" right
+label: 38, 24.6 "chain" above
+```
+
+$$\begin{aligned} \omega_p &= 2 \cdot 2\pi = 4\pi\ \frac{\text{rad}}{\text{s}} && \text{pedal gear} \\ v_c &= 5\omega_p = 20\pi\ \frac{\text{in}}{\text{s}} && \text{chain} \\ \omega_g &= \frac{v_c}{3} = \frac{20\pi}{3}\ \frac{\text{rad}}{\text{s}} && \text{wheel gear} \\ \omega_w &= \omega_g = \frac{20\pi}{3}\ \frac{\text{rad}}{\text{s}} && \text{wheel} \\ v &= 16\omega_w = \frac{320\pi}{3} \approx 335\ \frac{\text{in}}{\text{s}} && \text{bicycle} \end{aligned}$$
+
+That is about 19 miles per hour:
+$$335\ \frac{\text{in}}{\text{s}} \cdot \frac{3600\ \text{s}}{1\ \text{h}} \cdot \frac{1\ \text{mi}}{63360\ \text{in}} \approx 19\ \frac{\text{mi}}{\text{h}}.$$
+
+All at once: each turn of the pedals is $\frac{5}{3}$ turns of the wheel, and each turn of the wheel rolls one circumference, so
+$$v = 2 \cdot \frac{5}{3} \cdot 2\pi \cdot 16 = \frac{320\pi}{3}.$$
+
+```quiz
+Q: On a bicycle, what do the pedal gear and the wheel gear have in common?
+- their angular speed
++ their rim speed
+- their radius
+Why: The chain joins them, and each rim moves with the chain.
+
+Q: What do the wheel gear and the wheel have in common?
++ their angular speed
+- their rim speed
+- their radius
+Why: They turn on one axle.
+
+Q: A bicycle has a pedal gear of radius 4 in, a wheel gear of radius 2 in and a wheel of radius 13 in. The rider pedals once per second. How fast does it go, in inches per second?
+A: 163 ± 1
+Hint: Each turn of the pedals is $\frac{4}{2} = 2$ turns of the wheel.
+Why: $v = 1 \cdot 2 \cdot 2\pi \cdot 13 = 52\pi \approx 163$.
+
+Q: The rider shifts to a smaller wheel gear and keeps pedalling at the same rate. The bicycle
++ speeds up
+- slows down
+- keeps the same speed
+Why: The same chain speed turns a smaller gear faster, and the wheel turns with it.
+
+Q: A gear with 12 teeth meshes with a gear with 36 teeth turning at 40 rpm. How many rpm does the smaller gear make?
+A: 120
+Why: $12\omega = 36 \cdot 40$, so $\omega = 120$.
+```
+
 ## Trigonometric Functions {#trig-functions}
 flow: down
 rows: kinds
