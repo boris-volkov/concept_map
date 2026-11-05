@@ -3,14 +3,15 @@
 // It handles what explanations need: paragraphs, **bold**, *italic*, `code`,
 // [links](url), [[concept-id]] links, images, lists, > quotes, tables, math
 // between $...$ or $$...$$, small graphs of functions in ```graph blocks (see
-// graph.js), and small diagrams of vertices and edges in ```network blocks (see
-// network.js).
+// graph.js), small diagrams of vertices and edges in ```network blocks (see
+// network.js), and small drawings of shapes in {{ shape: cone }} (see shape.js).
 // Raw HTML such as an <iframe> passes through, so a Desmos graph or a video can
 // sit inside a concept's description.
 
 import { texToMathML } from './tex.js'
 import { graph } from './graph.js'
 import { network } from './network.js'
+import { shape } from './shape.js'
 
 const MATH = '\u0000' // brackets the index of a stashed formula
 const HELD = '\u0001' // brackets the index of a stashed inline fragment
@@ -108,7 +109,7 @@ const LIST_ITEM = /^( *)([-*+]|\d{1,9}[.)])( +|$)(.*)$/
 const TABLE_RULE = /^ *\|? *:?-+:? *(\| *:?-+:? *)*\|? *$/
 const HTML_BLOCK = /^ {0,3}<\/?(div|iframe|figure|table|details|video|audio|section|aside|center|ul|ol|pre|hr|img|p)\b/i
 
-const LONE_DIAGRAM = /^\s*\{\{\s*(?:y\s*=|network\s*:)[^}]*\}\}\s*$/
+const LONE_DIAGRAM = /^\s*\{\{\s*(?:y\s*=|network\s*:|shape\s*:)[^}]*\}\}\s*$/
 
 const isTableStart = (lines, i) => lines[i].includes('|') && (lines[i + 1] ?? '').includes('|') && TABLE_RULE.test(lines[i + 1])
 const startsBlock = (lines, i) => FENCE.test(lines[i]) || RULE.test(lines[i]) || QUOTE.test(lines[i]) ||
@@ -242,6 +243,9 @@ export const thumbnail = src => `size: 96, 72\n${src.replace(/;/g, '\n')}`
 export const SMALL_NETWORK = /\{\{\s*network\s*:([^}]*)\}\}/g
 export const smallNetwork = src => `size: 84, 66\n${src.replace(/;/g, '\n')}`
 
+// A small drawing of a shape, by name: {{ shape: cone }}. See shape.js.
+export const SMALL_SHAPE = /\{\{\s*shape\s*:([^}]*)\}\}/g
+
 const ALLOWED_TAG = /<\/?(?:a|abbr|b|br|code|del|div|em|figcaption|figure|i|iframe|img|kbd|mark|small|span|strong|sub|sup|u|video|audio|source)\b[^<>]*>/gi
 
 function inline(s, opts) {
@@ -250,6 +254,7 @@ function inline(s, opts) {
   s = s.replace(/(`+)([\s\S]*?[^`])\1(?!`)/g, (_, _ticks, code) => hold(`<code>${esc(code.trim())}</code>`))
   s = s.replace(THUMBNAIL, (_, src) => hold(graph(thumbnail(src))))
   s = s.replace(SMALL_NETWORK, (_, src) => hold(network(smallNetwork(src))))
+  s = s.replace(SMALL_SHAPE, (_, name) => hold(shape(name)))
   s = s.replace(/\\([\\`*_{}[\]()#+\-.!$|~<>])/g, (_, ch) => hold(esc(ch)))
   s = s.replace(ALLOWED_TAG, tag => hold(tag))
   s = esc(s)

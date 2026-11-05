@@ -9,9 +9,10 @@
 // collected in atlas.issues rather than thrown, so a typo never blanks the map.
 
 import { parseQuiz } from './quiz.js'
-import { plainText, THUMBNAIL, thumbnail, SMALL_NETWORK, smallNetwork } from './markdown.js'
+import { plainText, THUMBNAIL, thumbnail, SMALL_NETWORK, smallNetwork, SMALL_SHAPE } from './markdown.js'
 import { graphError } from './graph.js'
 import { networkError } from './network.js'
+import { shapeError } from './shape.js'
 import { prepare } from './model.js'
 
 export const KINDS = {
@@ -144,8 +145,8 @@ export function buildAtlas({ index, files }) {
 
     const { body, quizzes, graphs } = splitBody(n.bodyLines)
     for (const g of graphs) {
-      const problem = (g.network ? networkError : graphError)(g.src)
-      if (problem) report('error', n.file, g.line ?? n.line, `${g.network ? 'Network' : 'Graph'} in “${n.title}”: ${problem}`, n.id)
+      const problem = (g.shape ? shapeError : g.network ? networkError : graphError)(g.src)
+      if (problem) report('error', n.file, g.line ?? n.line, `${g.shape ? 'Shape' : g.network ? 'Network' : 'Graph'} in “${n.title}”: ${problem}`, n.id)
     }
     n.body = body
     n.quiz = quizzes.flatMap(lines => parseQuiz(lines, (line, msg) => report('error', n.file, line, `Quiz in “${n.title}”: ${msg}`, n.id)))
@@ -268,6 +269,7 @@ function splitBody(lines) {
   const smallOnes = line => {
     for (const [, src] of line.text.matchAll(THUMBNAIL)) graphs.push({ line: line.line, src: thumbnail(src) })
     for (const [, src] of line.text.matchAll(SMALL_NETWORK)) graphs.push({ line: line.line, src: smallNetwork(src), network: true })
+    for (const [, src] of line.text.matchAll(SMALL_SHAPE)) graphs.push({ line: line.line, src, shape: true })
   }
   for (let i = 0; i < lines.length; i++) {
     const g = /^\s*(`{3,}|~{3,})\s*(graph|network)\s*$/i.exec(lines[i].text)

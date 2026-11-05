@@ -1313,6 +1313,131 @@ prereqs: surface-area
 
 A plane cuts a solid in a two-dimensional cross-section: a cylinder across gives a circle, and a sphere always gives a circle. Rotating a plane figure about an axis gives a solid: a rectangle gives a cylinder, a right triangle a cone, a semicircle a sphere.
 
+### Table of Areas & Volumes {#area-volume-table}
+kind: formula
+tags: triangle, quadrilateral, parallelogram, rhombus, kite, trapezoid, polygon, pentagon, hexagon, octagon, decagon, dodecagon, circle, semicircle, sector, segment, annulus, ellipse, parabola, prism, cube, box, cylinder, pyramid, cone, frustum, sphere, hemisphere, ellipsoid, paraboloid, torus, tetrahedron, octahedron, dodecahedron, icosahedron
+prereqs: area-polygons, regular-polygon-area, rhombus-kite-area, herons-formula, arc-length-sector, surface-area, volume-pyramids-cones-spheres, ellipses
+
+The areas of plane figures, and the volumes and total surface areas of solids. Throughout, $h$ is a height measured square to the base, $l$ a slant height, $B$ the area of a base and $P$ its perimeter; in an oblique solid, $p$ is the perimeter of a cross-section square to $l$; and angles are in radians.
+
+: Triangles
+| Triangle | Drawn | Area |
+| --- | :-: | --- |
+| Any | {{ shape: triangle }} | $\dfrac{1}{2}bh$ |
+| Right | {{ shape: right-triangle }} | $\dfrac{1}{2}ab$ |
+| Isosceles | {{ shape: isosceles-triangle }} | $\dfrac{b}{4}\sqrt{4a^2 - b^2}$ |
+| Equilateral | {{ shape: equilateral-triangle }} | $\dfrac{\sqrt{3}}{4}a^2$ |
+
+: Triangles from Other Measurements
+| Known | Drawn | Area |
+| --- | :-: | --- |
+| Two sides and the angle between | {{ shape: triangle-two-sides }} | $\dfrac{1}{2}ab\sin C$ |
+| Two angles and the side between | {{ shape: triangle-two-angles }} | $\dfrac{c^2\sin A\sin B}{2\sin(A + B)}$ |
+| Three sides (Heron) | {{ shape: triangle-three-sides }} | $\sqrt{s(s - a)(s - b)(s - c)}$<br>$s = \dfrac{a + b + c}{2}$ |
+| Three vertices | {{ shape: triangle-vertices }} | $\dfrac{1}{2}\lvert x_1(y_2 - y_3) + x_2(y_3 - y_1)$<br>$\qquad + \, x_3(y_1 - y_2) \rvert$ |
+| Inscribed circle | {{ shape: triangle-incircle }} | $rs$<br>$s = \dfrac{a + b + c}{2}$ |
+| Circumscribed circle | {{ shape: triangle-circumcircle }} | $\dfrac{abc}{4R}$ |
+
+: Parallelograms
+| Figure | Drawn | Area |
+| --- | :-: | --- |
+| Square | {{ shape: square }} | $a^2 = \dfrac{1}{2}d^2$ |
+| Rectangle | {{ shape: rectangle }} | $lw$ |
+| Parallelogram | {{ shape: parallelogram }} | $bh = ab\sin\theta$ |
+| Rhombus | {{ shape: rhombus }} | $\dfrac{1}{2}d_1 d_2$ |
+
+: Other Quadrilaterals
+| Figure | Drawn | Area |
+| --- | :-: | --- |
+| Trapezoid | {{ shape: trapezoid }} | $\dfrac{1}{2}(a + b)h$ |
+| Kite | {{ shape: kite }} | $\dfrac{1}{2}d_1 d_2$ |
+| Any quadrilateral | {{ shape: quadrilateral }} | $\dfrac{1}{2}d_1 d_2\sin\theta$ |
+| Cyclic quadrilateral (Brahmagupta) | {{ shape: cyclic-quadrilateral }} | $\sqrt{(s - a)(s - b)(s - c)(s - d)}$<br>$s = \dfrac{a + b + c + d}{2}$ |
+
+: Regular Polygons with $n$ Sides
+| Known | Drawn | Area |
+| --- | :-: | --- |
+| Side | {{ shape: regular-polygon-side }} | $\dfrac{ns^2}{4\tan(\pi/n)}$ |
+| Side and apothem | {{ shape: regular-polygon-apothem }} | $\dfrac{1}{2}nsa = \dfrac{1}{2}aP$ |
+| Circumradius | {{ shape: regular-polygon-radius }} | $\dfrac{1}{2}nR^2\sin\dfrac{2\pi}{n}$ |
+
+: Regular Polygons by Name
+| Polygon | Drawn | Area |
+| --- | :-: | --- |
+| Pentagon | {{ shape: pentagon }} | $\dfrac{\sqrt{25 + 10\sqrt{5}}}{4}s^2$ |
+| Hexagon | {{ shape: hexagon }} | $\dfrac{3\sqrt{3}}{2}s^2$ |
+| Octagon | {{ shape: octagon }} | $2(1 + \sqrt{2})s^2$ |
+| Decagon | {{ shape: decagon }} | $\dfrac{5\sqrt{5 + 2\sqrt{5}}}{2}s^2$ |
+| Dodecagon | {{ shape: dodecagon }} | $3(2 + \sqrt{3})s^2$ |
+
+: Circles
+| Figure | Drawn | Area |
+| --- | :-: | --- |
+| Circle | {{ shape: circle }} | $\pi r^2 = \dfrac{1}{4}\pi d^2$ |
+| Semicircle | {{ shape: semicircle }} | $\dfrac{1}{2}\pi r^2$ |
+| Sector | {{ shape: sector }} | $\dfrac{1}{2}r^2\theta$ |
+| Segment | {{ shape: circular-segment }} | $\dfrac{1}{2}r^2(\theta - \sin\theta)$ |
+| Annulus | {{ shape: annulus }} | $\pi(R^2 - r^2)$ |
+| Sector of an annulus | {{ shape: annular-sector }} | $\dfrac{1}{2}\theta(R^2 - r^2)$ |
+
+: Ellipses and Parabolas
+| Figure | Drawn | Area |
+| --- | :-: | --- |
+| Ellipse | {{ shape: ellipse }} | $\pi ab$ |
+| Segment of a parabola | {{ shape: parabolic-segment }} | $\dfrac{2}{3}bh$ |
+
+: Prisms
+| Solid | Drawn | Volume | Surface Area |
+| --- | :-: | --- | --- |
+| Cube | {{ shape: cube }} | $a^3$ | $6a^2$ |
+| Rectangular box | {{ shape: box }} | $lwh$ | $2(lw + lh + wh)$ |
+| Any prism | {{ shape: prism }} | $Bh$ | $2B + Ph$ |
+| Triangular prism | {{ shape: triangular-prism }} | $\dfrac{1}{2}abh$ | $ab + (a + b + c)h$ |
+| Hexagonal prism | {{ shape: hexagonal-prism }} | $\dfrac{3\sqrt{3}}{2}s^2 h$ | $3\sqrt{3}s^2 + 6sh$ |
+| Oblique prism | {{ shape: oblique-prism }} | $Bh$ | $2B + pl$ |
+
+: Cylinders
+| Solid | Drawn | Volume | Surface Area |
+| --- | :-: | --- | --- |
+| Cylinder | {{ shape: cylinder }} | $\pi r^2 h$ | $2\pi r^2 + 2\pi rh$ |
+| Hollow cylinder | {{ shape: hollow-cylinder }} | $\pi(R^2 - r^2)h$ | $2\pi(R^2 - r^2) + 2\pi(R + r)h$ |
+| Oblique cylinder | {{ shape: oblique-cylinder }} | $\pi r^2 h$ | $2\pi r^2 + pl$ |
+
+: Pyramids and Cones
+| Solid | Drawn | Volume | Surface Area |
+| --- | :-: | --- | --- |
+| Any pyramid | {{ shape: pyramid }} | $\dfrac{1}{3}Bh$ | $B + \dfrac{1}{2}Pl$ if regular |
+| Square pyramid | {{ shape: square-pyramid }} | $\dfrac{1}{3}a^2 h$ | $a^2 + 2al$<br>$l = \sqrt{h^2 + \dfrac{1}{4}a^2}$ |
+| Cone | {{ shape: cone }} | $\dfrac{1}{3}\pi r^2 h$ | $\pi r^2 + \pi rl$<br>$l = \sqrt{r^2 + h^2}$ |
+| Frustum of a cone | {{ shape: cone-frustum }} | $\dfrac{1}{3}\pi h(R^2 + Rr + r^2)$ | $\pi(R^2 + r^2) + \pi(R + r)l$<br>$l = \sqrt{h^2 + (R - r)^2}$ |
+| Frustum of a pyramid | {{ shape: pyramid-frustum }} | $\dfrac{1}{3}h\left(B_1 + B_2 + \sqrt{B_1 B_2}\right)$ | $B_1 + B_2 + \dfrac{1}{2}(P_1 + P_2)l$ if regular |
+
+: Spheres
+| Solid | Drawn | Volume | Surface Area |
+| --- | :-: | --- | --- |
+| Sphere | {{ shape: sphere }} | $\dfrac{4}{3}\pi r^3$ | $4\pi r^2$ |
+| Hemisphere | {{ shape: hemisphere }} | $\dfrac{2}{3}\pi r^3$ | $3\pi r^2$ |
+| Cap | {{ shape: spherical-cap }} | $\dfrac{1}{3}\pi h^2(3r - h)$ | $2\pi rh + \pi a^2$ |
+| Segment | {{ shape: spherical-segment }} | $\dfrac{1}{6}\pi h(3a^2 + 3b^2 + h^2)$ | $2\pi rh + \pi(a^2 + b^2)$ |
+| Sector | {{ shape: spherical-sector }} | $\dfrac{2}{3}\pi r^2 h$ | $\pi r(2h + a)$ |
+| Shell | {{ shape: spherical-shell }} | $\dfrac{4}{3}\pi(R^3 - r^3)$ | $4\pi(R^2 + r^2)$ |
+
+: Other Round Solids
+| Solid | Drawn | Volume | Surface Area |
+| --- | :-: | --- | --- |
+| Ellipsoid | {{ shape: ellipsoid }} | $\dfrac{4}{3}\pi abc$ | no elementary formula |
+| Paraboloid | {{ shape: paraboloid }} | $\dfrac{1}{2}\pi r^2 h$ | $\pi r^2 + \dfrac{\pi r}{6h^2}\left((r^2 + 4h^2)^{3/2} - r^3\right)$ |
+| Torus | {{ shape: torus }} | $2\pi^2 Rr^2$ | $4\pi^2 Rr$ |
+
+: The Five Regular Solids
+| Solid | Drawn | Volume | Surface Area |
+| --- | :-: | --- | --- |
+| Tetrahedron | {{ shape: tetrahedron }} | $\dfrac{\sqrt{2}}{12}a^3$ | $\sqrt{3}a^2$ |
+| Cube | {{ shape: cube }} | $a^3$ | $6a^2$ |
+| Octahedron | {{ shape: octahedron }} | $\dfrac{\sqrt{2}}{3}a^3$ | $2\sqrt{3}a^2$ |
+| Dodecahedron | {{ shape: dodecahedron }} | $\dfrac{15 + 7\sqrt{5}}{4}a^3$ | $3\sqrt{25 + 10\sqrt{5}}\,a^2$ |
+| Icosahedron | {{ shape: icosahedron }} | $\dfrac{5(3 + \sqrt{5})}{12}a^3$ | $5\sqrt{3}a^2$ |
+
 ### Area of Rectangles & Triangles {#area-basic}
 kind: formula
 prereqs: multiplication, multiplying-fractions

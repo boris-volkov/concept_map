@@ -214,6 +214,27 @@ A table cell or a quiz question can hold a small one, written with semicolons fo
 
 An edge or a vertex that isn't in the graph shows up in **content problems**, so a `heavy:` or `path:` line can't quietly point at nothing. That makes it worth using `classes:` and `path:` for what a diagram claims: a colouring or a walk that is written out is checked.
 
+## Drawings of shapes
+
+A plane figure or a solid is drawn by its name, with the letters its formulas use, in a table cell or on a line of its own, as in *Table of Areas & Volumes*:
+
+```markdown
+| Cone | {{ shape: cone }} | $\dfrac{1}{3}\pi r^2 h$ |
+```
+
+| Kind | Names |
+| --- | --- |
+| Triangles | `triangle`, `right-triangle`, `isosceles-triangle`, `equilateral-triangle`, `triangle-two-sides`, `triangle-two-angles`, `triangle-three-sides`, `triangle-vertices`, `triangle-incircle`, `triangle-circumcircle` |
+| Quadrilaterals | `square`, `rectangle`, `parallelogram`, `rhombus`, `trapezoid`, `kite`, `quadrilateral`, `cyclic-quadrilateral` |
+| Regular polygons | `regular-polygon-side`, `regular-polygon-apothem`, `regular-polygon-radius`, `pentagon`, `hexagon`, `octagon`, `decagon`, `dodecagon` |
+| Curved regions | `circle`, `semicircle`, `sector`, `circular-segment`, `annulus`, `annular-sector`, `ellipse`, `parabolic-segment` |
+| Prisms and cylinders | `cube`, `box`, `prism`, `triangular-prism`, `hexagonal-prism`, `oblique-prism`, `cylinder`, `hollow-cylinder`, `oblique-cylinder` |
+| Pyramids and cones | `pyramid`, `square-pyramid`, `cone`, `cone-frustum`, `pyramid-frustum` |
+| Round solids | `sphere`, `hemisphere`, `spherical-cap`, `spherical-segment`, `spherical-sector`, `spherical-shell`, `ellipsoid`, `paraboloid`, `torus` |
+| Regular solids | `tetrahedron`, `cube`, `octahedron`, `dodecahedron`, `icosahedron` |
+
+A name that isn't one of these shows up in **content problems**. A new shape is a new entry in `SHAPES`, in `js/shape.js`.
+
 ## Quizzes
 
 A quiz is a fenced block marked `quiz`, anywhere in a concept's explanation. It is drawn at the end of the concept's entry, and a small **?** appears on the concept's card, which opens the concept right there, at its quiz.
