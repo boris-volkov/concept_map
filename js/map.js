@@ -1,11 +1,12 @@
 // The map on screen: one element per card, open topic and open file, and a layer of lines under
-// the cards, which run only between the domains. Inside an open domain, where a thing stands says
-// what comes before it (see layout.js), and a selection lights up the rest.
+// the cards, which run between the domains and between a domain's topics. Deeper down, where a
+// thing stands says what comes before it (see layout.js), and a selection lights up the rest.
 //
 // The domains stand in rows, each below those it builds on, with the lines between them running
-// down the gaps. An open domain keeps its card in place and floats its frame out to the right of
-// them all, clear of those lines. Everything else opens where it sits, the way a folder opens in a
-// file manager's tree: a topic into a frame around what it holds, a concept into its entry, the card
+// down the gaps, and a domain's topics stand the same way in its frame. An open one keeps its
+// card in place and floats its frame out to the right of them all, clear of those lines. Everything
+// else opens where it sits, the way a folder opens in a file manager's tree: a folder into a frame
+// around what it holds, a concept into its entry, the card
 // growing into the full text while the map makes room for it. The "i" on a topic's frame opens
 // the topic's README at the top of the frame. Nothing on the map opens anywhere else.
 //
@@ -14,7 +15,7 @@
 
 import { computeLayout, FRAME_PAD, DOMAINS } from './layout.js'
 import {
-  ancestors, isAncestor, descendants, domainOf, visibleRep, visibleEdges, prerequisitesOf, dependentsOf,
+  ancestors, isAncestor, descendants, visibleRep, visibleEdges, prerequisitesOf, dependentsOf,
   externalPrereqs, externalDependents, finder,
 } from './model.js'
 import { renderInline, plainText, esc } from './markdown.js'
@@ -32,7 +33,8 @@ const MAX_COLUMNS = 4
 const README_VIEW = 440 // how much of a README a view of it takes in, from its left edge
 const PHONE = matchMedia('(max-width: 760px)') // as in the stylesheet: a README stays as wide as the phone
 const ENTRY_COLUMN_GAP = 32 // as in the stylesheet
-const stubKey = n => 'spine:' + n.id // an open domain's card, left in its place among the domains
+const stubKey = n => 'spine:' + n.id // an open folder's card, left in its place in its drawing
+const popsOut = n => n.depth <= 1 && n.children.length > 0 // a domain, or a folder of a domain: see layoutGraph
 const r1 = v => Math.round(v * 10) / 10
 
 export class AtlasMap {
@@ -55,9 +57,9 @@ export class AtlasMap {
     this.sizes = new Map() // id → its size as a closed card
     this.fileSizes = new Map() // key → the size of an open file or README, which changes with what it shows
     this.heads = new Map()
-    this.spine = new Map() // domain id → the place of its card
+    this.spine = new Map() // id → the place of its card, in a drawing
     this.routes = new Map() // edge key → the route of a line (see layoutDomains and layoutSheet)
-    this.tethers = new Map() // domain id → the <path> tying its card to its open frame
+    this.tethers = new Map() // id → the <path> tying a card to its open frame
     this.selected = null
     this.hl = null
     this.camera = camera ?? new Camera(viewport, world, () => this.cameraMoved())
@@ -204,12 +206,12 @@ export class AtlasMap {
     el = document.createElement('div')
     el.dataset.id = key
     el.dataset.node = n.id
-    el.className = 'node group depth-0 stub'
+    el.className = `node group depth-${n.depth} stub`
     el.style.setProperty('--c', n.color)
     el.tabIndex = 0
     el.setAttribute('role', 'button')
     el.setAttribute('aria-label', `${n.plainTitle}, open beside this card: close it`)
-    el.title = 'Close this subject'
+    el.title = `Close this ${n.depth === 0 ? 'subject' : 'topic'}`
     el.innerHTML = groupFace(n)
     this.markProgress(n, el)
     this.world.append(el)
@@ -325,7 +327,7 @@ export class AtlasMap {
   relayout() {
     const visible = this.visibleNodes()
     const readmes = visible.filter(n => this.hasReadme(n))
-    const stubs = this.atlas.roots.filter(d => this.isOpen(d))
+    const stubs = visible.filter(n => popsOut(n) && this.isOpen(n))
     const keep = new Set([...visible.map(n => n.id), ...readmes.map(readmeKey), ...stubs.map(stubKey)])
     for (const [key, el] of this.els) {
       if (keep.has(key)) continue
@@ -398,9 +400,9 @@ export class AtlasMap {
 
   // ---- lines ----
 
-  // Lines run only where a layout made room for them: between the domains, and between the cards
-  // of a sheet, where there are few enough to follow. Inside an open domain there are none: where
-  // a thing stands says what comes before it, and lighting up a selection says the rest.
+  // Lines run only where a layout made room for them: between the domains, between a domain's
+  // topics, and between the cards of a sheet, where there are few enough to follow. Deeper down
+  // there are none: where a thing stands says what comes before it, and a selection says the rest.
   drawEdges() {
     this.edges = visibleEdges(this.atlas, n => this.isOpen(n), this.selected)
     for (const key of this.edges.keys()) if (!this.routes.has(key)) this.edges.delete(key)
@@ -439,11 +441,12 @@ export class AtlasMap {
     this.drawTethers()
   }
 
-  // An open domain's card, at the end of its row (see layoutDomains), is tied to its frame by a
-  // line from its side to the frame's head. Where two domains of one row are open, the inner one's
-  // line runs under the other card instead, and into its frame's side.
+  // An open folder's card (see layoutGraph) is tied to its frame by a line from its side to the
+  // frame's head. Where two folders of one row are open, the inner one's line runs under the other
+  // card instead, and into its frame's side.
   drawTethers() {
-    const open = this.atlas.roots.filter(d => this.isOpen(d) && this.spine.has(d.id) && this.boxes.has(d.id))
+    const open = [...this.spine.keys()].map(id => this.atlas.nodes.get(id))
+      .filter(d => d && popsOut(d) && this.isOpen(d) && this.boxes.has(d.id))
     for (const [id, p] of this.tethers) {
       if (open.some(d => d.id === id)) continue
       p.remove()
@@ -460,7 +463,8 @@ export class AtlasMap {
       }
       const card = this.spine.get(d.id)
       const frame = this.boxes.get(d.id)
-      const outer = ![...this.spine.values()].some(o => o !== card && o.y === card.y && o.x > card.x)
+      const beside = (d.parent?.children ?? this.atlas.roots).map(k => this.spine.get(k.id)).filter(Boolean)
+      const outer = !beside.some(o => o !== card && o.y === card.y && o.x > card.x)
       if (outer) {
         const [x1, y1, x2, y2] = [card.x + card.w, card.y + 26, frame.x, frame.y + 26]
         const c = (x2 - x1) / 2
@@ -551,9 +555,10 @@ export class AtlasMap {
   edgeState(e) {
     const h = this.hl
     if (!h) return ''
-    // A line between subjects, on the way to the selection's subject or on from it.
-    if (e.subjects) {
-      const s = domainOf(h.sel)
+    // A stated line, on the way to the subject or topic that holds the selection, or on from it.
+    if (e.stated) {
+      const s = [h.sel, ...ancestors(h.sel)].find(a => a.parent === e.to.parent)
+      if (!s) return 'dim'
       if (e.to === s || s.groundwork.has(e.to)) return 'pre'
       return e.from === s || e.from.groundwork.has(s) ? 'post' : 'dim'
     }
@@ -647,11 +652,11 @@ export class AtlasMap {
     this.selected = null
     const boxes = this.relayout()
     if (had) this.onSelect?.(null)
-    // The card stays where it was on the screen. A topic's frame grows out of it; a domain's
-    // floats out beside the domains, and only if its head would be out of sight does the map
+    // The card stays where it was on the screen. A folder deep in a domain grows out of it; any
+    // other floats out to the right, and only if its head would be out of sight does the map
     // move, as little as it can, to show it.
-    this.settle(n.depth === 0 ? stubKey(n) : n.id, before)
-    if (n.depth === 0) {
+    this.settle(popsOut(n) ? stubKey(n) : n.id, before)
+    if (popsOut(n)) {
       const frame = boxes.get(n.id)
       this.camera.moveTo(this.camera.nudge({ ...frame, w: Math.min(frame.w, 300), h: FRAME_PAD.top }))
     }
@@ -661,9 +666,9 @@ export class AtlasMap {
   collapse(n) {
     // Closed with the keyboard, from its frame or from its card: the focus goes to its card.
     const focused = [n.id, stubKey(n)].some(key => this.els.get(key)?.contains(document.activeElement))
-    // Where its card will be: an open domain's card stands in for it, and stays still; a topic
-    // folds up into the corner of its frame.
-    const before = this.boxes.get(n.depth === 0 ? stubKey(n) : n.id)
+    // Where its card will be: a card left in a drawing stands in for it, and stays still; a folder
+    // deeper down folds up into the corner of its frame.
+    const before = this.boxes.get(popsOut(n) ? stubKey(n) : n.id)
     for (const d of [n, ...descendants(n)]) {
       this.open.delete(d.id)
       this.readmes.delete(d.id)
@@ -676,8 +681,8 @@ export class AtlasMap {
     this.relayout()
     if (lost) this.onSelect?.(null)
     this.settle(n.id, before)
-    // A domain closed from its frame, far from its card: the map moves only as far as shows the card.
-    if (n.depth === 0) this.camera.moveTo(this.camera.nudge(this.boxes.get(n.id)))
+    // Closed from its frame, far from its card: the map moves only as far as shows the card.
+    if (popsOut(n)) this.camera.moveTo(this.camera.nudge(this.boxes.get(n.id)))
     if (focused) this.els.get(n.id)?.focus({ preventScroll: true })
     this.onView?.()
   }

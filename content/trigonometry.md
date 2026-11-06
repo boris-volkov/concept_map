@@ -106,6 +106,7 @@ Draw the right triangle, with the angle measured from the horizontal. Choose the
 **Example.** From 50 m away, the top of a tower is at $40^\circ$ elevation, so its height is $50\tan 40^\circ \approx 42$ m.
 
 ## Angles & the Unit Circle {#unit-circle-topic}
+built-on: right-triangle-trig
 rows: kinds
 wrap: 6
 
@@ -216,6 +217,7 @@ Why: The reference angle is $60^\circ$, and cosine is negative in quadrant II.
 ```
 
 ## Angular Motion {#angular-motion}
+built-on: unit-circle-topic
 rows: kinds
 wrap: 6
 
@@ -470,6 +472,7 @@ Why: $12\omega = 36 \cdot 40$, so $\omega = 120$.
 ```
 
 ## Trigonometric Functions {#trig-functions}
+built-on: unit-circle-topic
 rows: kinds
 wrap: 6
 
@@ -657,6 +660,7 @@ $$A = \frac{\max - \min}{2}, \quad D = \frac{\max + \min}{2},$$
 take $B = \frac{2\pi}{\text{period}}$, and set $C$ from where the cycle starts. Tides, daylight and Ferris wheels are all fitted this way.
 
 ## Identities & Equations {#trig-identities}
+built-on: trig-functions
 rows: kinds
 wrap: 6
 
@@ -895,6 +899,7 @@ prereqs: fundamental-identities
 $$\tan x \cos x = \frac{\sin x}{\cos x}\cos x = \sin x.$$
 
 ## Oblique Triangles
+built-on: unit-circle-topic
 rows: kinds
 wrap: 6
 
@@ -957,6 +962,7 @@ Why: $a^2 = 25 + 64 - 40 = 49$.
 ```
 
 ## Polar & Parametric {#polar-and-parametric}
+built-on: trig-functions
 rows: kinds
 wrap: 6
 
@@ -1028,6 +1034,7 @@ Solve one equation for $t$ and substitute into the other:
 $$x = t + 1,\ y = t^2 \implies y = (x - 1)^2.$$
 
 ## Hyperbolic Functions {#hyperbolic-functions}
+built-on: trig-identities
 rows: kinds
 wrap: 6
 

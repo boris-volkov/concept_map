@@ -412,6 +412,7 @@ Why: One is connected and the other is not, and an isomorphism preserves paths.
 ```
 
 ## Connectivity {#connectivity}
+built-on: graph-basics
 rows: kinds
 wrap: 6
 
@@ -666,6 +667,7 @@ Why: It has 5-cycles.
 ```
 
 ## Trees {#trees}
+built-on: connectivity
 rows: kinds
 wrap: 6
 
@@ -969,6 +971,7 @@ Why: $m^{n-1} n^{m-1} = 2^2 \cdot 3^1 = 12$.
 ```
 
 ## Euler Tours & Hamilton Cycles {#traversals}
+built-on: connectivity
 rows: kinds
 wrap: 6
 
@@ -1190,6 +1193,7 @@ For a short tour of a complete weighted graph: start anywhere, go each time to t
 It is fast, and usually within about a quarter of the best tour, but there is no constant bound: on some inputs it does arbitrarily badly by comparison.
 
 ## Planar Graphs {#planar-graphs}
+built-on: trees
 rows: kinds
 wrap: 6
 
@@ -1422,6 +1426,7 @@ Why: It has 14 edges, and $3V - 6 = 12$. It also contains $K_5$.
 ```
 
 ## Graph Colouring {#graph-colouring}
+built-on: graph-basics
 rows: kinds
 wrap: 6
 
@@ -1718,6 +1723,7 @@ Why: $A, B, C$ form a triangle, so at least 3; and $B$ and $D$ can share a slot.
 ```
 
 ## Matchings & Flows {#matchings-and-flows}
+built-on: directed-graphs
 rows: kinds
 wrap: 6
 
@@ -1984,6 +1990,7 @@ Why: $a$ in 1, $b$ in 2 and $c$ in 3.
 ```
 
 ## Directed Graphs {#directed-graphs}
+built-on: connectivity
 rows: kinds
 wrap: 6
 
@@ -2173,6 +2180,7 @@ Why: The scores sum to $\binom{5}{2} = 10$.
 ```
 
 ## Shortest Paths {#shortest-paths}
+built-on: connectivity
 rows: kinds
 wrap: 6
 
@@ -2273,6 +2281,7 @@ prereqs: negative-cycles, shortest-path-substructure
 After step $k$, $d_{ij}$ is the shortest length using only $v_1, \dots, v_k$ as intermediate vertices.
 
 ## Extremal Graphs & Ramsey Theory {#extremal-and-ramsey}
+built-on: graph-basics
 rows: kinds
 wrap: 6
 

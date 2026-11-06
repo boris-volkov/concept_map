@@ -152,6 +152,7 @@ Every non-empty set of real numbers that is bounded above has a least upper boun
 The rationals lack this: $\{q \in \mathbb{Q} : q^2 < 2\}$ has no least upper bound in $\mathbb{Q}$. Completeness is what makes limits, the [[ivt|Intermediate Value Theorem]] and the [[evt|Extreme Value Theorem]] work.
 
 ## Consequences of the Axioms {#first-theorems}
+built-on: axioms
 prereqs: proof
 
 Theorems proved from the axioms of the real numbers, each with its proof.
@@ -595,6 +596,7 @@ Treat a part of an expression as a single quantity, and look for a known pattern
 $$\begin{aligned} x^4 - y^4 &= (x^2)^2 - (y^2)^2 \\ &= (x^2 - y^2)(x^2 + y^2). \end{aligned}$$
 
 ## Equations & Inequalities {#equations}
+built-on: expressions
 rows: kinds
 wrap: 6
 
@@ -746,6 +748,7 @@ $$60\ \frac{\text{mi}}{\text{h}} \cdot \frac{5280\ \text{ft}}{1\ \text{mi}} \cdo
 An answer in the wrong units shows a mistake in the setup.
 
 ## Functions {#functions}
+built-on: equations, exponents-and-radicals
 
 A function $f : A \to B$ assigns to each element $x$ of a set $A$, its domain, exactly one element $f(x)$ of a set $B$.
 
@@ -2781,6 +2784,7 @@ $$1.15^t = \left(1.15^{1/12}\right)^{12t} \approx 1.0117^{12t},$$
 about 1.17% a month.
 
 ## Systems of Equations {#systems}
+built-on: equations
 rows: kinds
 wrap: 6
 
@@ -2915,6 +2919,7 @@ Name two unknowns, and write one equation for each fact.
 **Example.** 20 tickets, adults at \$8 and children at \$5, bring in \$130: $a + c = 20$ and $8a + 5c = 130$, so $a = 10$ and $c = 10$.
 
 ## Exponents & Radicals
+built-on: expressions
 rows: kinds
 wrap: 6
 
@@ -3030,6 +3035,7 @@ Why: $\sqrt[3]{8} = 2$, and $2^2 = 4$.
 ```
 
 ## Conic Sections
+built-on: functions
 rows: kinds
 wrap: 6
 
@@ -3153,6 +3159,7 @@ prereqs: ellipse-features, hyperbola-features
 For an ellipse, mark the centre, step $a$ across and $b$ up, and join the four points in an oval. For a hyperbola, draw the box of sides $2a$ and $2b$ about the centre, extend its diagonals as the asymptotes, and draw the branches from the vertices.
 
 ## Complex Numbers {#complex}
+built-on: exponents-and-radicals
 rows: kinds
 wrap: 6
 
@@ -3276,6 +3283,7 @@ $$x^2 + 4 = (x + 2i)(x - 2i).$$
 Find the roots with the quadratic formula, and write the factors.
 
 ## Sequences & Series
+built-on: equations, exponents-and-radicals
 rows: kinds
 wrap: 6
 

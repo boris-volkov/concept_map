@@ -66,6 +66,7 @@ Round each number to one significant figure, or to the nearest power of 10, and 
 So $48 \times 212 \approx 50 \times 200 = 10000$; the exact answer is 10176. Use this to check a calculation, or to estimate what can't be measured, such as how many piano tuners a city has.
 
 ## Operations
+built-on: whole-numbers
 
 The four operations, how they undo each other, and the order to do them in.
 
@@ -132,6 +133,7 @@ Thus
 $$2 + 3 \times 4 = 2 + 12 = 14.$$
 
 ## Factors & Multiples
+built-on: operations
 
 How whole numbers break apart into products: the number theory behind fractions.
 
@@ -223,6 +225,7 @@ Why: $8 = 2^3$ and $12 = 2^2 \cdot 3$, so $2^3 \cdot 3 = 24$.
 ```
 
 ## Fractions
+built-on: factors-and-multiples
 
 Parts of a whole, and the arithmetic of parts.
 
@@ -319,6 +322,7 @@ For $b, c, d \ne 0$:
 $$\frac{a}{b} \div \frac{c}{d} = \frac{a}{b} \cdot \frac{d}{c} = \frac{ad}{bc}.$$
 
 ## Decimals & Percents
+built-on: fractions
 
 Fractions written in base ten, and "per hundred".
 
@@ -378,6 +382,7 @@ Very large and very small numbers written as a number between 1 and 10 times a p
 $$\begin{aligned} 3{,}000{,}000 &= 3 \times 10^6, \\ 0.0004 &= 4 \times 10^{-4}. \end{aligned}$$
 
 ## Ratios & Rates
+built-on: fractions
 
 Comparing quantities by dividing them.
 
@@ -406,6 +411,7 @@ prereqs: unit-rates, multiplying-fractions
 Multiply by fractions that equal 1, like $\frac{60\text{ min}}{1\text{ h}}$, arranged so the units you don't want cancel out.
 
 ## Integers
+built-on: operations
 
 The whole numbers and their negatives.
 
@@ -439,6 +445,7 @@ The sign of the answer comes from the signs of the two numbers:
 - different signs give a negative: $(-12) \div 3 = -4$.
 
 ## Powers & Roots
+built-on: operations
 
 Repeated multiplication, and undoing it.
 
@@ -471,6 +478,7 @@ $$\sqrt{n} \approx a + \frac{n - a^2}{2a}.$$
 For instance, $\sqrt{10} \approx 3 + \frac{1}{6} \approx 3.17$; the exact value is 3.162. It always comes out slightly high, and works best when $n$ is close to $a^2$.
 
 ## Number Systems
+built-on: integers, decimals-and-percents
 kind: definition
 prereqs: negative-numbers, fractions-to-decimals, square-roots
 

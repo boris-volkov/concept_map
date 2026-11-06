@@ -230,6 +230,7 @@ Statements $A$ and $B$ are logically equivalent, written $A \equiv B$, when they
 Equivalent statements can replace each other anywhere, inside a bigger statement or in a proof. The [[laws-of-logic|laws of logic]] are the equivalences used most.
 
 ## Laws of Logic {#laws-of-logic}
+built-on: connectives
 
 The logical equivalences used to rewrite statements, each checked by a truth table.
 
@@ -334,6 +335,7 @@ Why: $\neg(p \to q) \equiv p \land \neg q$. Here the negation is true, since $n 
 ```
 
 ## Arguments {#arguments}
+built-on: connectives
 
 Which conclusions follow from which premises: valid argument forms, and the invalid ones that look like them.
 
@@ -526,6 +528,7 @@ It mistakes a conditional for its inverse. In the row with $p$ false and $q$ tru
 **Example.** If $n$ is divisible by 4, then $n$ is even; 6 is not divisible by 4; but 6 is even.
 
 ## Predicates & Quantifiers {#quantifiers}
+built-on: connectives
 
 Statements about all or some of the things in a domain: the language in which set theory, and the rest of mathematics, is written.
 
@@ -615,6 +618,7 @@ Universal generalisation is why a proof that something holds for every $x$ begin
 **Example.** Every real number has a non-negative square, and $-3$ is a real number, so $(-3)^2 \ge 0$: universal instantiation, then [[modus-ponens|modus ponens]].
 
 ## Proof {#proof}
+built-on: arguments, quantifiers
 
 How a mathematician knows something is true: by deducing it, step by step, from axioms, definitions and theorems already proved.
 

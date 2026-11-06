@@ -163,6 +163,7 @@ is a set, so $R \in V$, and then $R \in R$ exactly when $R \notin R$: a contradi
 Russell found this in 1901 in Frege's theory of sets, which let any property define a set: the set of all sets that are not elements of themselves can neither be nor not be an element of itself. ZFC avoids it by building sets only from sets already there.
 
 ## Operations on Sets {#set-operations}
+built-on: sets
 
 Building new sets from old: union, intersection, difference and complement, power sets and products.
 
@@ -311,6 +312,7 @@ $$\{1, 2\} \times \{x, y\} = \{(1, x), (1, y), (2, x), (2, y)\}.$$
 If $A$ has $m$ elements and $B$ has $n$, then $A \times B$ has $mn$. The [[coordinate-plane|coordinate plane]] is $\mathbb{R} \times \mathbb{R} = \mathbb{R}^2$.
 
 ## Relations & Functions {#relations-and-functions}
+built-on: set-operations
 
 Relations and functions, defined as sets of ordered pairs.
 
@@ -415,6 +417,7 @@ $$f[\{-2, 2\}] = \{4\}, \quad f^{-1}[\{4\}] = \{-2, 2\}, \quad f^{-1}[\{-1\}] = 
 Preimages keep unions, intersections and complements: $f^{-1}[Y \cap Z] = f^{-1}[Y] \cap f^{-1}[Z]$, and so on. Images keep unions, but not always intersections: for $x^2$, $f[\{-2\}] \cap f[\{2\}] = \{4\}$, while $f[\{-2\} \cap \{2\}] = \varnothing$.
 
 ## The Natural Numbers {#naturals-as-sets}
+built-on: set-operations
 
 How the natural numbers, and from them the rest of mathematics, are built out of sets.
 
@@ -443,6 +446,7 @@ With successor $S(n) = n \cup \{n\}$, the set $\omega$ satisfies the [[peano-axi
 So arithmetic, which Peano's axioms found, can be built inside set theory: addition and multiplication are defined on $\omega$ by recursion, as they are from the Peano axioms.
 
 ## Cardinality {#cardinality}
+built-on: relations-and-functions, naturals-as-sets
 
 The sizes of sets, finite and infinite, compared by matching their elements one to one.
 

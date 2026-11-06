@@ -180,24 +180,28 @@ export function buildAtlas({ index, files }) {
   }
   for (const n of nodes.values()) for (const p of n.prereqs) p.dependents.push(n)
 
-  // What a subject can't be learned without, which is for its author to say (see prepare in model.js).
+  // What a subject, or a topic of a subject, can't be learned without, which is for its author to
+  // say (see prepare in model.js). It names one of those beside it.
   for (const n of nodes.values()) {
     n.builtOn = []
     const m = n.meta.builtOn
     if (!m) continue
-    if (n.depth !== 0) {
-      report('warning', n.file, m.line, `“built-on:” only means something on a subject, and “${n.title}” isn’t one.`, n.id)
+    if (n.depth > 1) {
+      report('warning', n.file, m.line, `“built-on:” only means something on a subject or a topic of one, and “${n.title}” is deeper.`, n.id)
       continue
     }
+    const beside = n.depth ? n.parent.children : roots
     for (const token of m.value.split(/[\s,;]+/).filter(Boolean)) {
       const pid = token.toLowerCase()
       const p = nodes.get(pid)
       if (p === n) report('error', n.file, m.line, `“${n.title}” lists itself under “built-on:”.`, n.id)
-      else if (p?.depth !== 0) report('error', n.file, m.line, `“${n.title}” is built on “${pid}”, but no subject has that id${suggest(pid, new Map(roots.map(d => [d.id, d])))}.`, n.id)
-      else if (!n.builtOn.includes(p)) n.builtOn.push(p)
+      else if (!beside.includes(p)) {
+        const known = new Map(beside.map(d => [d.id, d]))
+        report('error', n.file, m.line, `“${n.title}” is built on “${pid}”, but nothing beside it has that id${suggest(pid, known)}.`, n.id)
+      } else if (!n.builtOn.includes(p)) n.builtOn.push(p)
     }
   }
-  for (const n of roots) {
+  for (const n of nodes.values()) {
     const seen = new Set()
     const todo = [...n.builtOn]
     while (todo.length) {
@@ -206,14 +210,7 @@ export function buildAtlas({ index, files }) {
       seen.add(p)
       todo.push(...p.builtOn)
     }
-    if (seen.has(n)) report('error', n.file, n.meta.builtOn.line, `“${n.title}” is built on itself, through its “built-on:” subjects.`, n.id)
-  }
-
-  for (const n of nodes.values()) {
-    for (const m of n.body.matchAll(/\[\[([^\]|]+?)(?:\|[^\]]*)?\]\]/g)) {
-      const id = m[1].trim().toLowerCase()
-      if (!nodes.has(id)) report('warning', n.file, n.line, `“${n.title}” links to [[${id}]], but no concept has that id${suggest(id, nodes)}.`, n.id)
-    }
+    if (seen.has(n)) report('error', n.file, n.meta.builtOn.line, `“${n.title}” is built on itself, through its “built-on:” lines.`, n.id)
   }
 
   const root = { id: '', title: index.title, children: roots, parent: null, depth: -1, isRoot: true }

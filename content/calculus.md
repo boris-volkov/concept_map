@@ -106,6 +106,7 @@ $\lim_{x \to a} f(x) = L$ if for every $\varepsilon > 0$ there is a $\delta > 0$
 $$0 < |x - a| < \delta \implies |f(x) - L| < \varepsilon.$$
 
 ## Derivatives
+built-on: limits
 
 The instantaneous rate of change: the slope of a curve at a point.
 
@@ -386,6 +387,7 @@ prereqs: power-rule
 The derivative of the derivative, $f''$, measures how the rate of change is itself changing: acceleration from velocity, or how a graph bends.
 
 ## Applications of Derivatives {#derivative-applications}
+built-on: derivatives
 
 What slopes are good for: rates, approximations, and finding the best.
 
@@ -522,6 +524,7 @@ Velocity is the derivative of position, and acceleration the derivative of veloc
 $$\begin{aligned} s(t) &= -4.9t^2 + v_0 t + s_0, \\ v(t) &= s'(t) = -9.8t + v_0, \\ a(t) &= v'(t) = -9.8. \end{aligned}$$
 
 ## Integrals
+built-on: derivatives
 
 Accumulation: adding up infinitely many infinitely thin pieces.
 
@@ -789,6 +792,7 @@ When no antiderivative can be found, approximate:
 - Simpson's rule uses parabolas.
 
 ## Applications of Integrals {#integral-applications}
+built-on: integrals
 
 Areas, volumes, lengths and totals, all as accumulations.
 
@@ -839,6 +843,7 @@ The length of a curve, adding up tiny hypotenuses:
 $$L = \int_a^b \sqrt{1 + f'(x)^2}\,dx.$$
 
 ## Differential Equations
+built-on: integrals
 
 Equations about rates of change, whose solutions are functions.
 
@@ -899,6 +904,7 @@ $$y' = ky\left(1 - \frac{y}{K}\right)$$
 gives the S-shaped curve of populations limited by resources.
 
 ## Infinite Series
+built-on: integrals
 
 Adding up infinitely many numbers, and when that makes sense.
 

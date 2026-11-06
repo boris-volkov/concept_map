@@ -77,18 +77,20 @@ export function prepare(atlas) {
     }
   }
   for (const n of [atlas.root, ...all]) n.localEdges = [...n.localEdges.values()]
-  // Subjects are the exception. A concept that cites another subject says nothing about the subject
-  // as a whole, so each says what it is built on: what someone studying alone couldn't learn it
-  // without. These alone set the subjects' rows and the lines between them.
-  atlas.root.localEdges = atlas.roots.flatMap(d => d.builtOn.map(p =>
-    ({ key: `${p.id}>${d.id}`, from: p, to: d, within: null, weight: 1, pairs: [[p, d]], subjects: true })))
-  for (const d of atlas.roots) {
-    d.groundwork = new Set() // every subject it is built on, however far back
-    const todo = [...d.builtOn]
+  // Subjects and their topics are the exception. A concept that cites another topic says nothing
+  // about the topic as a whole, so each says what it is built on: what someone studying alone
+  // couldn't learn it without. These alone set their rows and the lines between them.
+  for (const n of [atlas.root, ...atlas.roots]) {
+    n.localEdges = n.children.flatMap(k => k.builtOn.map(p =>
+      ({ key: `${p.id}>${k.id}`, from: p, to: k, within: n.isRoot ? null : n, weight: 1, pairs: [[p, k]], stated: true })))
+  }
+  for (const n of all) {
+    n.groundwork = new Set() // everything it is built on, however far back
+    const todo = [...n.builtOn]
     while (todo.length) {
       const p = todo.pop()
-      if (d.groundwork.has(p)) continue
-      d.groundwork.add(p)
+      if (n.groundwork.has(p)) continue
+      n.groundwork.add(p)
       todo.push(...p.builtOn)
     }
   }

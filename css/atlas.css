@@ -357,7 +357,7 @@ math { font-family: var(--math); font-size: 1.15em; } /* its letters are smaller
   outline-offset: 1px;
   background: color-mix(in srgb, var(--c) 13%, #fbf6e8);
 }
-/* An open domain's card stays in its place, outlined in its colour and tied by a line (drawn with
+/* An open folder's card stays in its place, outlined in its colour and tied by a line (drawn with
    the others, behind the cards) to the head of the frame it floated out into. */
 .node.group.stub {
   outline: 3px solid color-mix(in srgb, var(--c) 75%, transparent);
@@ -396,7 +396,7 @@ math { font-family: var(--math); font-size: 1.15em; } /* its letters are smaller
 
 /* A closed topic: a framed plate. */
 .node.group {
-  width: 416px; /* wide and short, as they stand in a stack: an open subject's frame holds it exactly */
+  width: 250px;
   padding: 12px 14px 13px;
   background: var(--card);
   border: 1px solid color-mix(in srgb, var(--c) 50%, var(--card-edge));

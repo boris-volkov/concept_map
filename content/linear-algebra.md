@@ -115,6 +115,7 @@ Why: $\sqrt{3^2 + 4^2}$.
 ```
 
 ## Matrices
+built-on: vectors
 rows: kinds
 wrap: 6
 
