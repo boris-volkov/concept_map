@@ -1,5 +1,6 @@
 # Algebra
 color: #8f2d2d
+built-on: arithmetic
 
 The language of unknown quantities: the rules for working with symbols that stand for numbers, and the functions built from them.
 
@@ -516,7 +517,6 @@ But $n + 1$ is a natural number too, so $s$ is not an upper bound after all. $\s
 So for every $\varepsilon > 0$ some $\frac{1}{n}$ is smaller than $\varepsilon$ (take $n > \frac{1}{\varepsilon}$), which is why $\frac{1}{n}$ [[sequence-limits|tends to zero]]. [[hilbert-continuity|Hilbert]] takes the same property as an axiom of geometry.
 
 ## Expressions
-flow: down
 rows: kinds
 wrap: 6
 
@@ -595,7 +595,6 @@ Treat a part of an expression as a single quantity, and look for a known pattern
 $$\begin{aligned} x^4 - y^4 &= (x^2)^2 - (y^2)^2 \\ &= (x^2 - y^2)(x^2 + y^2). \end{aligned}$$
 
 ## Equations & Inequalities {#equations}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -753,7 +752,6 @@ A function $f : A \to B$ assigns to each element $x$ of a set $A$, its domain, e
 The general notions first, then each family of functions: linear, polynomial, quadratic, rational, radical, exponential and logarithmic.
 
 ### Function Basics {#function-basics}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -1047,7 +1045,6 @@ prereqs: function-graphs
 The solutions of $f(x) = g(x)$ are the $x$-coordinates of the points where the graphs of $y = f(x)$ and $y = g(x)$ meet. Draw both, by hand or by calculator, and read off the crossings.
 
 ### Linear Functions
-flow: down
 rows: kinds
 wrap: 6
 
@@ -1231,7 +1228,6 @@ In a model $y = mx + b$, read $m$ as the change in $y$ per unit of $x$, with bot
 **Example.** For a taxi fare $C = 2.5m + 4$ in dollars after $m$ miles, the fare rises \$2.50 per mile from a starting charge of \$4.
 
 ### Polynomials
-flow: down
 rows: kinds
 wrap: 6
 
@@ -1642,7 +1638,6 @@ $$(x^2 + y^2)^2 = (x^2 - y^2)^2 + (2xy)^2.$$
 With $x > y$, this identity makes Pythagorean triples: $x = 2$, $y = 1$ gives $3, 4, 5$.
 
 ### Quadratics
-flow: down
 rows: kinds
 wrap: 6
 
@@ -2199,7 +2194,6 @@ $$\begin{aligned} x^4 - 5x^2 + 4 &= 0 \\ u^2 - 5u + 4 &= 0 && u = x^2 \\ (u - 1)
 so $x^2 = 1$ or $x^2 = 4$, and $x = \pm 1$ or $x = \pm 2$.
 
 ### Rational Expressions & Functions {#rational}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -2387,7 +2381,6 @@ Undo a sum of fractions: write the fraction with a constant over each linear fac
 $$\frac{5x - 1}{(x - 1)(x + 1)} = \frac{2}{x - 1} + \frac{3}{x + 1}.$$
 
 ### Radical Expressions & Functions {#radicals}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -2494,7 +2487,6 @@ prereqs: radical-function-form
 Plot $(h, k)$, then step right by $1$, $4$ and $9$ from it, rising $a$, $2a$ and $3a$ for a square root, and join the points.
 
 ### Exponentials & Logarithms {#exponentials-and-logarithms}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -2789,7 +2781,6 @@ $$1.15^t = \left(1.15^{1/12}\right)^{12t} \approx 1.0117^{12t},$$
 about 1.17% a month.
 
 ## Systems of Equations {#systems}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -2924,7 +2915,6 @@ Name two unknowns, and write one equation for each fact.
 **Example.** 20 tickets, adults at \$8 and children at \$5, bring in \$130: $a + c = 20$ and $8a + 5c = 130$, so $a = 10$ and $c = 10$.
 
 ## Exponents & Radicals
-flow: down
 rows: kinds
 wrap: 6
 
@@ -3040,7 +3030,6 @@ Why: $\sqrt[3]{8} = 2$, and $2^2 = 4$.
 ```
 
 ## Conic Sections
-flow: down
 rows: kinds
 wrap: 6
 
@@ -3164,7 +3153,6 @@ prereqs: ellipse-features, hyperbola-features
 For an ellipse, mark the centre, step $a$ across and $b$ up, and join the four points in an oval. For a hyperbola, draw the box of sides $2a$ and $2b$ about the centre, extend its diagonals as the asymptotes, and draw the branches from the vertices.
 
 ## Complex Numbers {#complex}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -3288,7 +3276,6 @@ $$x^2 + 4 = (x + 2i)(x - 2i).$$
 Find the roots with the quadratic formula, and write the factors.
 
 ## Sequences & Series
-flow: down
 rows: kinds
 wrap: 6
 

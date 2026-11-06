@@ -1,5 +1,6 @@
 # Geometry
 color: #3c6e47
+built-on: arithmetic
 
 Shape, size and position, and the art of proving things about them.
 
@@ -264,7 +265,6 @@ In hyperbolic geometry,
 In 1868 Beltrami built a model of it inside Euclidean geometry, which showed that it is free of contradiction if Euclidean geometry is, and so that the parallel postulate can never be proved from the others.
 
 ## Foundations {#geometry-foundations}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -340,7 +340,6 @@ Write a proof in four steps:
 4. write each statement with its reason: a given, a definition, a postulate or a theorem.
 
 ## Lines & Angles {#lines-and-angles}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -425,7 +424,6 @@ Why: $4x + 20 = 180$.
 ```
 
 ## Triangles
-flow: down
 rows: kinds
 wrap: 6
 
@@ -659,7 +657,6 @@ prereqs: pythagorean-inequalities
 With $c$ the longest side, compare $c^2$ with $a^2 + b^2$: less is acute, equal is right, more is obtuse. First check the [[triangle-inequality]].
 
 ## Congruence & Similarity {#congruence-and-similarity}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -820,7 +817,6 @@ prereqs: triangle-similarity, writing-proofs
 Find two pairs of equal angles (AA), or compare the ratios of sides for SSS or SAS similarity. Then write proportions in the order of the matching vertices.
 
 ## Transformations {#geometric-transformations}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -941,7 +937,6 @@ prereqs: rigid-motion-properties
 Match the vertices of the two figures. A change of orientation means a reflection is needed. Then translate one matching point onto the other, and rotate to line the rest up.
 
 ## Polygons
-flow: down
 rows: kinds
 wrap: 6
 
@@ -1065,7 +1060,6 @@ prereqs: quadrilaterals, parallelogram-properties
 Test in order: does it have two pairs of parallel sides, then equal diagonals for a rectangle, perpendicular diagonals for a rhombus, and both for a square? In coordinates, compare slopes and lengths.
 
 ## Circles
-flow: down
 rows: kinds
 wrap: 6
 
@@ -1267,7 +1261,6 @@ Why: $\frac{1}{6} \cdot 36\pi = 6\pi$.
 ```
 
 ## Measurement
-flow: down
 rows: kinds
 wrap: 6
 
@@ -1527,7 +1520,6 @@ prereqs: composite-figures, density
 Describe the object as simple shapes, compute what is asked, and round in the direction that the setting needs. Design problems choose the dimensions that meet a constraint at least cost.
 
 ## Coordinate Geometry
-flow: down
 rows: kinds
 wrap: 6
 
@@ -1622,7 +1614,6 @@ $$\begin{aligned} x^2 + y^2 + 4x - 2y &= 4 \\ (x + 2)^2 + (y - 1)^2 &= 9 \end{al
 so the centre is $(-2, 1)$ and the radius is 3.
 
 ## Constructions
-flow: down
 rows: kinds
 wrap: 6
 

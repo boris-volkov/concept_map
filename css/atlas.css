@@ -1,5 +1,8 @@
-/* Concept Atlas: an old-atlas look. Parchment, ink, a faint survey grid, and
-   one muted colour per domain, set in the content files and inherited inside. */
+/* Concept Atlas. What matters most is that it can be read, at any zoom. Everything is set in one
+   typeface, chosen for staying legible when small, in plain upper and lower case: no small caps,
+   no letter-spacing, and italics only for letters of mathematics. Sizes step down from a domain to
+   a topic to a concept, so that it is always clear what is inside what. Each domain has one colour,
+   set in the content files and inherited inside. */
 
 :root {
   --paper: #f2e9d4;
@@ -7,10 +10,10 @@
   --card: #fbf7ec;
   --card-edge: #d5c3a0;
   --ink: #2b2118;
-  --ink-2: #5a4936;
-  --ink-3: #8a775f;
+  --ink-2: #4a3b2b;
+  --ink-3: #6b5a45;
   --rule: #cbb68e;
-  --lit: #ffcf1a; /* highlighted arrows */
+  --lit: #008a33; /* highlighted arrows: at least 3:1 on the paper, the cards and even Geometry's green frames */
   --gold: #b8862b;
   --gold-ink: #8a5f0e;
   --gold-fill: #fbeab8;
@@ -31,8 +34,8 @@
   --rubric: #8f2d2d; /* the atlas's own red, as in its mark: the index and its button */
   --right: #3d6b35;
   --wrong: #9b2d2d;
-  --serif: "Palatino Linotype", Palatino, "Book Antiqua", "URW Palladio L", "TeX Gyre Pagella", Georgia, serif;
-  --math: "Latin Modern Math", "STIX Two Math", "Cambria Math", math;
+  --text: Verdana, "DejaVu Sans", "Bitstream Vera Sans", Geneva, "Noto Sans", Roboto, system-ui, sans-serif; /* the tallest lowercase and the widest spacing, so letters stay apart when small */
+  --math: "Cambria Math", "STIX Two Math", "Latin Modern Math", math;
   --bar-h: 56px;
   --panel-w: 360px; /* the index, beside the map */
   --side: 0px; /* how far the open index moves the map over (see the index) */
@@ -49,8 +52,7 @@ html, body {
   overflow: hidden;
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--serif);
-  -webkit-font-smoothing: antialiased;
+  font-family: var(--text);
 }
 
 button { font: inherit; color: inherit; }
@@ -58,8 +60,9 @@ a { color: color-mix(in srgb, var(--c, var(--ink)) 80%, var(--ink)); }
 [hidden] { display: none !important; }
 :focus-visible { outline: 2px solid color-mix(in srgb, var(--c, var(--ink)) 70%, transparent); outline-offset: 2px; }
 
-math { font-family: var(--math); font-size: 1.04em; }
-.math-block { display: block; overflow-x: auto; overflow-y: hidden; margin: 0.7em 0; padding: 2px 0; }
+math { font-family: var(--math); font-size: 1.15em; } /* its letters are smaller than the text's */
+.with-point { white-space: nowrap; }
+.math-block { display: block; margin: 0.7em 0; padding: 2px 0; }
 .math-block math { margin: 0; }
 
 /* ---------- top bar ---------- */
@@ -81,11 +84,10 @@ math { font-family: var(--math); font-size: 1.04em; }
 .brand { display: flex; align-items: baseline; gap: 9px; white-space: nowrap; min-width: 0; }
 .brand-mark { font-size: 24px; color: #8f2d2d; line-height: 1; }
 .brand-title {
-  font-size: 19px;
-  font-variant-caps: small-caps;
-  letter-spacing: 0.05em;
+  font-size: 17px;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-weight: bold;
 }
 
 .search { position: relative; flex: 1; max-width: 440px; margin-left: auto; }
@@ -93,16 +95,16 @@ math { font-family: var(--math); font-size: 1.04em; }
   width: 100%;
   padding: 8px 34px 8px 34px;
   font: inherit;
-  font-size: 15px;
+  font-size: 14px;
   color: var(--ink);
   background: var(--card) no-repeat 11px 50% / 15px
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Ccircle cx='8.5' cy='8.5' r='5.5' fill='none' stroke='%238a775f' stroke-width='1.8'/%3E%3Cpath d='M12.6 12.6 17 17' stroke='%238a775f' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Ccircle cx='8.5' cy='8.5' r='5.5' fill='none' stroke='%236b5a45' stroke-width='1.8'/%3E%3Cpath d='M12.6 12.6 17 17' stroke='%236b5a45' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");
   border: 1px solid var(--card-edge);
   box-shadow: inset 0 1px 2px rgba(70, 45, 15, 0.08);
   -webkit-appearance: none;
   appearance: none;
 }
-#search::placeholder { color: var(--ink-3); font-style: italic; }
+#search::placeholder { color: var(--ink-3); }
 #search:focus { outline: none; border-color: var(--ink-3); background-color: #fffdf6; }
 #search::-webkit-search-cancel-button { display: none; }
 .search-key {
@@ -110,7 +112,7 @@ math { font-family: var(--math); font-size: 1.04em; }
   right: 9px;
   top: 50%;
   translate: 0 -50%;
-  font: 12px var(--serif);
+  font: 12px var(--text);
   color: var(--ink-3);
   border: 1px solid var(--card-edge);
   padding: 0 5px;
@@ -142,19 +144,17 @@ math { font-family: var(--math); font-size: 1.04em; }
 }
 #search-results li + li { margin-top: 2px; }
 #search-results li.is-active { background: color-mix(in srgb, var(--c) 10%, var(--card)); }
-#search-results li.empty { border: 0; color: var(--ink-3); font-style: italic; cursor: default; }
-.r-title { font-size: 15px; }
-.r-kind { font-size: 11px; color: var(--c); font-variant-caps: all-small-caps; letter-spacing: 0.06em; align-self: center; }
-.r-path { grid-column: 1 / -1; font-size: 12px; color: var(--ink-3); font-style: italic; }
+#search-results li.empty { border: 0; color: var(--ink-3); cursor: default; }
+.r-title { font-size: 14px; }
+.r-kind { font-size: 12px; color: color-mix(in srgb, var(--c) 72%, black); align-self: center; }
+.r-path { grid-column: 1 / -1; font-size: 12px; color: var(--ink-3); }
 
 .tools { display: flex; gap: 6px; }
 .tools button, #zoom button {
   padding: 6px 11px;
   background: var(--card);
   border: 1px solid var(--card-edge);
-  font-size: 14px;
-  font-variant-caps: small-caps;
-  letter-spacing: 0.04em;
+  font-size: 13px;
   color: var(--ink-2);
   cursor: pointer;
 }
@@ -163,7 +163,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 /* The flashcards button: two cards, and how many are in the deck. */
 #btn-deck { display: flex; align-items: center; gap: 5px; }
 #btn-deck svg { width: 20px; height: 16px; fill: var(--card); stroke: currentColor; stroke-width: 1.3; }
-#btn-deck .deck-n { font-size: 13px; font-variant-numeric: tabular-nums; }
+#btn-deck .deck-n { font-size: 12px; font-variant-numeric: tabular-nums; }
 #btn-deck .deck-n:empty { display: none; }
 .tools button[aria-expanded="true"] {
   color: var(--rubric);
@@ -199,7 +199,7 @@ math { font-family: var(--math); font-size: 1.04em; }
   background: color-mix(in srgb, var(--c) 5%, var(--card));
   border-bottom: 1px solid color-mix(in srgb, var(--c) 20%, var(--card-edge));
 }
-.panel-head h2 { margin: 0 auto 0 0; font-size: 22px; font-weight: normal; font-variant-caps: small-caps; letter-spacing: 0.04em; color: var(--c); }
+.panel-head h2 { margin: 0 auto 0 0; font-size: 19px; font-weight: bold; color: var(--c); }
 /* The ×, as on an open file. */
 .panel-head .shut {
   width: 24px;
@@ -226,31 +226,15 @@ math { font-family: var(--math); font-size: 1.04em; }
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
-  background-color: var(--paper);
+  background: linear-gradient(160deg, #f5eddb, #efe5cd); /* the paper colour, a shade lighter to a shade deeper. Behind the map's layer, it is painted once. */
 }
 #viewport.is-panning { cursor: grabbing; }
 
 /* The whole map is one GPU layer, so panning slides a finished picture instead of redrawing it. */
 #world { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-origin: 0 0; will-change: transform; }
 
-/* The survey grid sits inside the map's layer and moves with it for free. map.js sizes it. */
-#grid {
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(to right, rgba(120, 90, 40, 0.11) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(120, 90, 40, 0.11) 1px, transparent 1px),
-    linear-gradient(to right, rgba(120, 90, 40, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(120, 90, 40, 0.06) 1px, transparent 1px);
-  background-size: 160px 160px, 160px 160px, 32px 32px, 32px 32px;
-}
-.is-far #grid { background-size: 160px 160px, 160px 160px, 0 0, 0 0; }
-.is-tiny #grid { display: none; }
-
-/* Arrows take no part in hit-testing: the browser need not trace hundreds of curves on every mouse move. */
+/* The lines, between the domains and in a tree popped out of the map. They take no part in
+   hit-testing: the browser need not trace curves on every mouse move. */
 #edges, .sheet > svg { position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: visible; z-index: 20; pointer-events: none; }
 .edge {
   fill: none;
@@ -258,35 +242,25 @@ math { font-family: var(--math); font-size: 1.04em; }
   stroke-width: calc(var(--w) * 1px);
   stroke-linecap: round;
   stroke-linejoin: round;
-  opacity: 0.62;
-  marker-end: url(#head);
+  opacity: 0.2;
 }
-.edge.cross { opacity: 0.26; }
-/* An arrow that closes a loop of topics, pointing back against the flow. */
-.edge.back { opacity: 0.3; }
-
-/* A two-way arrow, between topics that each build on part of the other: a head at each end. */
-.edge.twin { marker-start: url(#head); }
-.has-selection .edge.dim { opacity: 0.06; }
+.sheet .edge { opacity: 0.65; } /* few enough there to be followed */
+.has-selection .edge.dim { opacity: 0.04; }
+.sheet.has-selection .edge.dim { opacity: 0.2; }
 .has-selection .edge.dim.lit { opacity: 0.6; }
-/* Lit arrows (hovered, or the selected concept's) are bright gold with a dark edge, so they stand
-   out from the paper. The edge is a drop-shadow, which costs little on the handful of lit arrows. */
+/* Lit arrows (hovered, or the selected concept's) are bright green and thicker, with no shadow. */
 .edge.lit, .edge.pre, .edge.post {
   stroke: var(--lit);
   opacity: 1;
   stroke-width: calc(var(--w) * 1px + 0.8px);
-  filter: drop-shadow(0 0 1px rgba(60, 38, 0, 0.95));
-  marker-end: url(#head-lit);
 }
-.edge.twin.lit, .edge.twin.pre, .edge.twin.post { marker-start: url(#head-lit); }
 
 #loading {
   position: absolute;
   inset: 40% 0 auto;
   text-align: center;
-  font-style: italic;
   color: var(--ink-3);
-  font-size: 18px;
+  font-size: 16px;
   padding: 0 24px;
 }
 #loading.is-error { font-style: normal; color: var(--ink-2); max-width: 560px; margin: 0 auto; line-height: 1.5; }
@@ -304,7 +278,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 .node .title { overflow-wrap: anywhere; }
 
 .node.leaf {
-  width: 184px;
+  width: 204px;
   padding: 8px 26px 9px 11px;
   background: var(--card);
   border: 1px solid color-mix(in srgb, var(--c) 30%, var(--card-edge));
@@ -313,14 +287,12 @@ math { font-family: var(--math); font-size: 1.04em; }
 }
 .node.leaf:not(.doc):hover { box-shadow: var(--lift); border-color: color-mix(in srgb, var(--c) 55%, var(--card-edge)); }
 .node.leaf .kind {
-  font-size: 11px;
-  line-height: 1.2;
-  color: var(--c);
-  font-variant-caps: all-small-caps;
-  letter-spacing: 0.08em;
+  font-size: 12px;
+  line-height: 1.3;
+  color: color-mix(in srgb, var(--c) 72%, black);
   margin-bottom: 1px;
 }
-.node.leaf .title { font-size: 15px; line-height: 1.25; }
+.node.leaf .title { font-size: 15px; line-height: 1.3; }
 /* Theorems are blue boxes, whatever domain they are in. */
 .node.kind-theorem {
   background: var(--blue-fill);
@@ -365,7 +337,7 @@ math { font-family: var(--math); font-size: 1.04em; }
   border-left: 4px solid var(--gold);
   box-shadow: inset 0 0 0 2px #fff8e2, inset 0 0 0 3px rgba(176, 128, 32, 0.55), 0 1px 3px rgba(120, 80, 0, 0.3);
 }
-.node.kind-axiom .kind { color: var(--gold-ink); font-weight: bold; letter-spacing: 0.14em; }
+.node.kind-axiom .kind { color: var(--gold-ink); font-weight: bold; }
 .node.kind-axiom .kind::before { content: "✦ "; }
 .node.kind-axiom .title { color: #3d2a06; font-weight: 600; }
 .node.kind-axiom .quiz-badge { --c: var(--gold-ink); }
@@ -385,16 +357,16 @@ math { font-family: var(--math); font-size: 1.04em; }
   outline-offset: 1px;
   background: color-mix(in srgb, var(--c) 13%, #fbf6e8);
 }
-#world .node.group.is-open.is-current > .frame-head { background: color-mix(in srgb, var(--c) 16%, transparent); }
-
 /* An open domain's card stays in its place, outlined in its colour and tied by a line (drawn with
-   the arrows, behind the cards) to the head of the frame it floated out into. */
+   the others, behind the cards) to the head of the frame it floated out into. */
 .node.group.stub {
   outline: 3px solid color-mix(in srgb, var(--c) 75%, transparent);
   outline-offset: 1px;
   background: color-mix(in srgb, var(--c) 9%, var(--card));
 }
 .tether { fill: none; stroke: color-mix(in srgb, var(--c) 70%, transparent); stroke-width: 2px; }
+
+#world .node.group.is-open.is-current > .frame-head { background: color-mix(in srgb, var(--c) 16%, transparent); }
 
 #world .node.group.axioms.is-open {
   background: linear-gradient(160deg, #fdf6e2, #f6e6b8);
@@ -424,24 +396,23 @@ math { font-family: var(--math); font-size: 1.04em; }
 
 /* A closed topic: a framed plate. */
 .node.group {
-  width: 232px;
+  width: 416px; /* wide and short, as they stand in a stack: an open subject's frame holds it exactly */
   padding: 12px 14px 13px;
   background: var(--card);
   border: 1px solid color-mix(in srgb, var(--c) 50%, var(--card-edge));
   box-shadow: var(--shadow), inset 0 0 0 3px var(--card), inset 0 0 0 4px color-mix(in srgb, var(--c) 28%, transparent);
 }
-.node.group.depth-0 { width: 268px; padding: 16px 18px 17px; }
+.node.group.depth-0 { width: 290px; padding: 16px 18px 17px; }
 .node.group:not(.is-open):hover {
   box-shadow: var(--lift), inset 0 0 0 3px var(--card), inset 0 0 0 4px color-mix(in srgb, var(--c) 45%, transparent);
 }
-.eyebrow { font-size: 11.5px; color: var(--c); font-variant-caps: all-small-caps; letter-spacing: 0.09em; }
-.node.group .title { font-size: 19px; line-height: 1.2; margin: 3px 0 5px; font-variant-caps: small-caps; letter-spacing: 0.02em; }
-.node.group.depth-0 .title { font-size: 25px; margin: 4px 0 7px; }
+.eyebrow { font-size: 12px; color: color-mix(in srgb, var(--c) 72%, black); }
+.node.group .title { font-size: 18px; line-height: 1.2; margin: 3px 0 5px; font-weight: bold; }
+.node.group.depth-0 .title { font-size: 24px; margin: 4px 0 7px; }
 .node.group .summary {
-  font-size: 13.5px;
-  line-height: 1.38;
+  font-size: 13px;
+  line-height: 1.4;
   color: var(--ink-2);
-  font-style: italic;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -469,15 +440,19 @@ math { font-family: var(--math); font-size: 1.04em; }
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 40px;
+  height: 52px;
   padding: 0 8px 0 16px;
   white-space: nowrap;
   border-bottom: 1px solid color-mix(in srgb, var(--c) 22%, transparent);
+  background: color-mix(in srgb, var(--c) 16%, var(--card));
+  color: var(--ink-2);
 }
-.frame-title { font-size: 18px; color: var(--c); font-variant-caps: small-caps; letter-spacing: 0.04em; }
-.depth-0 .frame-title { font-size: 22px; }
-.frame-count { font-size: 12px; color: var(--ink-3); font-style: italic; margin-right: auto; }
-.frame-count::after { content: " concepts"; }
+/* What folder this is, larger than anything in it, and in a band that can be seen from far out. */
+.frame-title { margin-right: auto; font-size: 24px; font-weight: bold; color: color-mix(in srgb, var(--c) 72%, black); }
+.depth-0 .frame-title { font-size: 30px; color: inherit; }
+:is(.depth-2, .depth-3, .depth-4) .frame-title { font-size: 20px; }
+.sheet .frame-title { font-size: 22px; color: inherit; }
+#world .node.group.is-open.depth-0 > .frame-head { background: var(--c); color: #fff; } /* opened last or not */
 .frame-head button {
   width: 24px;
   height: 24px;
@@ -510,15 +485,14 @@ math { font-family: var(--math); font-size: 1.04em; }
   display: flex;
   align-items: center;
   gap: 8px;
-  height: 40px;
+  height: 52px;
   padding: 0 8px 0 16px;
   white-space: nowrap;
   border-bottom: 1px solid color-mix(in srgb, var(--c) 22%, transparent);
+  background: var(--c);
+  color: #fff;
 }
 .sheet .frame-title a { color: inherit; }
-
-/* Far out, only the big names matter. */
-.is-far .node.leaf .kind, .is-far .marks { visibility: hidden; }
 
 #key {
   position: fixed;
@@ -528,7 +502,7 @@ math { font-family: var(--math); font-size: 1.04em; }
   display: flex;
   gap: 14px;
   padding: 7px 12px;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--ink-2);
   background: color-mix(in srgb, var(--card) 92%, transparent);
   border: 1px solid var(--card-edge);
@@ -548,7 +522,7 @@ math { font-family: var(--math); font-size: 1.04em; }
   flex-direction: column;
   gap: 4px;
 }
-#zoom button { width: 34px; height: 34px; padding: 0; font-size: 18px; font-variant-caps: normal; box-shadow: var(--shadow); }
+#zoom button { width: 34px; height: 34px; padding: 0; font-size: 18px; box-shadow: var(--shadow); }
 
 #hint {
   display: none;
@@ -560,8 +534,7 @@ math { font-family: var(--math); font-size: 1.04em; }
   translate: -50% 0;
   max-width: calc(100vw - var(--side) - 120px);
   padding: 8px 16px;
-  font-size: 14px;
-  font-style: italic;
+  font-size: 13px;
   text-align: center;
   color: var(--ink-2);
   background: var(--card);
@@ -581,12 +554,12 @@ math { font-family: var(--math); font-size: 1.04em; }
   box-shadow: var(--lift);
 }
 #pop::backdrop { background: rgba(43, 33, 24, 0.35); }
-#pop h2 { margin: 0 0 8px; font-size: 21px; font-weight: normal; line-height: 1.25; }
-#pop p { margin: 0 0 16px; font-size: 15.5px; line-height: 1.5; color: var(--ink-2); }
+#pop h2 { margin: 0 0 8px; font-size: 18px; font-weight: bold; line-height: 1.25; }
+#pop p { margin: 0 0 16px; font-size: 14px; line-height: 1.5; color: var(--ink-2); }
 #pop footer { display: flex; justify-content: flex-end; gap: 8px; }
 #pop button {
   padding: 6px 14px;
-  font-size: 15px;
+  font-size: 13.5px;
   background: var(--card);
   border: 1px solid var(--card-edge);
   cursor: pointer;
@@ -602,22 +575,21 @@ math { font-family: var(--math); font-size: 1.04em; }
   translate: -50% 0;
   z-index: 120;
   padding: 6px 14px;
-  font-size: 14px;
-  font-style: italic;
+  font-size: 13px;
   color: var(--card);
   background: var(--ink-2);
 }
 
 /* ---------- quizzes, inside an open concept ---------- */
 
-.quiz { font-size: 15px; line-height: 1.45; }
-.quiz-meta { font-size: 12px; color: var(--ink-3); font-style: italic; }
+.quiz { font-size: 14.5px; line-height: 1.45; }
+.quiz-meta { font-size: 12px; color: var(--ink-3); }
 .quiz-prompt p { margin: 4px 0 10px; }
 .quiz-choices { display: grid; gap: 6px; }
 .quiz-choice {
   text-align: left;
   padding: 7px 11px;
-  font-size: 15px;
+  font-size: 14px;
   background: #fffdf6;
   border: 1px solid var(--card-edge);
   cursor: pointer;
@@ -639,7 +611,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 .quiz-form input.is-wrong { border-color: var(--wrong); }
 .quiz button.quiz-next, .quiz-form button, .quiz-again, .quiz-reveal {
   padding: 6px 13px;
-  font-size: 14px;
+  font-size: 13px;
   background: var(--c, var(--ink-2));
   color: var(--card);
   border: 0;
@@ -648,7 +620,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 .quiz-form button:disabled { opacity: 0.4; cursor: default; }
 .quiz-reveal { background: none; color: var(--ink-2); border: 1px solid var(--card-edge); margin-top: 6px; }
 .quiz-feedback:empty { display: none; }
-.quiz-feedback { margin-top: 10px; padding: 8px 11px; font-size: 14.5px; }
+.quiz-feedback { margin-top: 10px; padding: 8px 11px; font-size: 14px; }
 .quiz-feedback p { margin: 0 0 6px; }
 .quiz-feedback.right { background: color-mix(in srgb, var(--right) 9%, transparent); border-left: 3px solid var(--right); }
 .quiz-feedback.wrong { background: color-mix(in srgb, var(--wrong) 7%, transparent); border-left: 3px solid var(--wrong); }
@@ -656,7 +628,7 @@ math { font-family: var(--math); font-size: 1.04em; }
 .quiz-done { text-align: center; padding: 6px 0 2px; }
 .quiz-score { font-size: 38px; color: var(--c, var(--ink)); }
 .quiz-score span { font-size: 20px; color: var(--ink-3); }
-.quiz-done p { margin: 4px 0 12px; font-style: italic; color: var(--ink-2); }
+.quiz-done p { margin: 4px 0 12px; color: var(--ink-2); }
 
 /* ---------- small graphs, inside an open concept (graph.js) ---------- */
 
@@ -675,8 +647,8 @@ math { font-family: var(--math); font-size: 1.04em; }
 .graph .arc { fill: none; stroke: var(--ink-2); stroke-width: 1.2; }
 .graph .dot { fill: var(--c, var(--ink)); stroke: #fffdf6; stroke-width: 1.5; }
 /* Labels stand out from the lines behind them on a halo of the paper. */
-.graph text { font-family: var(--serif); font-size: 12px; fill: var(--ink); paint-order: stroke; stroke: #fffdf6; stroke-width: 3.5px; stroke-linejoin: round; }
-.graph .axis-name { font-style: italic; fill: var(--ink-2); }
+.graph text { font-family: var(--text); font-size: 11.5px; fill: var(--ink); paint-order: stroke; stroke: #fffdf6; stroke-width: 3.5px; stroke-linejoin: round; }
+.graph .axis-name { font-style: italic; fill: var(--ink-2); font-family: var(--math); font-size: 14px; }
 .graph-error { color: var(--wrong); font-size: 14px; }
 
 /* Diagrams of vertices and edges (network.js): bare on the page, with the colour of the domain kept
@@ -705,11 +677,11 @@ math { font-family: var(--math); font-size: 1.04em; }
 .network .vertex.tone5 { fill: var(--tone5); stroke: var(--tone5); }
 .network .vertex.tone6 { fill: var(--tone6); stroke: var(--tone6); }
 .network text { stroke: var(--card); }
-.network text.name { stroke: none; font-style: italic; font-size: 12.5px; }
+.network text.name { stroke: none; font-style: italic; font-size: 14px; font-family: var(--math); }
 .network text.name.on-fill { fill: #fff; font-style: normal; font-weight: 600; }
-.network text.name.tiny { font-size: 9.5px; }
+.network text.name.tiny { font-size: 11px; }
 .network text.weight { font-size: 12px; stroke-width: 4px; }
-.network figcaption { margin-top: 4px; text-align: center; font-size: 14px; color: var(--ink-2); }
+.network figcaption { margin-top: 4px; text-align: center; font-size: 13px; color: var(--ink-2); }
 .network-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 6px 26px; margin: 0.5em 0 1.1em; }
 .network-row .graph { margin: 0; }
 /* A drawing of a shape, from shape.js. The class names stay clear of the map's, such as .edge and .face. */
@@ -720,8 +692,8 @@ math { font-family: var(--math); font-size: 1.04em; }
 .shape .measure { fill: none; stroke: var(--ink-2); stroke-width: 1; stroke-dasharray: 4 2.5; }
 .shape .mark { fill: none; stroke: var(--ink-2); stroke-width: 1; }
 .shape .pivot { fill: var(--ink-2); }
-.shape text { font-size: 12.5px; font-style: italic; stroke: var(--card); stroke-width: 3px; }
-.shape .sub { font-size: 9px; font-style: normal; }
+.shape text { font-size: 14px; font-style: italic; stroke: var(--card); stroke-width: 3px; font-family: var(--math); }
+.shape .sub { font-size: 10px; font-style: normal; }
 
 /* ---------- open files: a concept's entry, and a topic's README ---------- */
 
@@ -762,12 +734,11 @@ math { font-family: var(--math); font-size: 1.04em; }
   border-bottom-color: var(--gold);
   box-shadow: inset 0 0 0 2px #fff8e2, inset 0 0 0 3px rgba(176, 128, 32, 0.55);
 }
-.doc-kind { font-size: 12.5px; line-height: 1.3; color: var(--c); font-variant-caps: all-small-caps; letter-spacing: 0.1em; }
+.doc-kind { font-size: 12px; line-height: 1.3; color: color-mix(in srgb, var(--c) 72%, black); }
 :is(.kind-theorem, .kind-skill, .kind-heuristic, .kind-definition, .kind-axiom) > .doc-head .doc-kind { font-weight: bold; }
-.kind-axiom > .doc-head .doc-kind { letter-spacing: 0.14em; }
 .kind-axiom > .doc-head .doc-kind::before { content: "✦ "; }
-.doc-title { grid-column: 1 / -1; margin: 0; font-size: 24px; line-height: 1.18; font-weight: normal; overflow-wrap: anywhere; }
-.kind-axiom > .doc-head .doc-title { color: #3d2a06; font-weight: 600; }
+.doc-title { grid-column: 1 / -1; margin: 0; font-size: 18px; line-height: 1.25; font-weight: bold; overflow-wrap: anywhere; }
+.kind-axiom > .doc-head .doc-title { color: #3d2a06; }
 /* A mastered concept keeps the check its card had. */
 .doc-check { display: none; color: var(--right); font-weight: normal; }
 .is-mastered > .doc-head .doc-check { display: inline; }
@@ -841,15 +812,15 @@ math { font-family: var(--math); font-size: 1.04em; }
 .node.is-pre-direct { box-shadow: 0 0 0 2.5px var(--pre), var(--lift); }
 .node.is-post { box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--post) 50%, transparent), var(--shadow); }
 .node.is-post-direct { box-shadow: 0 0 0 2.5px var(--post), var(--lift); }
-.has-selection .node.is-dim { opacity: 0.3; }
+.has-selection .node.is-dim { opacity: 0.45; }
 .has-selection .node.is-dim:hover { opacity: 0.75; }
 /* An open file is still being read: it only fades a little. */
-.has-selection .node.doc.is-dim { opacity: 0.62; }
+.has-selection .node.doc.is-dim { opacity: 0.85; }
 .has-selection .node.doc.is-dim:hover { opacity: 1; }
 
-.prose { font-size: 16.5px; line-height: 1.6; }
+.prose { font-size: 15px; line-height: 1.6; }
 .prose p { margin: 0 0 0.85em; }
-.prose.empty { color: var(--ink-3); font-style: italic; }
+.prose.empty { color: var(--ink-3); }
 .prose ul, .prose ol { padding-left: 1.4em; margin: 0 0 0.85em; }
 .prose li { margin: 0.2em 0; }
 /* A formal statement, set apart as in a textbook. Axioms and theorems blue, with the statement in italics. */
@@ -871,13 +842,12 @@ math { font-family: var(--math); font-size: 1.04em; }
   border-left: 4px solid var(--gold);
   box-shadow: inset 0 0 0 3px #fff8e2, inset 0 0 0 4px rgba(176, 128, 32, 0.5);
 }
-.statement-axiom .prose, .statement-theorem .prose { font-style: italic; }
-.statement-label { font-weight: bold; font-size: 15px; letter-spacing: 0.02em; margin-bottom: 2px; }
+.statement-label { font-weight: bold; font-size: 13.5px; margin-bottom: 2px; }
 .statement-theorem .statement-label { color: var(--blue); }
 .statement-skill .statement-label { color: var(--red); }
 .statement-heuristic .statement-label { color: var(--violet); }
 .statement-definition .statement-label { color: var(--green); }
-.statement-axiom .statement-label { color: var(--gold-ink); font-size: 17px; letter-spacing: 0.1em; font-variant-caps: all-small-caps; }
+.statement-axiom .statement-label { color: var(--gold-ink); font-size: 13.5px; }
 .statement-axiom .statement-label::before { content: "✦ "; }
 .statement .prose p { margin-bottom: 0.6em; }
 .prose blockquote {
@@ -888,14 +858,17 @@ math { font-family: var(--math); font-size: 1.04em; }
 }
 .prose blockquote p:last-child { margin-bottom: 0; }
 .prose code { font-size: 0.88em; background: var(--paper); padding: 0.05em 0.3em; }
-.prose pre { overflow-x: auto; background: var(--paper); padding: 10px; }
+.prose pre { background: var(--paper); padding: 10px; }
 .prose img, .prose iframe, .prose video { max-width: 100%; }
 .prose iframe { width: 100%; aspect-ratio: 4 / 3; border: 1px solid var(--card-edge); }
 .prose hr { border: 0; border-top: 1px solid var(--rule); margin: 1.2em 0; }
-.table-wrap { overflow-x: auto; margin: 0 0 1em; }
-.prose table { border-collapse: collapse; font-size: 15px; }
+/* Formulas, tables and code never scroll inside an entry, so they can never show a scroll bar. What is
+   too wide widens the entry instead (widen in map.js), and a hair of drift in the width of text
+   between one display scale and another just lies in the margin. */
+.table-wrap { margin: 0 0 1em; }
+.prose table { border-collapse: collapse; font-size: 14px; }
 .prose th, .prose td { padding: 4px 12px; border-bottom: 1px solid var(--card-edge); }
-.prose th { font-weight: normal; font-variant-caps: all-small-caps; letter-spacing: 0.06em; color: var(--ink-2); text-align: left; }
+.prose th { font-weight: bold; color: var(--ink-2); text-align: left; font-size: 13px; }
 /* A reference table: a title, rules above and below as in a book, and hairlines between the rows.
    The row under the pointer lights up, for following a formula across with a student. */
 .prose table.ruled { width: 100%; border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); }
@@ -903,10 +876,9 @@ math { font-family: var(--math); font-size: 1.04em; }
   caption-side: top;
   padding: 0 0 5px;
   text-align: left;
-  font-size: 17px;
-  font-variant-caps: small-caps;
-  letter-spacing: 0.04em;
-  color: var(--c);
+  font-size: 15.5px;
+  color: color-mix(in srgb, var(--c) 72%, black);
+  font-weight: bold;
 }
 .prose .ruled th { border-bottom: 1px solid var(--ink); }
 .prose .ruled td { padding: 5px 12px; border-bottom: 1px solid color-mix(in srgb, var(--rule) 45%, transparent); vertical-align: middle; }
@@ -923,17 +895,15 @@ math { font-family: var(--math); font-size: 1.04em; }
 .doc-body section { margin-top: 20px; }
 .doc-body h3 {
   margin: 0 0 8px;
-  font-size: 15px;
-  font-weight: normal;
-  font-variant-caps: all-small-caps;
-  letter-spacing: 0.1em;
+  font-size: 13.5px;
+  font-weight: bold;
   color: var(--ink-2);
   border-bottom: 1px solid color-mix(in srgb, var(--card-edge) 70%, transparent);
   padding-bottom: 3px;
 }
 .links.pre h3 { color: var(--pre); }
 .links.post h3 { color: var(--post); }
-h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; color: var(--ink-3); font-size: 13px; }
+h3 .note { color: var(--ink-3); font-size: 12.5px; font-weight: normal; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip {
   display: inline-flex;
@@ -948,16 +918,15 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
   line-height: 1.25;
 }
 .chip:hover { background: color-mix(in srgb, var(--c) 8%, #fffdf6); }
-.chip-title { font-size: 14.5px; }
-.chip-where { font-size: 11.5px; color: var(--ink-3); font-style: italic; }
+.chip-title { font-size: 13.5px; }
+.chip-where { font-size: 12px; color: var(--ink-3); }
 .chip.is-mastered .chip-title::after, .path li .is-mastered::after { content: " ✓"; color: var(--right); }
 .reveal {
   margin-top: 8px;
   padding: 3px 0;
   border: 0;
   background: none;
-  font-size: 13.5px;
-  font-style: italic;
+  font-size: 13px;
   color: var(--ink-2);
   text-decoration: underline;
   text-decoration-color: var(--rule);
@@ -965,15 +934,15 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
   cursor: pointer;
 }
 .reveal:hover { color: var(--ink); }
-.none { margin: 0; font-style: italic; color: var(--ink-3); font-size: 14.5px; }
-.where { font-size: 12px; color: var(--ink-3); font-style: italic; }
-.path details summary { cursor: pointer; font-size: 15px; color: var(--ink-2); }
+.none { margin: 0; color: var(--ink-3); font-size: 13.5px; }
+.where { font-size: 12px; color: var(--ink-3); }
+.path details summary { cursor: pointer; font-size: 14px; color: var(--ink-2); }
 .path .count { font-size: 12px; color: var(--card); background: var(--ink-3); padding: 0 7px; margin-left: 4px; font-style: normal; }
-.path .note { margin: 6px 0; font-size: 13px; font-style: italic; color: var(--ink-3); }
-.path ol { margin: 0; padding-left: 2em; font-size: 14.5px; line-height: 1.5; }
+.path .note { margin: 6px 0; font-size: 12.5px; color: var(--ink-3); }
+.path ol { margin: 0; padding-left: 2em; font-size: 13.5px; line-height: 1.5; }
 .path ol a { color: var(--ink); text-decoration-color: color-mix(in srgb, var(--c) 45%, transparent); }
 .path ol li::marker { color: var(--ink-3); font-size: 12px; }
-.next-up { margin: 0 0 8px; padding: 7px 11px; background: color-mix(in srgb, var(--right) 8%, transparent); border-left: 3px solid var(--right); font-size: 15px; }
+.next-up { margin: 0 0 8px; padding: 7px 11px; background: color-mix(in srgb, var(--right) 8%, transparent); border-left: 3px solid var(--right); font-size: 14px; }
 .practice .quiz { padding: 12px 14px; background: #fffdf6; border: 1px solid var(--card-edge); }
 
 .doc-foot {
@@ -989,26 +958,26 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
 .mastery {
   white-space: nowrap;
   padding: 5px 12px;
-  font-size: 14px;
+  font-size: 13px;
   background: #fffdf6;
   border: 1px solid var(--card-edge);
   color: var(--ink-2);
   cursor: pointer;
 }
 .mastery.is-on { color: var(--right); border-color: color-mix(in srgb, var(--right) 50%, transparent); background: color-mix(in srgb, var(--right) 8%, #fffdf6); }
-.topic-progress { font-size: 14px; font-style: italic; color: var(--ink-2); }
+.topic-progress { font-size: 13px; color: var(--ink-2); }
 .source { font-size: 12px; color: var(--ink-3); font-family: ui-monospace, Consolas, monospace; text-align: right; }
 
 .index details { margin: 0 0 6px; border-left: 3px solid var(--c); padding-left: 10px; }
-.index summary { cursor: pointer; font-size: 18px; font-variant-caps: small-caps; letter-spacing: 0.03em; color: var(--c); padding: 3px 0; }
+.index summary { cursor: pointer; font-size: 15px; color: color-mix(in srgb, var(--c) 72%, black); padding: 3px 0; font-weight: bold; }
 .index summary .where { margin-left: 8px; }
 .index ul { margin: 0; padding-left: 1.1em; list-style: none; }
 .index details > ul { padding: 2px 0 10px; }
-.index li { margin: 2px 0; font-size: 14.5px; line-height: 1.35; }
+.index li { margin: 2px 0; font-size: 13.5px; line-height: 1.35; }
 .index li > a { color: var(--ink); text-decoration: none; }
 .index li > a:hover { text-decoration: underline; }
-.index li:has(> ul) > a { font-variant-caps: small-caps; color: var(--c); letter-spacing: 0.02em; }
-.index-note { font-style: italic; color: var(--ink-3); font-size: 14px; margin: 0 0 12px; }
+.index li:has(> ul) > a { color: color-mix(in srgb, var(--c) 72%, black); font-weight: bold; }
+.index-note { color: var(--ink-3); font-size: 13px; margin: 0 0 12px; }
 
 /* ---------- the deck of flashcards (flashcards.js) ---------- */
 
@@ -1023,13 +992,13 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
   padding: 20px 16px;
   background: color-mix(in srgb, var(--paper) 88%, transparent);
 }
-.deck-box { display: flex; flex-direction: column; gap: 12px; width: min(620px, 100%); max-height: 100%; }
+.deck-box { display: flex; flex-direction: column; gap: 12px; width: min(620px, 100%); max-width: 100%; max-height: 100%; }
 .deck-head { display: flex; align-items: center; gap: 12px; }
-.deck-head h2 { margin: 0 auto 0 0; font-size: 22px; font-weight: normal; font-variant-caps: small-caps; letter-spacing: 0.04em; color: var(--rubric); }
-.deck-count { font-size: 14px; font-style: italic; color: var(--ink-2); white-space: nowrap; }
+.deck-head h2 { margin: 0 auto 0 0; font-size: 19px; font-weight: bold; color: var(--rubric); }
+.deck-count { font-size: 13px; color: var(--ink-2); white-space: nowrap; }
 @media (max-width: 560px) {
   .deck-head { gap: 8px; }
-  .deck-head h2 { font-size: 19px; }
+  .deck-head h2 { font-size: 17px; }
   .deck-head button:not(.shut) { padding: 6px 9px; }
 }
 .deck-head .shut {
@@ -1045,7 +1014,7 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
 }
 .deck-head button, .deck-foot button {
   padding: 6px 12px;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--ink-2);
   background: var(--card);
   border: 1px solid var(--card-edge);
@@ -1056,7 +1025,7 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
 .deck-foot { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
 .deck-foot .deck-flip { min-width: 9em; color: var(--card); background: var(--rubric); border-color: var(--rubric); }
 .deck-foot .deck-flip:hover:not(:disabled) { color: var(--card); background: color-mix(in srgb, var(--rubric) 85%, black); }
-.deck-foot .deck-remove { margin-left: auto; font-style: italic; }
+.deck-foot .deck-remove { margin-left: auto; }
 
 /* A card: its domain's colour down the left, as on the map. */
 .deck-card {
@@ -1071,11 +1040,11 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
   cursor: pointer;
 }
 .deck-card.is-back { cursor: default; }
-.deck-card.is-empty { display: flex; align-items: center; justify-content: center; text-align: center; font-style: italic; color: var(--ink-2); cursor: default; }
+.deck-card.is-empty { display: flex; align-items: center; justify-content: center; text-align: center; color: var(--ink-2); cursor: default; }
 .card-front { min-height: 262px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-.card-title { margin: 6px 0 0; font-size: 32px; font-weight: normal; line-height: 1.2; }
-.card-hint { margin: 18px 0 0; font-size: 13px; font-style: italic; color: var(--ink-3); }
-.card-name { margin: 2px 0 14px; font-size: 20px; font-weight: normal; }
+.card-title { margin: 6px 0 0; font-size: 26px; font-weight: bold; line-height: 1.2; }
+.card-hint { margin: 18px 0 0; font-size: 12.5px; color: var(--ink-3); }
+.card-name { margin: 2px 0 14px; font-size: 18px; font-weight: bold; }
 .kind-axiom .card-title, .kind-axiom .card-name { color: #3d2a06; }
 .kind-theorem .doc-kind { --c: var(--blue); }
 .kind-skill .doc-kind { --c: var(--red); }
@@ -1090,8 +1059,7 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
   align-items: center;
   gap: 8px 12px;
   padding: 8px 12px;
-  font-size: 14px;
-  font-style: italic;
+  font-size: 13px;
   color: var(--ink-2);
   background: color-mix(in srgb, var(--rubric) 7%, var(--card));
   border: 1px solid var(--card-edge);
@@ -1131,7 +1099,7 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
   cursor: zoom-in;
 }
 .deck-qr svg { width: 100%; height: auto; }
-.deck-share-text { flex: 1; min-width: 0; font-size: 15px; line-height: 1.45; }
+.deck-share-text { flex: 1; min-width: 0; font-size: 14px; line-height: 1.45; }
 .deck-share-text p { margin: 0 0 10px; }
 .deck-link { display: flex; gap: 6px; margin: 0 0 12px; }
 .deck-link input {
@@ -1145,7 +1113,7 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
 }
 .deck-link button {
   padding: 6px 12px;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--card);
   background: var(--rubric);
   border: 1px solid var(--rubric);
@@ -1153,8 +1121,8 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
   white-space: nowrap;
 }
 .deck-save { color: var(--rubric); }
-.deck-share-note { font-size: 13.5px; font-style: italic; color: var(--ink-3); }
-.deck-share-warn { font-size: 13.5px; color: var(--wrong); }
+.deck-share-note { font-size: 13px; color: var(--ink-3); }
+.deck-share-warn { font-size: 13px; color: var(--wrong); }
 /* The code alone, as big as the screen allows, to show a class. */
 .deck-share.is-large { justify-content: center; }
 .deck-share.is-large .deck-share-text { display: none; }
@@ -1172,7 +1140,7 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
   bottom: 62px;
   z-index: 70;
   padding: 6px 12px 6px 30px;
-  font-size: 13px;
+  font-size: 12.5px;
   color: #6b4a12;
   background: #fbf0cf no-repeat 10px 50% / 13px
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1 15 14H1Z' fill='%23c58a1a'/%3E%3Cpath d='M8 6v4M8 11.6v.4' stroke='%23fff' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
@@ -1190,14 +1158,14 @@ h3 .note { font-variant-caps: normal; letter-spacing: 0; font-style: italic; col
   max-height: 55vh;
   overflow-y: auto;
   padding: 12px 16px;
-  font-size: 14px;
+  font-size: 13px;
   background: var(--card);
   border: 1px solid var(--card-edge);
   box-shadow: var(--lift);
 }
 .issues-head { display: flex; justify-content: space-between; align-items: center; }
 .issues-head button { border: 0; background: none; font-size: 20px; cursor: pointer; color: var(--ink-3); }
-#issues-list p { margin: 4px 0 8px; color: var(--ink-2); font-style: italic; }
+#issues-list p { margin: 4px 0 8px; color: var(--ink-2); }
 #issues-list ol { margin: 0; padding-left: 1.3em; }
 #issues-list li { margin: 0 0 8px; line-height: 1.4; }
 #issues-list li.error::marker { color: var(--wrong); }
@@ -1244,7 +1212,7 @@ merror { color: #b22; background: #fbe3e0; }
   :root { --bar-h: 52px; }
   #topbar { gap: 10px; padding: 0 10px; }
   .brand-title, .search-key { display: none; }
-  .tools button { padding: 6px 8px; font-size: 13px; }
+  .tools button { padding: 6px 8px; font-size: 12px; }
   #btn-expand { display: none; }
   /* An open file is as wide as a phone, so it can be read without zooming out. */
   .node.doc, .readme { width: 340px; }

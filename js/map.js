@@ -1,19 +1,20 @@
-// The map on screen: one element per card, open topic and open file, and a layer of arrows
-// underneath the cards.
+// The map on screen: one element per card, open topic and open file, and a layer of lines under
+// the cards, which run only between the domains. Inside an open domain, where a thing stands says
+// what comes before it (see layout.js), and a selection lights up the rest.
 //
-// The domains stand in rows, each below those it builds on, with the arrows between them running
+// The domains stand in rows, each below those it builds on, with the lines between them running
 // down the gaps. An open domain keeps its card in place and floats its frame out to the right of
-// them all, clear of those arrows. Everything else opens where it sits, the way a folder opens in a file
-// manager's tree: a topic into a frame around what it holds, a concept into its entry, the card
+// them all, clear of those lines. Everything else opens where it sits, the way a folder opens in a
+// file manager's tree: a topic into a frame around what it holds, a concept into its entry, the card
 // growing into the full text while the map makes room for it. The "i" on a topic's frame opens
 // the topic's README at the top of the frame. Nothing on the map opens anywhere else.
 //
 // A new layout is applied at once, without any animation, so the map stays quick however much
 // of it is open.
 
-import { computeLayout, flowOf, FRAME_PAD, DOMAINS } from './layout.js'
+import { computeLayout, FRAME_PAD, DOMAINS } from './layout.js'
 import {
-  ancestors, isAncestor, descendants, visibleRep, visibleEdges, prerequisitesOf, dependentsOf,
+  ancestors, isAncestor, descendants, domainOf, visibleRep, visibleEdges, prerequisitesOf, dependentsOf,
   externalPrereqs, externalDependents, finder,
 } from './model.js'
 import { renderInline, plainText, esc } from './markdown.js'
@@ -25,7 +26,6 @@ import * as deck from './deck.js'
 import * as docs from './docs.js'
 
 const SVG = 'http://www.w3.org/2000/svg'
-const GRID_MARGIN = 4000 // how far the survey grid runs past the edges of the map
 const readmeKey = n => 'readme:' + n.id
 const ENTRY_COLUMN = 620 // about how tall a column of an open entry may run
 const MAX_COLUMNS = 4
@@ -33,17 +33,15 @@ const README_VIEW = 440 // how much of a README a view of it takes in, from its 
 const PHONE = matchMedia('(max-width: 760px)') // as in the stylesheet: a README stays as wide as the phone
 const ENTRY_COLUMN_GAP = 32 // as in the stylesheet
 const stubKey = n => 'spine:' + n.id // an open domain's card, left in its place among the domains
-const tetherKey = n => 'tether:' + n.id // the line from it to its frame
 const r1 = v => Math.round(v * 10) / 10
 
 export class AtlasMap {
   // A sheet (see sheet.js) is one of these too, with its frame for a viewport and a world, and
   // the main map's camera.
-  constructor({ viewport, world, svg, grid, atlas, camera, onSelect, onView, onPop }) {
+  constructor({ viewport, world, svg, atlas, camera, onSelect, onView, onPop }) {
     this.viewport = viewport
     this.world = world
     this.svg = svg
-    this.grid = grid
     this.onSelect = onSelect
     this.onView = onView
     this.onPop = onPop
@@ -58,7 +56,7 @@ export class AtlasMap {
     this.fileSizes = new Map() // key → the size of an open file or README, which changes with what it shows
     this.heads = new Map()
     this.spine = new Map() // domain id → the place of its card
-    this.routes = new Map() // edge key → the route of an arrow between domains (see layoutDomains)
+    this.routes = new Map() // edge key → the route of a line (see layoutDomains and layoutSheet)
     this.tethers = new Map() // domain id → the <path> tying its card to its open frame
     this.selected = null
     this.hl = null
@@ -189,19 +187,16 @@ export class AtlasMap {
   }
 
   fillGroup(n, el) {
-    const label = n.depth === 0 ? 'Domain' : 'Topic'
     el.className = `node group depth-${Math.min(n.depth, 4)}`
     // A topic holding nothing but axioms is gilded like its axioms.
     if (descendants(n).every(d => d.children.length || d.kind === 'axiom')) el.classList.add('axioms')
     el.tabIndex = 0
     el.setAttribute('role', 'button')
     el.innerHTML = groupFace(n) + frameHead(n)
-    el.setAttribute('aria-label', `${n.plainTitle}, ${label.toLowerCase()} of ${n.leafCount} concepts`)
+    el.setAttribute('aria-label', `${n.plainTitle}, ${n.depth === 0 ? 'subject' : 'topic'}`)
     this.markProgress(n, el)
   }
 
-  // An open domain's card stays in its place, outlined and tied to the frame it floated out into;
-  // clicking it closes the domain again.
   stubElement(n) {
     const key = stubKey(n)
     let el = this.els.get(key)
@@ -214,7 +209,7 @@ export class AtlasMap {
     el.tabIndex = 0
     el.setAttribute('role', 'button')
     el.setAttribute('aria-label', `${n.plainTitle}, open beside this card: close it`)
-    el.title = 'Close this domain'
+    el.title = 'Close this subject'
     el.innerHTML = groupFace(n)
     this.markProgress(n, el)
     this.world.append(el)
@@ -222,6 +217,8 @@ export class AtlasMap {
     return el
   }
 
+  // An open domain's card stays in its place, outlined and tied to the frame it floated out into;
+  // clicking it closes the domain again.
   // A topic's README is an element of its own, laid in the top of the topic's frame.
   readmeElement(n) {
     const key = readmeKey(n)
@@ -382,7 +379,7 @@ export class AtlasMap {
   }
 
   // Sheets stand in a row to the right of the map, so whatever opens on the map only pushes them
-  // further right, and they never lie over it. The canvas, and the grid, reach as far as they do.
+  // further right, and they never lie over it. The canvas reaches as far as they do.
   placeSheets() {
     let w = this.bounds.w
     let h = this.bounds.h
@@ -392,10 +389,6 @@ export class AtlasMap {
       h = Math.max(h, s.height)
     }
     this.canvas = { x: 0, y: 0, w, h }
-    const g = this.grid.style
-    g.transform = `translate(${-GRID_MARGIN}px, ${-GRID_MARGIN}px)`
-    g.width = `${Math.ceil(w) + 2 * GRID_MARGIN}px`
-    g.height = `${Math.ceil(h) + 2 * GRID_MARGIN}px`
   }
 
   /** Where a box of this map stands on the canvas, which the camera works in. A sheet's are inside its frame. */
@@ -403,75 +396,25 @@ export class AtlasMap {
     return box
   }
 
-  // ---- arrows ----
+  // ---- lines ----
 
+  // Lines run only where a layout made room for them: between the domains, and between the cards
+  // of a sheet, where there are few enough to follow. Inside an open domain there are none: where
+  // a thing stands says what comes before it, and lighting up a selection says the rest.
   drawEdges() {
     this.edges = visibleEdges(this.atlas, n => this.isOpen(n), this.selected)
-    // A selected concept's links into other domains aren't drawn across the frames: the arrows
-    // between the domains carry them, and light up for it.
-    for (const [key, e] of this.edges) if (e.focus && !e.within) this.edges.delete(key)
-    const outs = new Map()
-    const ins = new Map()
-    const live = []
-    const sides = new Map() // a domain card's top or bottom → the arrows that enter or leave it there
+    for (const key of this.edges.keys()) if (!this.routes.has(key)) this.edges.delete(key)
+    const sides = new Map() // a card's top or bottom → the lines that enter or leave it there
     const routed = []
     for (const e of this.edges.values()) {
       const p = this.paths.get(e.key) ?? this.makePath(e)
-      // Between domains: down the gaps between the rows, along the arrow's route (see layoutDomains).
       const route = this.routes.get(e.key)
-      if (route) {
-        const it = { e, p, route, U: this.spine.get(route.upper.id), L: this.spine.get(route.lower.id) }
-        addTo(sides, route.upper.id + ' bottom', it)
-        addTo(sides, route.lower.id + ' top', it)
-        routed.push(it)
-        continue
-      }
-      let [from, to] = [e.from, e.to]
-      let [a, b] = [this.boxes.get(from.id), this.boxes.get(to.id)]
-      if (!a || !b) continue
-      // An arrow follows the flow of the topic it runs within: out of a box's bottom (or right)
-      // side into the next one's top (or left).
-      const dir = flowOf(e.within ?? this.atlas.root)
-      const down = dir === 'down'
-      const lo = box => (down ? box.y : box.x)
-      const hi = box => (down ? box.y + box.h : box.x + box.w)
-      // A two-way arrow, with a head at each end, runs from whichever end comes first.
-      if (e.twin && hi(b) <= lo(a)) [from, to, a, b] = [to, from, b, a]
-      // A one-way arrow that closes a loop of topics points back against the flow, from its
-      // source's top (or left) side to its target's bottom (or right), and is drawn lighter.
-      // One between boxes side by side, which only a selected concept's links can be, runs across.
-      const way = hi(a) <= lo(b) ? 'on' : hi(b) <= lo(a) ? 'back' : 'side'
-      p.classList.toggle('back', way === 'back')
-      const it = { e, p, a, b, dir, way }
-      if (way !== 'side') {
-        addTo(outs, from.id + dir + way, it)
-        addTo(ins, to.id + dir + way, it)
-      }
-      live.push(it)
+      const it = { e, p, route, U: this.spine.get(route.upper.id), L: this.spine.get(route.lower.id) }
+      addTo(sides, route.upper.id + ' bottom', it)
+      addTo(sides, route.lower.id + ' top', it)
+      routed.push(it)
     }
-    // Several arrows leaving (or entering) one side spread out along it, in the order of their other ends.
-    fan(outs, 'out')
-    fan(ins, 'in')
-    for (const it of live) {
-      const { a, b, way } = it
-      const both = !!it.e.twin
-      const down = it.dir === 'down'
-      let d
-      if (way === 'side') {
-        // Between the middles of the boxes' facing sides, across the flow.
-        const first = down ? a.x + a.w <= b.x : a.y + a.h <= b.y
-        d = down
-          ? curve(first ? a.x + a.w : a.x, a.y + a.h / 2, first ? b.x : b.x + b.w, b.y + b.h / 2, false, both)
-          : curve(a.x + a.w / 2, first ? a.y + a.h : a.y, b.x + b.w / 2, first ? b.y : b.y + b.h, true, both)
-      } else {
-        const back = way === 'back'
-        d = down
-          ? curve(it.out, back ? a.y : a.y + a.h, it.in, back ? b.y + b.h : b.y, true, both)
-          : curve(back ? a.x : a.x + a.w, it.out, back ? b.x + b.w : b.x, it.in, false, both)
-      }
-      it.p.setAttribute('d', d)
-    }
-    // The arrows leaving (or entering) a domain's card spread out along its side, in the order of
+    // The lines leaving (or entering) a card spread out along its side, in the order of
     // where they head next. Each then runs from the upper card's bottom, straight down through its
     // gap in every row it passes, into the lower card's top, turned round if it points up.
     const mid = box => box.x + box.w / 2
@@ -486,8 +429,7 @@ export class AtlasMap {
     for (const it of routed) {
       const { U, L, route } = it
       const pts = [[it.out, U.y + U.h], ...route.pass.flatMap(q => [[q.x, q.y0], [q.x, q.y1]]), [it.in, L.y]]
-      it.p.classList.toggle('back', route.back)
-      it.p.setAttribute('d', path(route.back ? pts.reverse() : pts, !!it.e.twin))
+      it.p.setAttribute('d', path(route.back ? pts.reverse() : pts))
     }
     for (const [key, p] of this.paths) {
       if (this.edges.has(key)) continue
@@ -520,7 +462,7 @@ export class AtlasMap {
       const frame = this.boxes.get(d.id)
       const outer = ![...this.spine.values()].some(o => o !== card && o.y === card.y && o.x > card.x)
       if (outer) {
-        const [x1, y1, x2, y2] = [card.x + card.w, card.y + 19, frame.x, frame.y + 19]
+        const [x1, y1, x2, y2] = [card.x + card.w, card.y + 26, frame.x, frame.y + 26]
         const c = (x2 - x1) / 2
         p.setAttribute('d', `M${r1(x1)},${r1(y1)}C${r1(x1 + c)},${r1(y1)} ${r1(x2 - c)},${r1(y2)} ${r1(x2)},${r1(y2)}`)
       } else {
@@ -528,7 +470,7 @@ export class AtlasMap {
         const x1 = card.x + card.w - 28
         const yu = card.y + card.h + 16
         const x2 = frame.x - 22
-        const y2 = Math.max(frame.y + 19, yu)
+        const y2 = Math.max(frame.y + 26, yu)
         p.setAttribute('d', `M${r1(x1)},${r1(card.y + card.h)}V${r1(yu - 8)}Q${r1(x1)},${r1(yu)} ${r1(x1 + 8)},${r1(yu)}` +
           `H${r1(x2 - 8)}Q${r1(x2)},${r1(yu)} ${r1(x2)},${r1(Math.min(y2, yu + 8))}V${r1(y2)}H${r1(frame.x)}`)
       }
@@ -538,10 +480,7 @@ export class AtlasMap {
   makePath(e) {
     const p = document.createElementNS(SVG, 'path')
     p.classList.add('edge')
-    // Arrows between cards in different topics run across other cards and frames; draw them lighter.
-    if (e.from.parent !== e.to.parent) p.classList.add('cross')
     if (e.focus) p.classList.add('focus')
-    if (e.twin) p.classList.add('twin')
     p.style.setProperty('--c', e.from.color)
     p.style.setProperty('--w', (1.2 + Math.min(2.6, Math.log2(e.pairs.length) * 0.65)).toFixed(2))
     this.svg.append(p)
@@ -612,6 +551,12 @@ export class AtlasMap {
   edgeState(e) {
     const h = this.hl
     if (!h) return ''
+    // A line between subjects, on the way to the selection's subject or on from it.
+    if (e.subjects) {
+      const s = domainOf(h.sel)
+      if (e.to === s || s.groundwork.has(e.to)) return 'pre'
+      return e.from === s || e.from.groundwork.has(s) ? 'post' : 'dim'
+    }
     const within = n => n === h.sel || isAncestor(h.sel, n)
     let post = false
     for (const [p, c] of e.pairs) {
@@ -649,10 +594,10 @@ export class AtlasMap {
     const path = e.composedPath()
     const hit = selector => path.find(x => x.matches?.(selector))
     if (hit('a[href], input, select, label')) return // main.js follows the links; the rest work by themselves
-    const readme = hit('.readme')
-    if (readme) return this.readmeClick(this.atlas.nodes.get(readme.dataset.topic), hit)
     const stub = hit('.stub')
     if (stub) return this.collapse(this.atlas.nodes.get(stub.dataset.node))
+    const readme = hit('.readme')
+    if (readme) return this.readmeClick(this.atlas.nodes.get(readme.dataset.topic), hit)
     const el = hit('.node')
     const n = el && this.atlas.nodes.get(el.dataset.id)
     if (!n) return this.background()
@@ -942,25 +887,17 @@ export class AtlasMap {
     }
   }
 
-  // Runs on every frame of a pan or zoom, so it does as little as possible: it touches the
-  // page only when the zoom crosses into another band (far out, the grid and small labels go).
+  // Runs on every frame of a pan or zoom, so it touches nothing on the page. The map is one
+  // picture, scaled as a whole: nothing on it changes with the zoom.
   cameraMoved() {
-    const k = this.camera.k
-    const level = k < 0.2 ? 2 : k < 0.45 ? 1 : 0
-    if (level !== this.level) {
-      this.level = level
-      this.viewport.classList.toggle('is-far', level >= 1)
-      this.viewport.classList.toggle('is-tiny', level === 2)
-    }
     this.onView?.()
   }
 }
 
 // A domain's or topic's card: what it is, its title and summary, and a bar of progress.
 function groupFace(n) {
-  const label = n.depth === 0 ? 'Domain' : 'Topic'
   return `<div class="face">
-      <div class="eyebrow">${label} · ${n.leafCount} ${n.leafCount === 1 ? 'concept' : 'concepts'}</div>
+      <div class="eyebrow">${n.depth === 0 ? 'Subject' : 'Topic'}</div>
       <div class="title">${renderInline(n.title)}</div>
       ${n.summary ? `<div class="summary">${renderInline(n.summary)}</div>` : ''}
       <div class="meter"><span></span></div>
@@ -970,10 +907,9 @@ function groupFace(n) {
 // An open folder's head: its title, its count, and its buttons.
 const frameHead = n => `<div class="frame-head">
   <span class="frame-title">${renderInline(n.title)}</span>
-  <span class="frame-count">${n.leafCount}</span>
   <button type="button" class="open-all" title="Open everything inside" aria-label="Open everything inside ${esc(n.plainTitle)}">+</button>
-  <button type="button" class="about" title="About this ${n.depth === 0 ? 'domain' : 'topic'}" aria-label="About ${esc(n.plainTitle)}">i</button>
-  <button type="button" class="shut" title="Close this ${n.depth === 0 ? 'domain' : 'topic'}" aria-label="Close ${esc(n.plainTitle)}">×</button>
+  <button type="button" class="about" title="About this ${n.depth === 0 ? 'subject' : 'topic'}" aria-label="About ${esc(n.plainTitle)}">i</button>
+  <button type="button" class="shut" title="Close this ${n.depth === 0 ? 'subject' : 'topic'}" aria-label="Close ${esc(n.plainTitle)}">×</button>
 </div>`
 
 // A formula or table too wide for its file widens the file as far as it needs, rather than hide
@@ -981,8 +917,10 @@ const frameHead = n => `<div class="frame-head">
 function widen(el) {
   let extra = el.scrollWidth - el.clientWidth
   for (const box of el.querySelectorAll('.math-block, .table-wrap, pre')) extra = Math.max(extra, box.scrollWidth - box.clientWidth)
-  // A pixel to spare: the widths are whole pixels, and a fraction left over would bring the scroll bar back.
-  if (extra > 0) el.style.width = `${el.offsetWidth + extra + 1}px`
+  // A pixel to spare, as the widths are whole pixels.
+  // An entry in columns shares its width out between them, so each has to gain all of it.
+  const columns = +el.style.getPropertyValue('--columns') || 1
+  if (extra > 0) el.style.width = `${el.offsetWidth + extra * columns + 1}px`
 }
 
 // A long entry runs in columns, as a newspaper does, so that it fills a wide screen rather than
@@ -1008,48 +946,9 @@ function addTo(map, key, item) {
   else map.set(key, [item])
 }
 
-// side 'out' places where arrows leave their source box; 'in', where they reach their target.
-function fan(groups, side) {
-  for (const list of groups.values()) {
-    const down = list[0].dir === 'down'
-    const own = it => (side === 'out' ? it.a : it.b)
-    const other = it => (side === 'out' ? it.b : it.a)
-    const mid = box => (down ? box.x + box.w / 2 : box.y + box.h / 2)
-    list.sort((p, q) => mid(other(p)) - mid(other(q)))
-    const box = own(list[0])
-    const span = down ? box.w : box.h
-    const gap = list.length > 1 ? Math.min(9, (span * 0.6) / (list.length - 1)) : 0
-    list.forEach((it, i) => { it[side] = mid(box) + (i - (list.length - 1) / 2) * gap })
-  }
-}
-
-// An S-curve from one box to the next, across (right side to left side) or down (bottom to top),
-// or the other way round for an arrow that points back against the flow, from a target that
-// lies earlier along it. It stops HEAD short of the target, where the arrowhead marker takes
-// over (see index.html), and, for a two-way arrow (`both`), starts HEAD clear of the source too,
-// for the head at that end.
-const HEAD = 10
-function curve(sx, sy, tx, ty, down, both = false) {
-  const s = Math.sign(down ? ty - sy : tx - sx) || 1 // +1 along the flow, −1 back against it
-  if (down) ty -= s * HEAD
-  else tx -= s * HEAD
-  if (both && down) sy += s * HEAD
-  else if (both) sx += s * HEAD
-  const d = Math.abs(down ? ty - sy : tx - sx)
-  const c = Math.min(360, Math.max(30, d * 0.5))
-  const [p, q] = down ? [[sx, sy + s * c], [tx, ty - s * c]] : [[sx + s * c, sy], [tx - s * c, ty]]
-  return `M${r1(sx)},${r1(sy)}C${r1(p[0])},${r1(p[1])} ${r1(q[0])},${r1(q[1])} ${r1(tx)},${r1(ty)}`
-}
-
-// An arrow between domains, through the points of its route: each joined to the next by an
-// S-curve, which runs straight down a gap where two points stand one above the other. It stops
-// HEAD short of its last point for the arrowhead, and starts HEAD clear of its first when it has
-// a head at that end too.
-function path(pts, both) {
-  const p = pts.map(q => [...q])
-  const s = Math.sign(p.at(-1)[1] - p[0][1]) || 1
-  p.at(-1)[1] -= s * HEAD
-  if (both) p[0][1] += s * HEAD
+// A line of a sheet, through the points of its route: each joined to the next by an
+// S-curve, which runs straight down a gap where two points stand one above the other.
+function path(p) {
   let d = `M${r1(p[0][0])},${r1(p[0][1])}`
   for (let i = 1; i < p.length; i++) {
     const [x0, y0] = p[i - 1]

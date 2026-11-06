@@ -5,8 +5,8 @@
 // and the "i" on a topic's frame opens the topic's README, at the top of the frame. This module
 // writes what each shows, and the index of every concept, which opens in a panel beside the map.
 //
-// An open concept shows its content and nothing else: the arrows on the map already say what
-// it builds on. The "i" on it opens a band under its head with those connections spelled out.
+// An open concept shows its content and nothing else: the map already lights up what it builds
+// on. The "i" on it opens a band under its head with those connections spelled out.
 
 import { renderMarkdown, renderInline, esc } from './markdown.js'
 import { learningPath, externalPrereqs, externalDependents, leaves, finder } from './model.js'
@@ -50,8 +50,8 @@ export function showInfo(el, n, on) {
   refresh(el, n)
 }
 
-// The band under an open concept's "i": how it joins the rest of the map, which the arrows
-// otherwise say on their own, the chain behind it, and where it is written.
+// The band under an open concept's "i": how it joins the rest of the map, which the lit-up cards
+// otherwise show on their own, the chain behind it, and where it is written.
 function conceptInfo(n) {
   const path = learningPath(n)
   return `<div class="doc-body doc-info">
@@ -67,7 +67,7 @@ function conceptInfo(n) {
 export function readme(n, atlas) {
   const resolve = id => atlas.nodes.get(id)
   const path = learningPath(n)
-  const what = n.depth === 0 ? 'domain' : 'topic'
+  const what = n.depth === 0 ? 'subject' : 'topic'
   return `<header class="doc-head">
       <span class="doc-kind">About this ${what}</span>
       <span class="topic-progress"></span>
@@ -92,7 +92,7 @@ export function index(atlas) {
   const tree = list => `<ul>${list.map(n => `<li><a href="#${esc(n.id)}" style="--c:${n.color}">` +
     `${renderInline(n.title)}</a>${n.children.length ? tree(n.children) : ''}</li>`).join('')}</ul>`
   const count = atlas.roots.reduce((s, d) => s + d.leafCount, 0)
-  return `<p class="index-note">${count} concepts in ${atlas.roots.length} domains. Choose one to open it where it sits on the map.</p>
+  return `<p class="index-note">${count} concepts in ${atlas.roots.length} subjects. Choose one to open it where it sits on the map.</p>
     ${atlas.roots.map(d => `<details data-domain="${esc(d.id)}" style="--c:${d.color}"><summary>${renderInline(d.title)}` +
       `<span class="where">${d.leafCount}</span></summary>${tree(d.children)}</details>`).join('')}`
 }

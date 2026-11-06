@@ -1,5 +1,5 @@
 // Questions about the concept graph: what contains what, what needs what, and
-// which arrows to draw for the topics that are currently open.
+// which lines a popped-out tree draws.
 //
 // "Needs" has three sources: a concept's own prereqs, everything inside a topic
 // (knowing Fractions means knowing what's in it), and the prereqs written on the
@@ -62,7 +62,7 @@ export function prepare(atlas) {
 
   // Each topic's prerequisite arrows, lifted to the children of the topic they run within:
   // LCM → Adding Fractions, inside Arithmetic, becomes Factors & Multiples → Fractions. The
-  // layout orders a topic's children by these, and these are the arrows the map draws.
+  // layout orders a topic's children by these.
   for (const n of [atlas.root, ...all]) n.localEdges = new Map()
   for (const c of all) {
     for (const p of c.directPrereqs) {
@@ -77,6 +77,21 @@ export function prepare(atlas) {
     }
   }
   for (const n of [atlas.root, ...all]) n.localEdges = [...n.localEdges.values()]
+  // Subjects are the exception. A concept that cites another subject says nothing about the subject
+  // as a whole, so each says what it is built on: what someone studying alone couldn't learn it
+  // without. These alone set the subjects' rows and the lines between them.
+  atlas.root.localEdges = atlas.roots.flatMap(d => d.builtOn.map(p =>
+    ({ key: `${p.id}>${d.id}`, from: p, to: d, within: null, weight: 1, pairs: [[p, d]], subjects: true })))
+  for (const d of atlas.roots) {
+    d.groundwork = new Set() // every subject it is built on, however far back
+    const todo = [...d.builtOn]
+    while (todo.length) {
+      const p = todo.pop()
+      if (d.groundwork.has(p)) continue
+      d.groundwork.add(p)
+      todo.push(...p.builtOn)
+    }
+  }
   for (const n of all) n.twins = []
   for (const n of [atlas.root, ...all]) markIntertwined(n)
 

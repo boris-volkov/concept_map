@@ -36,7 +36,7 @@ async function start() {
   // Before the map is made, so that it starts out the size it keeps.
   if (view?.index) showIndex(true)
   map = new AtlasMap({
-    viewport: $('viewport'), world: $('world'), svg: $('edges'), grid: $('grid'), atlas,
+    viewport: $('viewport'), world: $('world'), svg: $('edges'), atlas,
     onSelect: selected, onView: saveView, onPop: n => popOut(map, n, $('pop')),
   })
   search = new Search($('search'), $('search-results'), { onPick: n => go(n.id) })

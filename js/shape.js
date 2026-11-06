@@ -279,7 +279,7 @@ const standing = (n, c, R) => sweep(0, 2 * PI, t => onCircle(c, R, t - PI / 2 - 
 
 function regular(n) {
   return s => {
-    const corners = standing(n, [56, 42], 37)
+    const corners = standing(n, [56, 38], 35)
     s.figure(closed(corners))
     s.under(corners[0], corners[1], 's')
   }

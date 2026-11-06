@@ -1,51 +1,41 @@
 // Where everything goes on the map.
 //
-// The domains make a small layered drawing of their own, in rows: each domain a row
-// below the furthest of those it builds on, so that going down the map is going
-// deeper into mathematics, and domains that don't build on one another side by side.
-// An open domain keeps its card in place and floats its frame out to the right of all
-// the cards, level with its row, so the arrows between domains never cross a frame.
+// One rule, at every depth: going down the page is going deeper into mathematics. Each thing goes a
+// level below the furthest of those beside it that it builds on, and a level keeps the order
+// written. Nothing else decides where a box goes, so that how the page is organized says what
+// comes before what.
 //
-// Inside a domain, each open topic lays out its own children, inside out. Topics
-// holding topics fill columns across the page, in the order written (see placeColumns).
-// Topics holding concepts make a layered (or "Sugiyama") drawing, prerequisites first
-// and what builds on them after, running across.
+// The domains make a small layered drawing of their own, in rows: each domain a row below the
+// furthest of those it builds on, and domains that don't build on one another side by side, with
+// lines between them running down the gaps. An open domain keeps its card in place and floats its
+// frame out to the right of all the cards, level with its row, so the lines never cross a frame.
 //
-// The order of a topic's children, and how they wrap, depend only on the arrows among
-// them and how many there are, not on what is open. Boxes line up at the start of their
-// rows and columns, so whatever opens pushes only what lies after it, right and down.
+// Inside a domain there are no lines. Folders open wide, so they stand one under another, a level
+// at a time, those of a level close together, and opening one moves only what is below it.
+// Concepts are small, so they stand in rows, a row to each level, what stands together being at
+// the same level, unless their topic is marked "rows: kinds". Each open folder lays out its own
+// contents, inside out.
+//
+// How a row wraps depends only on how many boxes it holds, never on what is open. Boxes line up at
+// the start of their rows, so whatever opens pushes only what lies after it, right and down.
 
-export const FRAME_PAD = { top: 54, right: 22, bottom: 22, left: 22 }
+export const FRAME_PAD = { top: 66, right: 22, bottom: 22, left: 22 }
 /**
  * The domains' rows: between rows, from the cards to the frames that float out beside them,
- * between frames that float out of one row, between cards side by side, and between an arrow
+ * between frames that float out of one row, between cards side by side, and between a line
  * passing a row and whatever is next to it.
  */
 export const DOMAINS = { gap: 64, float: 72, stack: 30, card: 44, pass: 20 }
-const SHEET = { gap: 52, card: 22, pass: 12 } // the same for a sheet (see layoutSheet), whose cards are smaller
+const SHEET = { gap: 52, card: 22, pass: 12 } // a sheet (see layoutSheet): between rows, cards, and a line and what it passes
 const README_GAP = 22 // between an open topic's README and its contents
-const GAP = {
-  right: { layer: 78, wrap: 22, card: 14 }, // layer: between the columns an arrow runs across
-  down: { layer: 58, wrap: 26, card: 18 },
-}
-const ASPECT = 1.5 // a crowded layer down the page wraps until its topic is about this wide for its height
-const ASPECT_ACROSS = 3 // a crowded column wraps sooner, as an open file makes it far taller than wide
-const NOMINAL = { w: 190, h: 64 } // what a box counts as when wrapping, open or not
+const GAP = { level: 44, wrap: 16, card: 14 } // between levels, the lines of a level that wraps, and boxes side by side
+const ASPECT = 1.5 // a crowded level wraps until its folder is about this wide for its height
+const NOMINAL = { w: 210, h: 68 } // what a box counts as when wrapping, open or not
 const COLUMN_ASPECT = 1.6 // the more of this, the more columns a topic of topics gets
 const FEW = 12 // a topic in rows by kind with no more cards than this runs on, without a row for each kind
-const COLUMN_GAP = 32 // between the columns of a topic of topics, and the boxes in them
 // The rows of a topic marked "rows: kinds": what is proved, what is true of the thing, how it is written, what to do with it.
 const KIND_ROW = { axiom: 0, theorem: 0, rule: 0, formula: 2, form: 2, skill: 3, technique: 3 }
 const kindRow = n => KIND_ROW[n.kind] ?? 1
-
-const holdsTopics = node => node.children.some(k => k.children.length)
-
-/** Whether a topic lays its contents out in columns: one holding topics, or concepts with no arrows to follow. */
-const inColumns = node => !node.wrap && !node.rowsByKind && (holdsTopics(node) ? !node.flow : !node.localEdges.length)
-
-/** The way a topic's contents flow. "wrap:" always means so many to a row, across the page. */
-const plannedFlow = node => (node.wrap ? 'down' : node.flow ?? (holdsTopics(node) ? 'down' : 'right'))
-export const flowOf = node => (node.balanced ? 'down' : plannedFlow(node))
 
 /**
  * root: the atlas root; isOpen(node); cardSize(node) → {w, h}, with `file: true` for an open
@@ -53,8 +43,8 @@ export const flowOf = node => (node.balanced ? 'down' : plannedFlow(node))
  * width; readmeSize(node, width) → {w, h} of an open topic's README at the width its frame has to
  * give, or null when it has none showing.
  * Returns absolute boxes {x, y, w, h} by node id (an open domain's is its frame), each domain
- * card's place by id (`spine`), the route of each arrow between domains by key (see
- * layoutDomains), and the overall size.
+ * card's place by id (`spine`), the route of each line between domains by key (see layoutDomains),
+ * and the overall size.
  */
 export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = () => null) {
   const rel = new Map()
@@ -81,23 +71,21 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
   const arrange = container => {
     const kids = container.children
     const size = kids.map(measure)
-    const at = new Map(kids.map((k, i) => [k, i]))
-    // Rows by kind leave the arrows out of it: the cards keep the order they are written in. A
+    // Rows by kind leave the prerequisites out of it: the cards keep the order they are written in. A
     // small topic has too few of each kind to fill a row, so it runs on, in balanced rows.
     const bands = container.rowsByKind && kids.length > FEW
     const rows = container.rowsByKind ? kids.map(k => (bands ? kindRow(k) : 0)) : null
     const line = container.rowsByKind && !bands ? columnCount(kids.length) : container.wrap
-    const edges = rows ? [] : container.localEdges.map(e => ({ a: at.get(e.from), b: at.get(e.to), w: e.weight, twin: e.twin }))
-    const pos = inColumns(container)
-      ? placeColumns(size, kids.map(k => k.leafCount))
-      : placeLayered(size, edges, plannedFlow(container), line, rows)
-    container.balanced = !!pos.balanced
+    const level = rows ?? levelsOf(kids, container.localEdges)
+    // A subject starts from its axioms, whatever they happen to build on.
+    kids.forEach((k, i) => { if (k.children.length && k.title === 'Axioms') level[i] = -1 })
+    // Folders open wide, so a folder of folders stands them one to a line.
+    const pos = placeLevels(size, level, kids.some(k => k.children.length) ? 1 : line)
     kids.forEach((k, i) => rel.set(k, { x: pos.x[i], y: pos.y[i], w: size[i].w, h: size[i].h }))
     return { w: pos.w, h: pos.h }
   }
 
-  // The domains: every card takes a place of one size, so the rows are even, and an open domain's
-  // frame floats out to the right of them all, level with its row.
+  // The domains: every card takes a place of one size, so that they stand on a grid.
   const kids = root.children
   const slot = {
     w: Math.max(0, ...kids.map(k => cardSize(k).w)),
@@ -127,7 +115,7 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
  * tallest frame beside it.
  * slot: {w, h}, the size of a domain's card; frames: domain → {w, h} of its open frame.
  * Returns { places: id → card box, frames: domain → frame box, routes: edge key → { upper,
- * lower, pass: [{x, y0, y1}], back }, width, height }. An arrow runs from the bottom of its upper
+ * lower, pass: [{x, y0, y1}], back }, width, height }. A line runs from the bottom of its upper
  * card to the top of its lower one, straight down through each passing point from y0 to y1;
  * `back` marks one that points up, closing a loop.
  */
@@ -165,7 +153,7 @@ function layoutDomains(root, slot, frames) {
 
 /**
  * A sheet: the concepts that lead up to one concept, popped out of the map (see sheet.js). They
- * make a drawing like the domains', each row of cards resting on those above and the concept at
+ * make a layered drawing, each row of cards resting on those above and the concept at
  * the bottom. Each card stands as low as it can, just above the first thing it leads to, so that
  * a foundation only one concept needs sits beside that concept and not at the top with the rest.
  * The cards' places are reckoned as if all were closed. A card that opens grows where it stands:
@@ -206,8 +194,8 @@ export function layoutSheet(root, cardSize) {
 }
 
 /**
- * A small layered drawing of `kids`, across, which the domains and a sheet share (placeLayered
- * does the same inside a topic). Each goes a row below the furthest of those it builds on, after
+ * A small layered drawing of `kids`, across, which the domains and a sheet share. Each goes a row
+ * below the furthest of those it builds on, after
  * the few arrows that close a loop are turned round, so that going down is going deeper into
  * mathematics and those that don't build on one another stand side by side. An arrow that skips
  * rows passes each row between at a point of its own, set into the row like a very narrow card,
@@ -244,12 +232,24 @@ function drawRows(kids, localEdges, cardWidth, gaps, late = false) {
   }
   const rows = n ? Math.max(...row) + 1 : 0
 
-  // 2. The things in each row: its cards, and a passing point for each arrow that skips it.
+  // A line that another way down already implies says nothing: Arithmetic leads to Algebra, and
+  // Algebra to Trigonometry, so Arithmetic has no line of its own to Trigonometry. Taking these out
+  // leaves every row as it was, as a row is set by the longest way down.
+  const reach = kids.map(() => new Set())
+  for (const v of [...Array(n).keys()].sort((p, q) => rank[q] - rank[p])) {
+    for (const s of succs[v]) {
+      reach[v].add(s)
+      for (const r of reach[s]) reach[v].add(r)
+    }
+  }
+  const lines = edges.filter(t => !succs[t.upper].some(s => s !== t.lower && reach[s].has(t.lower)))
+
+  // 2. The things in each row: its cards, and a passing point for each line that skips it.
   const items = kids.map((_, i) => ({ card: i, row: row[i] }))
   const above = items.map(() => [])
   const below = items.map(() => [])
   const join = (p, q, w) => { below[p].push({ v: q, w }); above[q].push({ v: p, w }) }
-  for (const t of edges) {
+  for (const t of lines) {
     t.pass = []
     let prev = t.upper
     for (let r = row[t.upper] + 1; r < row[t.lower]; r++) {
@@ -284,7 +284,7 @@ function drawRows(kids, localEdges, cardWidth, gaps, late = false) {
   }
 
   // 4. Across: each row's cards and passing points side by side, each then nudged toward what it
-  // connects to, as close as the things beside it allow (as in placeLayered).
+  // connects to, as close as the things beside it allow.
   const breadth = i => (isCard(i) ? cardWidth : 0)
   const between = (p, q) => (isCard(p) && isCard(q) ? gaps.card : gaps.pass)
   const px = new Array(items.length)
@@ -314,7 +314,7 @@ function drawRows(kids, localEdges, cardWidth, gaps, late = false) {
   const right = Math.max(...items.map((_, i) => px[i] + breadth(i))) - lo
   for (let i = 0; i < items.length; i++) px[i] -= lo
 
-  const routes = (top, tall) => new Map(edges.map(t => [t.e.key, {
+  const routes = (top, tall) => new Map(lines.map(t => [t.e.key, {
     upper: kids[t.upper],
     lower: kids[t.lower],
     pass: t.pass.map(i => ({ x: px[i], y0: top[items[i].row], y1: top[items[i].row] + tall[items[i].row] })),
@@ -323,135 +323,62 @@ function drawRows(kids, localEdges, cardWidth, gaps, late = false) {
   return { rows, items, layers, isCard, px, right, routes }
 }
 
-// How many columns, or cards to a row, keep n boxes about as wide as a screen.
+// How many boxes to a row keep n of them about as wide as a screen.
 const columnCount = n => Math.max(1, Math.round(Math.sqrt(n * COLUMN_ASPECT)))
 
-// Lays boxes out in columns across the page, as text fills a newspaper, so that what they hold
-// spreads wide rather than tall. Each box, in the order written, goes to the column holding the
-// fewest concepts so far. That is reckoned from what the boxes hold, never from their sizes, so
-// a box always keeps its column: opening one moves only what is below it, or in columns to its right.
-function placeColumns(size, weight) {
-  const n = size.length
-  const load = new Array(columnCount(n)).fill(0)
-  const columns = load.map(() => [])
-  size.forEach((_, k) => {
-    const c = load.indexOf(Math.min(...load))
-    load[c] += weight[k]
-    columns[c].push(k)
-  })
-  const x = new Array(n)
-  const y = new Array(n)
-  let cx = 0
-  let h = 0
-  for (const column of columns) {
-    if (!column.length) continue
-    let cy = 0
-    for (const k of column) {
-      x[k] = cx
-      y[k] = cy
-      cy += size[k].h + COLUMN_GAP
-    }
-    h = Math.max(h, cy - COLUMN_GAP)
-    cx += Math.max(...column.map(k => size[k].w)) + COLUMN_GAP
+/**
+ * Each child's level: one below the furthest of its siblings that it builds on. The few links that
+ * close a loop between topics are turned round first, so that every link points one way. A two-way
+ * link counts as one from its first end to its second (see markIntertwined in model.js).
+ */
+function levelsOf(kids, links) {
+  const at = new Map(kids.map((k, i) => [k, i]))
+  const edges = links.map(e => ({ a: at.get(e.from), b: at.get(e.to), w: e.weight })).filter(e => e.a !== e.b)
+  const rank = linearOrder(kids.length, edges)
+  const before = kids.map(() => [])
+  for (const e of edges) (rank[e.a] < rank[e.b] ? before[e.b] : before[e.a]).push(rank[e.a] < rank[e.b] ? e.a : e.b)
+  const level = kids.map(() => 0)
+  for (const v of [...kids.keys()].sort((p, q) => rank[p] - rank[q])) {
+    for (const u of before[v]) level[v] = Math.max(level[v], level[u] + 1)
   }
-  return { x, y, w: cx - COLUMN_GAP, h }
+  return level
 }
 
-// Lays out boxes of the given sizes, with weighted arrows a → b between them, flowing `dir`.
-// `rows`, if given, says which layer each box starts in, for boxes with no arrows to place them.
-// Positions are worked out as u (along the flow) and v (across it), then turned into x and y.
-function placeLayered(size, edges, dir, wrap = 0, rows = null) {
+/**
+ * Lays out boxes of the given sizes in rows, a level at a time, each keeping the order written.
+ * Levels stand further apart than the lines of one that wraps, so that what belongs together looks
+ * it. A crowded level wraps, by the number of boxes alone, so that opening one leaves every other
+ * where it was, or `wrap` boxes to a line. Nothing is centred: what grows moves only what lies
+ * after it.
+ */
+function placeLevels(size, level, wrap) {
   const n = size.length
   if (!n) return { x: [], y: [], w: 0, h: 0 }
-  const across = dir === 'right'
-  const length = k => (across ? size[k].w : size[k].h) // along the flow
-  const breadth = k => (across ? size[k].h : size[k].w) // across the flow
-  const gap = GAP[dir]
-
-  // A two-way arrow counts as one from its first end to its second, like any other (see
-  // markIntertwined in model.js), so two boxes that build on each other follow one another.
-  const arrows = edges
-
-  // 1. Turn the few arrows that close a loop around (the lightest ones), so every arrow points one way.
-  const rank = linearOrder(n, arrows)
-  const preds = Array.from({ length: n }, () => [])
-  const succs = Array.from({ length: n }, () => [])
-  for (const e of arrows) {
-    if (e.a === e.b) continue
-    const [a, b] = rank[e.a] < rank[e.b] ? [e.a, e.b] : [e.b, e.a]
-    preds[b].push({ v: a, w: e.w })
-    succs[a].push({ v: b, w: e.w })
-  }
-  const topo = [...Array(n).keys()].sort((p, q) => rank[p] - rank[q])
-
-  // 2. Layers: each box goes one layer after its furthest prerequisite...
-  const layer = rows ? [...rows] : new Array(n).fill(0)
-  for (const v of topo) for (const { v: u } of preds[v]) layer[v] = Math.max(layer[v], layer[u] + 1)
-  // ...then boxes with more arrows out than in slide forward, toward what they lead to.
-  for (const v of [...topo].reverse()) {
-    if (!succs[v].length || succs[v].length <= preds[v].length) continue
-    layer[v] = Math.min(...succs[v].map(s => layer[s.v])) - 1
-  }
-  const used = [...new Set(layer)].sort((p, q) => p - q)
-  // A long chain would run out in one thin line: it takes balanced rows instead, in the order written.
-  if (across && !wrap && !rows && used.length > columnCount(n)) {
-    return { ...placeLayered(size, [], 'down', columnCount(n), new Array(n).fill(0)), balanced: true }
-  }
-  const compact = new Map(used.map((l, i) => [l, i]))
-  const layers = used.map(() => [])
-  for (let v = 0; v < n; v++) layers[compact.get(layer[v])].push(v)
-
-  // 3. Order each layer to uncross the arrows: sort by the average position of neighbours, sweeping both ways.
-  const position = new Array(n)
-  layers.forEach(list => list.forEach((v, i) => { position[v] = (i + 0.5) / list.length }))
-  const sortBy = (list, nbrs) => {
-    const key = new Map(list.map(v => {
-      const ns = nbrs[v]
-      const total = ns.reduce((s, x) => s + x.w, 0)
-      return [v, ns.length ? ns.reduce((s, x) => s + position[x.v] * x.w, 0) / total : position[v]]
-    }))
-    list.sort((p, q) => key.get(p) - key.get(q) || position[p] - position[q])
-    list.forEach((v, i) => { position[v] = (i + 0.5) / list.length })
-  }
-  for (let sweep = 0; sweep < 4; sweep++) {
-    for (let l = 1; l < layers.length; l++) sortBy(layers[l], preds)
-    for (let l = layers.length - 2; l >= 0; l--) sortBy(layers[l], succs)
-  }
-
-  // 4. Wrap crowded layers: a topic of twelve unconnected axioms becomes a grid, not a tower.
-  // How is worked out from the number of boxes alone, never their sizes, so that opening one
-  // leaves every other where it was: what grows only pushes what comes after it.
-  const unit = across ? NOMINAL.h : NOMINAL.w
-  const stack = list => list.reduce((s, k, i) => s + breadth(k) + (i ? gap.card : 0), 0)
-  const area = n * (NOMINAL.w + gap.wrap) * (NOMINAL.h + gap.card)
-  const limit = Math.max(across ? Math.sqrt(area / ASPECT_ACROSS) : Math.sqrt(area * ASPECT), unit)
-  const lanes = [] // a layer's boxes, split into one or more lanes side by side
-  layers.forEach((list, l) => {
-    // A topic's "wrap: n" fixes the length of a line, keeping its authors' order (CANI / CANI / D).
-    const parts = Math.max(1, Math.round(list.length * (unit + gap.card) / limit))
+  const limit = Math.max(Math.sqrt(n * (NOMINAL.w + GAP.wrap) * (NOMINAL.h + GAP.card) * ASPECT), NOMINAL.w)
+  const lanes = []
+  for (const l of [...new Set(level)].sort((p, q) => p - q)) {
+    const list = [...size.keys()].filter(k => level[k] === l)
+    const parts = Math.max(1, Math.round((list.length * (NOMINAL.w + GAP.card)) / limit))
     const line = wrap || Math.ceil(list.length / parts)
-    for (let i = 0; i < list.length; i += line) lanes.push({ layer: l, nodes: list.slice(i, i + line) })
-  })
-
-  // 5. Coordinates: lanes one after another along the flow, and the boxes of each from its start.
-  // Nothing is centred, so a box that grows moves only what lies after it.
-  const u = new Array(n)
-  const v = new Array(n)
-  let cu = 0
+    for (let i = 0; i < list.length; i += line) lanes.push({ level: l, boxes: list.slice(i, i + line) })
+  }
+  const x = new Array(n)
+  const y = new Array(n)
+  let top = 0
+  let w = 0
   lanes.forEach((lane, i) => {
-    if (i) cu += lanes[i - 1].layer === lane.layer ? gap.wrap : gap.layer
-    let cv = 0
-    lane.nodes.forEach((k, j) => {
-      if (j) cv += gap.card
-      u[k] = cu
-      v[k] = cv
-      cv += breadth(k)
+    if (i) top += lanes[i - 1].level === lane.level ? GAP.wrap : GAP.level
+    let left = 0
+    lane.boxes.forEach((k, j) => {
+      if (j) left += GAP.card
+      x[k] = left
+      y[k] = top
+      left += size[k].w
     })
-    cu += Math.max(...lane.nodes.map(length))
+    w = Math.max(w, left)
+    top += Math.max(...lane.boxes.map(k => size[k].h))
   })
-
-  const hi = Math.max(...v.map((t, k) => t + breadth(k)))
-  return across ? { x: u, y: v, w: cu, h: hi } : { x: v, y: u, w: hi, h: cu }
+  return { x, y, w, h: top }
 }
 
 // Places a lane's boxes, in order and without overlap, as close as possible to where

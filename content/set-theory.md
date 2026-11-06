@@ -1,5 +1,6 @@
 # Set Theory
 color: #5a4a8c
+built-on: logic
 
 Collections, and the axioms from which, in principle, every object of mathematics can be built.
 

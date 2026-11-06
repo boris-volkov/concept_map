@@ -60,20 +60,7 @@
 
   <main id="viewport" aria-label="Concept map">
     <div id="world">
-      <div id="grid" aria-hidden="true"></div>
-      <svg id="edges" aria-hidden="true">
-        <!-- Arrowheads: filled triangles in each arrow's own colour. The line stops where the
-             triangle starts, so a thick line never covers the point. At the start of a two-way
-             arrow the same triangle turns round, to point back at the box it leaves. -->
-        <defs>
-          <marker id="head" viewBox="0 0 10 10" refX="0" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
-            <path d="M0,0.8 L10,5 L0,9.2 Z" fill="context-stroke"/>
-          </marker>
-          <marker id="head-lit" viewBox="0 0 17 15" refX="7" refY="7.5" markerWidth="17" markerHeight="15" markerUnits="userSpaceOnUse" orient="auto-start-reverse">
-            <path d="M0,0 L17,7.5 L0,15 Z" fill="context-stroke"/>
-          </marker>
-        </defs>
-      </svg>
+      <svg id="edges" aria-hidden="true"></svg>
     </div>
     <p id="loading">Unrolling the map…</p>
   </main>
@@ -90,7 +77,7 @@
     <span class="key-post">Required for</span>
   </div>
 
-  <p id="hint">Click a domain, a topic or a concept to open it · scroll to zoom, drag to pan</p>
+  <p id="hint">Click a subject, a topic or a concept to open it · scroll to zoom, drag to pan</p>
 
   <!-- The deck of flashcards, over the map (flashcards.js). -->
   <div id="deck" role="dialog" aria-modal="true" aria-labelledby="deck-title" hidden>
@@ -122,7 +109,7 @@
   <dialog id="pop" aria-labelledby="pop-title">
     <form method="dialog">
       <h2 id="pop-title">Pop out what leads up to <span class="pop-name"></span>?</h2>
-      <p>This draws a copy of the concept and the <span class="pop-count"></span> behind it beside the map, joined by their arrows. What you open in the copy stays in the copy.</p>
+      <p>This draws a copy of the concept and the <span class="pop-count"></span> behind it beside the map, joined by lines. What you open in the copy stays in the copy.</p>
       <footer>
         <button type="submit">Cancel</button>
         <button type="submit" class="pop-yes" autofocus>Pop out</button>

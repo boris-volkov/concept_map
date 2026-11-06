@@ -1,5 +1,6 @@
 # Calculus
 color: #2f4f86
+built-on: algebra, trigonometry
 
 The mathematics of change and accumulation: the slopes of curves, the areas under them, and the theorem that says these are two sides of one idea.
 

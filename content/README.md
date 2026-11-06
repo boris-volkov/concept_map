@@ -4,10 +4,10 @@ Everything on the map comes from the Markdown files in this folder. There is not
 
 ## The shape of a file
 
-Each file is one **domain**, written as an outline. The heading level says what is inside what:
+Each file is one **subject**, written as an outline. The heading level says what is inside what:
 
 ```markdown
-# Arithmetic                      ← a domain: one per file
+# Arithmetic                      ← a subject: one per file
 color: #a06a1c
 
 Numbers and the four operations.  ← its description, shown on its card
@@ -27,7 +27,7 @@ A heading with headings under it is a **topic**: it shows as a card that opens u
 
 The first paragraph under a heading is its summary, shown on cards and in search results. Everything after that is the explanation, shown when the concept is opened. A topic's text is its README, which the *i* on its open frame shows at the top of the frame.
 
-The atlas is a reference for tutoring, so entries favour formal statements over casual explanation. For an **axiom**, **theorem**, **definition**, **formula**, **form**, **property**, **heuristic** or **rule**, the first paragraph is its formal statement, and for a **skill** its method, and the entry sets it in a box: gold for axioms, blue for theorems (with the statement in italics), green for definitions, red for skills, violet for heuristics. Each domain keeps all of its axioms together in one topic, `## Axioms`, at the top of its file; a topic that holds nothing but axioms is gilded on the map. Where a subject can be founded in more than one way, give each axiom system a topic of its own inside `## Axioms`, side by side, as Geometry does with Euclid's, Hilbert's and others. Theorems proved from them belong in other topics. Write the statement with no blank line inside it: it may include displayed formulas, and it may end with a list, such as numbered axioms. Proofs, examples and remarks follow after a blank line.
+The atlas is a reference for tutoring, so entries favour formal statements over casual explanation. For an **axiom**, **theorem**, **definition**, **formula**, **form**, **property**, **heuristic** or **rule**, the first paragraph is its formal statement, and for a **skill** its method, and the entry sets it in a box: gold for axioms, blue for theorems, green for definitions, red for skills, violet for heuristics. Each subject keeps all of its axioms together in one topic, `## Axioms`, at the top of its file, and that topic stands first in its subject, whatever it builds on; a topic that holds nothing but axioms is gilded on the map. Where a subject can be founded in more than one way, give each axiom system a topic of its own inside `## Axioms`, side by side, as Geometry does with Euclid's, Hilbert's and others. Theorems proved from them belong in other topics. Write the statement with no blank line inside it: it may include displayed formulas, and it may end with a list, such as numbered axioms. Proofs, examples and remarks follow after a blank line.
 
 ```markdown
 ### Mean Value Theorem {#mvt}
@@ -65,24 +65,26 @@ Right under a heading, before the summary, these lines describe it. All are opti
 
 | Line | Meaning |
 | --- | --- |
-| `prereqs: lcm, equivalent-fractions` | What this builds on, by id. The map draws these as arrows. |
+| `prereqs: lcm, equivalent-fractions` | What this builds on, by id. It decides where this stands, a row below what it builds on. Selecting it lights these up, and its tree of prerequisites draws them as lines. |
 | `kind: theorem` | A label on the card: `definition`, `axiom`, `property`, `theorem`, `formula`, `form` (a way of writing something, and what it shows), `heuristic` (a rule of thumb: useful and approximate, or a convention, rather than a fact), `rule` (of inference), `skill` or `technique`. Leave it out for a plain concept. |
-| `color: #8f2d2d` | The colour of this domain or topic and everything inside it. Usually only on the `#` heading. |
+| `color: #8f2d2d` | The colour of this subject or topic and everything inside it. Usually only on the `#` heading. |
 | `summary: …` | A summary, when the first paragraph won't do. |
 | `tags: grade-6, exam` | Extra words for the search box to find. |
-| `flow: down` | On a topic: lay its contents out top to bottom (or `flow: across`, left to right), instead of the usual way. Good for a topic that is one long chain. |
-| `wrap: 4` | On a topic: lay its contents out at most 4 to a row across the page, in the order written, as the field axioms are (C A N I / C A N I / D). Without it the map arranges a topic by its arrows. |
-| `rows: kinds` | On a topic: lay its contents out in rows by kind, in the order written, whatever the arrows say: theorems on top, then definitions and properties, then forms and formulas, then skills and techniques. Use it with `flow: down` and a `wrap:`, as Quadratics does, for a topic that reads best as a reference sheet. A topic of 12 cards or fewer runs on in balanced rows, still in that order. Its cards draw their arrows only when one is selected. |
+| `wrap: 4` | On a topic: lay its contents out at most 4 to a row across the page, in the order written, as the field axioms are (C A N I / C A N I / D). Without it, each row of a topic is a level, and a crowded one wraps by itself. |
+| `rows: kinds` | On a topic: lay its contents out in rows by kind, in the order written, whatever the prerequisites say: theorems on top, then definitions and properties, then forms and formulas, then skills and techniques. Use it with a `wrap:`, as Quadratics does, for a topic that reads best as a reference sheet. A topic of 12 cards or fewer runs on in balanced rows, still in that order. |
 | `id: lcm` | The same as `{#lcm}` on the heading. |
-| `parent: algebra` | Only on a file's `#` heading: put this file's contents inside another topic (see *Splitting a big domain*). |
+| `built-on: algebra, trigonometry` | Only on a file's `#` heading: the subjects someone studying alone really couldn't learn this one without. These alone set its row and the lines between subjects (see *Prerequisites*). |
+| `parent: algebra` | Only on a file's `#` heading: put this file's contents inside another topic (see *Splitting a big subject*). |
 
 ## Prerequisites
 
 A prerequisite is something a concept **cannot be stated, done or proved without**, not something usually taught first or merely related to it. A square root needs multiplication, not exponents: $\sqrt{9} = 3$ because $3 \times 3 = 9$, and a student can do that before ever seeing $3^2$. Ask the test of each one. For a skill, could a student do it without this? For a definition, could it be stated without this? For a theorem, does its proof use this? So a skill does not list the axioms behind it, a definition does not list what its examples happen to use, and what only some uses of a concept need goes on those uses: graphing belongs on *Solving by Graphing*, not on *Systems of Linear Equations*.
 
-List only what a concept **directly** builds on. "Adding Fractions" needs "Least Common Multiple"; it doesn't need to list "Multiplication" too, because LCM already builds on multiplication, and the *Full chain of prerequisites*, under the *i* on an open concept, follows the whole chain back to counting. If you do list one that another prerequisite already leads to, the map leaves its arrow out, and so does the *Prerequisites* list under the *i*, so an extra prerequisite never adds clutter.
+A subject's `built-on:` line asks a different question: could someone studying alone get through this subject without that one? Not whether it is usually taught first, and not whether a few concepts cite it. Calculus can't be learned without Algebra and Trigonometry, but Geometry can be learned without Algebra, even though *Coordinate Geometry* needs it: that is what `prereqs:` on those concepts is for.
 
-A prerequisite can be a whole topic, `prereqs: fractions`, which means everything in it. A prerequisite on a topic applies to everything inside the topic. Use both sparingly: arrows between single concepts say more.
+List only what a concept **directly** builds on. "Adding Fractions" needs "Least Common Multiple"; it doesn't need to list "Multiplication" too, because LCM already builds on multiplication, and the *Full chain of prerequisites*, under the *i* on an open concept, follows the whole chain back to counting. If you do list one that another prerequisite already leads to, the *Prerequisites* list under the *i* leaves it out, and so does the tree of prerequisites, so an extra prerequisite never adds clutter.
+
+A prerequisite can be a whole topic, `prereqs: fractions`, which means everything in it. A prerequisite on a topic applies to everything inside the topic. Use both sparingly: prerequisites between single concepts say more.
 
 Two things are not allowed, and are reported if they happen: a concept can't require the topic it sits in (or something inside itself), and prerequisites can't go round in a loop.
 
@@ -136,7 +138,7 @@ A table cell can hold a small graph, written with semicolons for line breaks: `{
 $$\begin{aligned} a &= a \cdot 1 && \text{neutral element} \\ &= a(cc^{-1}) && \text{inverses} \end{aligned}$$
 ```
 
-Or set a proof out as a table, with a *Statement* and a *Reason* column. Inside a table, write a link as `[[id]]`, without words of its own, since a `|` there starts a new column. A theorem's prerequisites are the axioms and theorems its proof uses, so that its arrows show how the proofs build on one another, as in Algebra's *Consequences of the Axioms*.
+Or set a proof out as a table, with a *Statement* and a *Reason* column. Inside a table, write a link as `[[id]]`, without words of its own, since a `|` there starts a new column. A theorem's prerequisites are the axioms and theorems its proof uses, so that its tree of prerequisites shows how the proofs build on one another, as in Algebra's *Consequences of the Axioms*.
 
 **Links to other concepts**: `[[lcm]]` becomes a link titled "Least Common Multiple", and `[[lcm|the LCM]]` uses your own words.
 
@@ -198,10 +200,10 @@ heavy: a-b b-c
 | `names: a b c d` | Renames a family's vertices in order, and shows the names. |
 | `layout: circle` | `circle`, the usual one, `line`, `tree` with the first vertex as the root, `two-rows` for the two sides of a bipartite graph, or `spring`, a force-directed drawing. |
 | `at: a(0,0) b(2,0) c(1,sqrt(3))` | Puts vertices exactly where they are wanted, with y upwards. Any number can be an expression. |
-| `heavy: a-b b-c` | Draws edges in the colour of the domain, and the others lighter. |
+| `heavy: a-b b-c` | Draws edges in the colour of the subject, and the others lighter. |
 | `path: a b c a` | The same, along a walk. |
 | `dashed: a-b` | Draws edges dashed. |
-| `mark: a c` | Picks out vertices in the colour of the domain. |
+| `mark: a c` | Picks out vertices in the colour of the subject. |
 | `classes: a c / b d` | Colours the vertices, class by class. |
 | `edge-classes: a-b c-d / b-c` | Colours the edges in the same way. |
 | `labels: all` or `labels: none` | Shows or hides the names of the vertices. They are shown for an edge list and hidden for a family. |
@@ -263,11 +265,11 @@ A: 5/12
 
 A student who gets every question right on the first try has the concept marked as mastered. Progress is saved in their own browser; it is never sent anywhere.
 
-## Adding a domain, or splitting a big one
+## Adding a subject, or splitting a big one
 
-To add a domain, create a file here, start it with a `#` heading, and add a link to it in [index.md](index.md). The order of the links is the order the map reads them in; the layout itself follows the arrows.
+To add a subject, create a file here, start it with a `#` heading, and add a link to it in [index.md](index.md). The order of the links is the order the map reads them in; the layout itself follows the prerequisites.
 
-When a domain's file grows long, move a topic to a file of its own. Make its heading a `#` heading, say where it belongs, and link the new file from index.md:
+When a subject's file grows long, move a topic to a file of its own. Make its heading a `#` heading, say where it belongs, and link the new file from index.md:
 
 ```markdown
 # Infinite Series

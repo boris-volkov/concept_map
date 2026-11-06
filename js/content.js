@@ -22,8 +22,8 @@ export const KINDS = {
 
 const KEYS = {
   id: 'id', kind: 'kind', type: 'kind', prereqs: 'prereqs', prereq: 'prereqs', prerequisites: 'prereqs',
-  requires: 'prereqs', needs: 'prereqs', color: 'color', colour: 'color', parent: 'parent',
-  summary: 'summary', tags: 'tags', tag: 'tags', wrap: 'wrap', flow: 'flow', rows: 'rows',
+  requires: 'prereqs', needs: 'prereqs', 'built-on': 'builtOn', color: 'color', colour: 'color', parent: 'parent',
+  summary: 'summary', tags: 'tags', tag: 'tags', wrap: 'wrap', rows: 'rows',
 }
 
 const DEFAULT_COLOR = '#6b5a45'
@@ -152,9 +152,6 @@ export function buildAtlas({ index, files }) {
     n.quiz = quizzes.flatMap(lines => parseQuiz(lines, (line, msg) => report('error', n.file, line, `Quiz in “${n.title}”: ${msg}`, n.id)))
     n.summary = n.meta.summary?.value.trim() || firstParagraph(body)
     n.wrap = parseInt(n.meta.wrap?.value, 10) || 0 // for a topic: at most this many children in a line
-    const flow = n.meta.flow?.value.trim().toLowerCase()
-    if (flow && flow !== 'down' && flow !== 'across') report('warning', n.file, n.meta.flow.line, `“flow: ${flow}” should be “down” or “across”.`, n.id)
-    n.flow = flow === 'down' ? 'down' : flow === 'across' ? 'right' : null // for a topic: overrides the alternating flow
     const rows = n.meta.rows?.value.trim().toLowerCase()
     if (rows && rows !== 'kinds') report('warning', n.file, n.meta.rows.line, `“rows: ${rows}” should be “kinds”.`, n.id)
     n.rowsByKind = rows === 'kinds' // for a topic: one row per kind of thing, not an order set by its arrows
@@ -182,6 +179,35 @@ export function buildAtlas({ index, files }) {
     }
   }
   for (const n of nodes.values()) for (const p of n.prereqs) p.dependents.push(n)
+
+  // What a subject can't be learned without, which is for its author to say (see prepare in model.js).
+  for (const n of nodes.values()) {
+    n.builtOn = []
+    const m = n.meta.builtOn
+    if (!m) continue
+    if (n.depth !== 0) {
+      report('warning', n.file, m.line, `“built-on:” only means something on a subject, and “${n.title}” isn’t one.`, n.id)
+      continue
+    }
+    for (const token of m.value.split(/[\s,;]+/).filter(Boolean)) {
+      const pid = token.toLowerCase()
+      const p = nodes.get(pid)
+      if (p === n) report('error', n.file, m.line, `“${n.title}” lists itself under “built-on:”.`, n.id)
+      else if (p?.depth !== 0) report('error', n.file, m.line, `“${n.title}” is built on “${pid}”, but no subject has that id${suggest(pid, new Map(roots.map(d => [d.id, d])))}.`, n.id)
+      else if (!n.builtOn.includes(p)) n.builtOn.push(p)
+    }
+  }
+  for (const n of roots) {
+    const seen = new Set()
+    const todo = [...n.builtOn]
+    while (todo.length) {
+      const p = todo.pop()
+      if (seen.has(p)) continue
+      seen.add(p)
+      todo.push(...p.builtOn)
+    }
+    if (seen.has(n)) report('error', n.file, n.meta.builtOn.line, `“${n.title}” is built on itself, through its “built-on:” subjects.`, n.id)
+  }
 
   for (const n of nodes.values()) {
     for (const m of n.body.matchAll(/\[\[([^\]|]+?)(?:\|[^\]]*)?\]\]/g)) {

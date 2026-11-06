@@ -18,7 +18,7 @@ kind: definition
 
 A proof system with no axioms, only rules: each connective has an introduction rule, which proves a statement built with it, and an elimination rule, which draws a conclusion from one.
 
-The rules, and their names elsewhere in this domain:
+The rules, and their names elsewhere in this subject:
 
 | Connective | Introduction | Elimination |
 | --- | --- | --- |

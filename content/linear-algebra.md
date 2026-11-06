@@ -1,5 +1,6 @@
 # Linear Algebra
 color: #6b6b2a
+built-on: algebra
 
 Vectors and matrices: arithmetic with whole lists of numbers at once, for arrows in the plane, systems of equations, and the transformations that move shapes around.
 
@@ -24,7 +25,6 @@ A vector space over $\mathbb{R}$ is a set $V$ with addition and scalar multiplic
 The arrows in the plane, $\mathbb{R}^n$, polynomials and functions are all vector spaces.
 
 ## Vectors
-flow: down
 rows: kinds
 wrap: 6
 
@@ -115,7 +115,6 @@ Why: $\sqrt{3^2 + 4^2}$.
 ```
 
 ## Matrices
-flow: down
 rows: kinds
 wrap: 6
 

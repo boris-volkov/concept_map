@@ -39,7 +39,6 @@ class Sheet extends AtlasMap {
   /** Writes the head of the frame, and notes how wide the frame must be to fit it. */
   caption(n) {
     this.head.innerHTML = `<span class="frame-title">What leads up to <a href="#${esc(n.id)}" title="Show it on the map">${renderInline(n.title)}</a></span>
-      <span class="frame-count">${this.atlas.roots.length}</span>
       <button type="button" class="shut" title="Close this copy" aria-label="Close the copy of what leads up to ${esc(n.plainTitle)}">×</button>`
     const frame = this.viewport
     frame.setAttribute('aria-label', `What leads up to ${n.plainTitle}`)

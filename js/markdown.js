@@ -94,11 +94,14 @@ function protectMath(src, store) {
   return out
 }
 
-// A displayed formula sits in a span of its own, so a long one can scroll sideways without stretching the page.
+// A displayed formula sits in a span of its own, which is how an entry finds out it is too wide (see
+// widen in map.js). Punctuation stays on the line of the formula it follows, not at the start of the next.
 const restoreMath = (html, store) =>
-  html.replace(/\u0000(\d+)\u0000/g, (_, n) => store[n].display
-    ? `<span class="math-block">${texToMathML(store[n].tex, true)}</span>`
-    : texToMathML(store[n].tex, false))
+  html.replace(/\u0000(\d+)\u0000([.,;:!?)]*)/g, (_, n, after) => {
+    if (store[n].display) return `<span class="math-block">${texToMathML(store[n].tex, true)}</span>${after}`
+    const math = texToMathML(store[n].tex, false)
+    return after ? `<span class="with-point">${math}${after}</span>` : math
+  })
 
 // ---- blocks ----
 

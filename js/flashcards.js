@@ -234,7 +234,17 @@ export class Flashcards {
     card.innerHTML = this.back ? cardBack(n, this.atlas) : cardFront(n)
     card.setAttribute('aria-label', `${n.plainTitle}, ${this.back ? 'back' : 'front'}`)
     card.scrollTop = 0
+    this.fit()
     this.root.querySelector('.deck-flip').textContent = this.back ? 'Show the name' : 'Turn over'
+  }
+
+  // A formula or table too wide for a card widens the card, as far as the screen allows, rather
+  // than give it a scroll bar.
+  fit() {
+    const box = this.card.parentElement
+    box.style.width = ''
+    const extra = this.card.scrollWidth - this.card.clientWidth
+    if (extra > 0) box.style.width = `${box.offsetWidth + extra + 1}px`
   }
 
   // Over a shared deck: where it came from, and whether its cards are in the student's own deck yet.

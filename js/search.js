@@ -80,8 +80,8 @@ export class Search {
     this.list.innerHTML = this.results.length
       ? this.results.map((n, i) => `<li role="option" data-i="${i}" style="--c:${n.color}">
           <span class="r-title">${renderInline(n.title)}</span>
-          <span class="r-kind">${KINDS[n.kind] ?? esc(n.kind)}</span>
-          <span class="r-path">${esc(this.entries.find(e => e.node === n).path || 'Domain')}</span></li>`).join('')
+          <span class="r-kind">${n.depth === 0 ? 'Subject' : KINDS[n.kind] ?? esc(n.kind)}</span>
+          <span class="r-path">${esc(this.entries.find(e => e.node === n).path)}</span></li>`).join('')
       : '<li class="empty">Nothing by that name yet.</li>'
     this.list.hidden = false
     this.input.setAttribute('aria-expanded', 'true')

@@ -1,10 +1,10 @@
 # Probability & Statistics {#statistics}
 color: #74416f
+built-on: algebra
 
 Reasoning about data, and about chance.
 
 ## Describing Data
-flow: down
 rows: kinds
 wrap: 6
 
@@ -200,7 +200,6 @@ Why: $\hat{y} = 35$, and $37 - 35 = 2$.
 ```
 
 ## Counting Methods
-flow: down
 rows: kinds
 wrap: 6
 
@@ -405,7 +404,6 @@ $$P(A^c) = 1 - P(A),$$
 is derived from these three.
 
 ## Probability
-flow: down
 rows: kinds
 wrap: 6
 
@@ -538,7 +536,6 @@ prereqs: probability-basics
 Model each trial with a random device, such as a spinner or random numbers, repeat it many times, and take the share of successes as an estimate.
 
 ## Distributions
-flow: down
 rows: kinds
 wrap: 6
 
@@ -693,7 +690,6 @@ Find the expected payoff of each option, as the sum of value times probability, 
 **Example.** A \$2 ticket with a 1 in 500 chance of \$500 has expected gain $\frac{500}{500} - 2 = -\$1$.
 
 ## Sampling & Inference
-flow: down
 rows: kinds
 wrap: 6
 

@@ -1,16 +1,16 @@
 # Graph Theory
 color: #b3541e
+built-on: arithmetic
 
 Vertices joined by edges: the mathematics of networks, and of what connects to what.
 
 ## Graphs {#graph-basics}
-flow: down
 rows: kinds
 wrap: 7
 
 The objects of the subject: vertices, edges and degrees, and the ways of writing a graph down.
 
-A graph records which things are joined to which, and nothing else: where its vertices are drawn, and how its edges bend, mean nothing. The word has nothing to do with the [[function-graphs|graph of a function]]. Everything here rests on sets of pairs, from Set Theory, and the counting is that of [[combinations]]. The rest of this domain assumes that a graph is finite and simple unless it says otherwise.
+A graph records which things are joined to which, and nothing else: where its vertices are drawn, and how its edges bend, mean nothing. The word has nothing to do with the [[function-graphs|graph of a function]]. Everything here rests on sets of pairs, from Set Theory, and the counting is that of [[combinations]]. The rest of this subject assumes that a graph is finite and simple unless it says otherwise.
 
 ### Handshaking Lemma {#handshaking-lemma}
 kind: theorem
@@ -412,7 +412,6 @@ Why: One is connected and the other is not, and an isomorphism preserves paths.
 ```
 
 ## Connectivity {#connectivity}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -667,7 +666,6 @@ Why: It has 5-cycles.
 ```
 
 ## Trees {#trees}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -971,7 +969,6 @@ Why: $m^{n-1} n^{m-1} = 2^2 \cdot 3^1 = 12$.
 ```
 
 ## Euler Tours & Hamilton Cycles {#traversals}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -1193,7 +1190,6 @@ For a short tour of a complete weighted graph: start anywhere, go each time to t
 It is fast, and usually within about a quarter of the best tour, but there is no constant bound: on some inputs it does arbitrarily badly by comparison.
 
 ## Planar Graphs {#planar-graphs}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -1426,7 +1422,6 @@ Why: It has 14 edges, and $3V - 6 = 12$. It also contains $K_5$.
 ```
 
 ## Graph Colouring {#graph-colouring}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -1723,7 +1718,6 @@ Why: $A, B, C$ form a triangle, so at least 3; and $B$ and $D$ can share a slot.
 ```
 
 ## Matchings & Flows {#matchings-and-flows}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -1990,7 +1984,6 @@ Why: $a$ in 1, $b$ in 2 and $c$ in 3.
 ```
 
 ## Directed Graphs {#directed-graphs}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -2180,7 +2173,6 @@ Why: The scores sum to $\binom{5}{2} = 10$.
 ```
 
 ## Shortest Paths {#shortest-paths}
-flow: down
 rows: kinds
 wrap: 6
 
@@ -2281,7 +2273,6 @@ prereqs: negative-cycles, shortest-path-substructure
 After step $k$, $d_{ij}$ is the shortest length using only $v_1, \dots, v_k$ as intermediate vertices.
 
 ## Extremal Graphs & Ramsey Theory {#extremal-and-ramsey}
-flow: down
 rows: kinds
 wrap: 6
 
