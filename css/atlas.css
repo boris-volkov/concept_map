@@ -357,15 +357,6 @@ math { font-family: var(--math); font-size: 1.15em; } /* its letters are smaller
   outline-offset: 1px;
   background: color-mix(in srgb, var(--c) 13%, #fbf6e8);
 }
-/* An open folder's card stays in its place, outlined in its colour and tied by a line (drawn with
-   the others, behind the cards) to the head of the frame it floated out into. */
-.node.group.stub {
-  outline: 3px solid color-mix(in srgb, var(--c) 75%, transparent);
-  outline-offset: 1px;
-  background: color-mix(in srgb, var(--c) 9%, var(--card));
-}
-.tether { fill: none; stroke: color-mix(in srgb, var(--c) 70%, transparent); stroke-width: 2px; }
-
 #world .node.group.is-open.is-current > .frame-head { background: color-mix(in srgb, var(--c) 16%, transparent); }
 
 #world .node.group.axioms.is-open {

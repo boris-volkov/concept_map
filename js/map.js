@@ -3,12 +3,11 @@
 // thing stands says what comes before it (see layout.js), and a selection lights up the rest.
 //
 // The domains stand in rows, each below those it builds on, with the lines between them running
-// down the gaps, and a domain's topics stand the same way in its frame. An open one keeps its
-// card in place and floats its frame out to the right of them all, clear of those lines. Everything
-// else opens where it sits, the way a folder opens in a file manager's tree: a folder into a frame
-// around what it holds, a concept into its entry, the card
-// growing into the full text while the map makes room for it. The "i" on a topic's frame opens
-// the topic's README at the top of the frame. Nothing on the map opens anywhere else.
+// down the gaps, and a domain's topics stand the same way in its frame. Everything opens where it
+// sits, the way a folder opens in a file manager's tree: a folder into a frame around what it
+// holds, a concept into its entry, the card growing into the full text while the map makes room
+// for it. The "i" on a topic's frame opens the topic's README at the top of the frame. Nothing on
+// the map opens anywhere else.
 //
 // A new layout is applied at once, without any animation, so the map stays quick however much
 // of it is open.
@@ -33,8 +32,7 @@ const MAX_COLUMNS = 4
 const README_VIEW = 440 // how much of a README a view of it takes in, from its left edge
 const PHONE = matchMedia('(max-width: 760px)') // as in the stylesheet: a README stays as wide as the phone
 const ENTRY_COLUMN_GAP = 32 // as in the stylesheet
-const stubKey = n => 'spine:' + n.id // an open folder's card, left in its place in its drawing
-const popsOut = n => n.depth <= 1 && n.children.length > 0 // a domain, or a folder of a domain: see layoutGraph
+const LINE_SPAN = 300 // how much of a box's side lines meet it along, from its left: a frame is too wide for all of it
 const r1 = v => Math.round(v * 10) / 10
 
 export class AtlasMap {
@@ -57,9 +55,7 @@ export class AtlasMap {
     this.sizes = new Map() // id → its size as a closed card
     this.fileSizes = new Map() // key → the size of an open file or README, which changes with what it shows
     this.heads = new Map()
-    this.spine = new Map() // id → the place of its card, in a drawing
-    this.routes = new Map() // edge key → the route of a line (see layoutDomains and layoutSheet)
-    this.tethers = new Map() // id → the <path> tying a card to its open frame
+    this.routes = new Map() // edge key → the route of a line (see layoutGraph and layoutSheet)
     this.selected = null
     this.hl = null
     this.camera = camera ?? new Camera(viewport, world, () => this.cameraMoved())
@@ -199,28 +195,6 @@ export class AtlasMap {
     this.markProgress(n, el)
   }
 
-  stubElement(n) {
-    const key = stubKey(n)
-    let el = this.els.get(key)
-    if (el) return el
-    el = document.createElement('div')
-    el.dataset.id = key
-    el.dataset.node = n.id
-    el.className = `node group depth-${n.depth} stub`
-    el.style.setProperty('--c', n.color)
-    el.tabIndex = 0
-    el.setAttribute('role', 'button')
-    el.setAttribute('aria-label', `${n.plainTitle}, open beside this card: close it`)
-    el.title = `Close this ${n.depth === 0 ? 'subject' : 'topic'}`
-    el.innerHTML = groupFace(n)
-    this.markProgress(n, el)
-    this.world.append(el)
-    this.els.set(key, el)
-    return el
-  }
-
-  // An open domain's card stays in its place, outlined and tied to the frame it floated out into;
-  // clicking it closes the domain again.
   // A topic's README is an element of its own, laid in the top of the topic's frame.
   readmeElement(n) {
     const key = readmeKey(n)
@@ -327,8 +301,7 @@ export class AtlasMap {
   relayout() {
     const visible = this.visibleNodes()
     const readmes = visible.filter(n => this.hasReadme(n))
-    const stubs = visible.filter(n => popsOut(n) && this.isOpen(n))
-    const keep = new Set([...visible.map(n => n.id), ...readmes.map(readmeKey), ...stubs.map(stubKey)])
+    const keep = new Set([...visible.map(n => n.id), ...readmes.map(readmeKey)])
     for (const [key, el] of this.els) {
       if (keep.has(key)) continue
       this.resizes.unobserve(el)
@@ -337,7 +310,6 @@ export class AtlasMap {
       this.fileSizes.delete(key)
     }
     this.measure(visible, readmes)
-    for (const d of stubs) this.stubElement(d)
     for (const n of visible) {
       const el = this.els.get(n.id)
       el.classList.toggle('is-open', this.isOpen(n) || this.isFileOpen(n))
@@ -346,8 +318,6 @@ export class AtlasMap {
     }
     const layout = this.lay()
     const boxes = layout.boxes
-    this.spine = layout.spine
-    for (const d of stubs) boxes.set(stubKey(d), layout.spine.get(d.id))
     for (const n of readmes) {
       const frame = boxes.get(n.id)
       const size = this.fileSizes.get(readmeKey(n))
@@ -411,73 +381,33 @@ export class AtlasMap {
     for (const e of this.edges.values()) {
       const p = this.paths.get(e.key) ?? this.makePath(e)
       const route = this.routes.get(e.key)
-      const it = { e, p, route, U: this.spine.get(route.upper.id), L: this.spine.get(route.lower.id) }
+      const it = { e, p, route, U: this.boxes.get(route.upper.id), L: this.boxes.get(route.lower.id) }
       addTo(sides, route.upper.id + ' bottom', it)
       addTo(sides, route.lower.id + ' top', it)
       routed.push(it)
     }
-    // The lines leaving (or entering) a card spread out along its side, in the order of
-    // where they head next. Each then runs from the upper card's bottom, straight down through its
-    // gap in every row it passes, into the lower card's top, turned round if it points up.
-    const mid = box => box.x + box.w / 2
+    // The lines leaving (or entering) a card spread out along its side, in the order of where they
+    // head next. Each then runs from the upper card's bottom, straight down out of its row and
+    // through its gap in every row it passes, into the lower card's top, turned round if it points up.
+    const span = box => Math.min(box.w, LINE_SPAN)
+    const mid = box => box.x + span(box) / 2
     for (const [key, list] of sides) {
       const bottom = key.endsWith(' bottom')
       const next = it => (bottom ? it.route.pass[0]?.x ?? mid(it.L) : it.route.pass.at(-1)?.x ?? mid(it.U))
       list.sort((p, q) => next(p) - next(q))
       const box = bottom ? list[0].U : list[0].L
-      const gap = list.length > 1 ? Math.min(16, (box.w * 0.6) / (list.length - 1)) : 0
+      const gap = list.length > 1 ? Math.min(16, (span(box) * 0.6) / (list.length - 1)) : 0
       list.forEach((it, i) => { it[bottom ? 'out' : 'in'] = mid(box) + (i - (list.length - 1) / 2) * gap })
     }
     for (const it of routed) {
       const { U, L, route } = it
-      const pts = [[it.out, U.y + U.h], ...route.pass.flatMap(q => [[q.x, q.y0], [q.x, q.y1]]), [it.in, L.y]]
+      const pts = [[it.out, U.y + U.h], [it.out, route.leave], ...route.pass.flatMap(q => [[q.x, q.y0], [q.x, q.y1]]), [it.in, L.y]]
       it.p.setAttribute('d', path(route.back ? pts.reverse() : pts))
     }
     for (const [key, p] of this.paths) {
       if (this.edges.has(key)) continue
       p.remove()
       this.paths.delete(key)
-    }
-    this.drawTethers()
-  }
-
-  // An open folder's card (see layoutGraph) is tied to its frame by a line from its side to the
-  // frame's head. Where two folders of one row are open, the inner one's line runs under the other
-  // card instead, and into its frame's side.
-  drawTethers() {
-    const open = [...this.spine.keys()].map(id => this.atlas.nodes.get(id))
-      .filter(d => d && popsOut(d) && this.isOpen(d) && this.boxes.has(d.id))
-    for (const [id, p] of this.tethers) {
-      if (open.some(d => d.id === id)) continue
-      p.remove()
-      this.tethers.delete(id)
-    }
-    for (const d of open) {
-      let p = this.tethers.get(d.id)
-      if (!p) {
-        p = document.createElementNS(SVG, 'path')
-        p.classList.add('tether')
-        p.style.setProperty('--c', d.color)
-        this.svg.append(p)
-        this.tethers.set(d.id, p)
-      }
-      const card = this.spine.get(d.id)
-      const frame = this.boxes.get(d.id)
-      const beside = (d.parent?.children ?? this.atlas.roots).map(k => this.spine.get(k.id)).filter(Boolean)
-      const outer = !beside.some(o => o !== card && o.y === card.y && o.x > card.x)
-      if (outer) {
-        const [x1, y1, x2, y2] = [card.x + card.w, card.y + 26, frame.x, frame.y + 26]
-        const c = (x2 - x1) / 2
-        p.setAttribute('d', `M${r1(x1)},${r1(y1)}C${r1(x1 + c)},${r1(y1)} ${r1(x2 - c)},${r1(y2)} ${r1(x2)},${r1(y2)}`)
-      } else {
-        // Down out of the card's bottom, along under the row, and up or down into the frame's side.
-        const x1 = card.x + card.w - 28
-        const yu = card.y + card.h + 16
-        const x2 = frame.x - 22
-        const y2 = Math.max(frame.y + 26, yu)
-        p.setAttribute('d', `M${r1(x1)},${r1(card.y + card.h)}V${r1(yu - 8)}Q${r1(x1)},${r1(yu)} ${r1(x1 + 8)},${r1(yu)}` +
-          `H${r1(x2 - 8)}Q${r1(x2)},${r1(yu)} ${r1(x2)},${r1(Math.min(y2, yu + 8))}V${r1(y2)}H${r1(frame.x)}`)
-      }
     }
   }
 
@@ -599,8 +529,6 @@ export class AtlasMap {
     const path = e.composedPath()
     const hit = selector => path.find(x => x.matches?.(selector))
     if (hit('a[href], input, select, label')) return // main.js follows the links; the rest work by themselves
-    const stub = hit('.stub')
-    if (stub) return this.collapse(this.atlas.nodes.get(stub.dataset.node))
     const readme = hit('.readme')
     if (readme) return this.readmeClick(this.atlas.nodes.get(readme.dataset.topic), hit)
     const el = hit('.node')
@@ -650,25 +578,17 @@ export class AtlasMap {
     // Opening a topic takes the focus: whatever was selected before lets go.
     const had = this.selected
     this.selected = null
-    const boxes = this.relayout()
+    this.relayout()
     if (had) this.onSelect?.(null)
-    // The card stays where it was on the screen. A folder deep in a domain grows out of it; any
-    // other floats out to the right, and only if its head would be out of sight does the map
-    // move, as little as it can, to show it.
-    this.settle(popsOut(n) ? stubKey(n) : n.id, before)
-    if (popsOut(n)) {
-      const frame = boxes.get(n.id)
-      this.camera.moveTo(this.camera.nudge({ ...frame, w: Math.min(frame.w, 300), h: FRAME_PAD.top }))
-    }
+    // The card stays where it was on the screen, and its frame grows out of it.
+    this.settle(n.id, before)
     this.onView?.()
   }
 
   collapse(n) {
-    // Closed with the keyboard, from its frame or from its card: the focus goes to its card.
-    const focused = [n.id, stubKey(n)].some(key => this.els.get(key)?.contains(document.activeElement))
-    // Where its card will be: a card left in a drawing stands in for it, and stays still; a folder
-    // deeper down folds up into the corner of its frame.
-    const before = this.boxes.get(popsOut(n) ? stubKey(n) : n.id)
+    // Closed with the keyboard: the focus goes to its card.
+    const focused = !!this.els.get(n.id)?.contains(document.activeElement)
+    const before = this.boxes.get(n.id) // it folds up into the corner of its frame
     for (const d of [n, ...descendants(n)]) {
       this.open.delete(d.id)
       this.readmes.delete(d.id)
@@ -681,8 +601,6 @@ export class AtlasMap {
     this.relayout()
     if (lost) this.onSelect?.(null)
     this.settle(n.id, before)
-    // Closed from its frame, far from its card: the map moves only as far as shows the card.
-    if (popsOut(n)) this.camera.moveTo(this.camera.nudge(this.boxes.get(n.id)))
     if (focused) this.els.get(n.id)?.focus({ preventScroll: true })
     this.onView?.()
   }

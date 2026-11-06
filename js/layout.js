@@ -7,9 +7,9 @@
 //
 // The domains make a small layered drawing of their own, in rows: each domain a row below the
 // furthest of those it builds on, and domains that don't build on one another side by side, with
-// lines between them running down the gaps. An open domain keeps its card in place and floats its
-// frame out to the right of all the cards, level with its row, so the lines never cross a frame.
-// Inside a domain, its topics make the same drawing, and an open topic floats out in the same way.
+// lines between them running down the gaps. Inside a domain, its topics make the same drawing. A
+// folder opens where it stands, as a very large card: what comes after it in its row moves along,
+// the rows below it move down, and the rows above don't move at all.
 //
 // Below that there are no lines. Folders open wide, so they stand one under another, a level at a
 // time, those of a level close together, and opening one moves only what is below it. Concepts
@@ -22,12 +22,11 @@
 
 export const FRAME_PAD = { top: 66, right: 22, bottom: 22, left: 22 }
 /**
- * The domains' rows: between rows, from the cards to the frames that float out beside them,
- * between frames that float out of one row, between cards side by side, and between a line
- * passing a row and whatever is next to it.
+ * The domains' rows: between rows, from the map to the sheets beside it, between cards side by side,
+ * and between a line passing a row and whatever is next to it.
  */
-export const DOMAINS = { gap: 64, float: 72, stack: 30, card: 44, pass: 20 }
-const TOPICS = { gap: 40, float: 48, stack: 24, card: 20, pass: 12 } // the same for the topics inside a domain
+export const DOMAINS = { gap: 64, float: 72, card: 44, pass: 20 }
+const TOPICS = { gap: 40, card: 20, pass: 12 } // the same for the topics inside a domain
 const SHEET = { gap: 52, card: 22, pass: 12 } // a sheet (see layoutSheet): between rows, cards, and a line and what it passes
 const README_GAP = 22 // between an open topic's README and its contents
 const GAP = { level: 44, wrap: 16, card: 14 } // between levels, the lines of a level that wraps, and boxes side by side
@@ -44,9 +43,8 @@ const kindRow = n => KIND_ROW[n.kind] ?? 1
  * file (a domain's is the size of its card, open or not); headerWidth(node) → minimum frame
  * width; readmeSize(node, width) → {w, h} of an open topic's README at the width its frame has to
  * give, or null when it has none showing.
- * Returns absolute boxes {x, y, w, h} by node id (an open domain's is its frame), each domain
- * card's place by id (`spine`), the route of each line between domains by key (see layoutDomains),
- * and the overall size.
+ * Returns absolute boxes {x, y, w, h} by node id, an open folder's being its frame, the route of
+ * each line by key (see layoutGraph), and the overall size.
  */
 export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = () => null) {
   const rel = new Map()
@@ -86,8 +84,8 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
     return { w: pos.w, h: pos.h }
   }
 
-  // A drawing, of the domains or of a domain's topics: every card takes a place of one size, so the
-  // rows are even, and an open folder's frame floats out to the right of them all, level with its row.
+  // A drawing, of the domains or of a domain's topics: every card takes a place of one size, so
+  // the rows are even, and an open folder's frame takes the place of its card.
   const graph = (container, gaps) => {
     const kids = container.children
     const cards = kids.map(cardSize).filter(s => !s.file)
@@ -95,19 +93,17 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
     const frames = new Map(kids.filter(open).map(k => [k, measure(k)]))
     const d = layoutGraph(container, slot, frames, gaps, kids.map(cardSize))
     graphs.set(container, d)
-    for (const k of kids) rel.set(k, d.frames.get(k) ?? d.places.get(k.id))
+    for (const k of kids) rel.set(k, d.places.get(k.id))
     return { w: d.width, h: d.height }
   }
   const whole = graph(root, DOMAINS)
 
   const boxes = new Map()
-  const spine = new Map()
   const routes = new Map()
   const place = (container, ox, oy) => {
     const d = graphs.get(container)
     if (d) {
-      for (const [id, c] of d.places) spine.set(id, { ...c, x: ox + c.x, y: oy + c.y })
-      for (const [key, r] of d.routes) routes.set(key, { ...r, pass: r.pass.map(q => ({ x: ox + q.x, y0: oy + q.y0, y1: oy + q.y1 })) })
+      for (const [key, r] of d.routes) routes.set(key, { ...r, leave: oy + r.leave, pass: r.pass.map(q => ({ x: ox + q.x, y0: oy + q.y0, y1: oy + q.y1 })) })
     }
     for (const k of container.children) {
       const r = rel.get(k)
@@ -117,58 +113,47 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
     }
   }
   place(root, 0, 0)
-  return { boxes, spine, routes, width: whole.w, height: whole.h }
+  return { boxes, routes, width: whole.w, height: whole.h }
 }
 
 /**
- * The children of the root or of a domain, as a small layered drawing (see drawRows). An open
- * folder's frame floats out to the right of all the cards, level with its row; frames out of one
- * row stand side by side, the rightmost card's first, so that the page stays wide. A row is as
- * tall as its cards, or as the tallest frame beside it. An open concept grows where it stands.
+ * The children of the root or of a domain, as a small layered drawing (see drawRows). What is open
+ * grows where it stands, as a very large card. What comes after it in its row moves along, passing
+ * points too, so that the lines stay in the gaps, and a row is as tall as what it holds, so that the
+ * rows below move down. Nothing else moves, and a line meets a frame as it would a card.
  * slot: {w, h}, the size of a card; frames: folder → {w, h} of its open frame; size: each child's
- * size, with `file: true` for an open concept. Returns { places: id → card box, frames: folder →
- * frame box, routes: edge key → { upper, lower, pass: [{x, y0, y1}], back }, width, height }. A line
- * runs from the bottom of its upper card to the top of its lower one, straight down through each
+ * size, with `file: true` for an open concept. Returns { places: id → box, routes: edge key →
+ * { upper, lower, leave, pass: [{x, y0, y1}], back }, width, height }. A line runs from the bottom
+ * of its upper box straight down to `leave`, the bottom of that row, so that it never cuts through
+ * what is open beside the box. It then runs to the top of its lower box, straight down through each
  * passing point from y0 to y1; `back` marks one that points up.
  */
 function layoutGraph(root, slot, frames, gaps, size) {
   const kids = root.children
   const { rows, items, layers, isCard, px, routes } = drawRows(kids, root.localEdges, slot.w, gaps)
-  const moved = roomFor(px, slot.w, size)
-  px.forEach((x, i) => { px[i] = moved.get(x) })
-  const wide = i => (isCard(i) ? (size[i].file ? size[i].w : slot.w) : 0)
-  const right = Math.max(...px.map((x, i) => x + wide(i)))
-
-  // 5. Down: each row as tall as its cards, or as the frames floating out beside it, side by side.
-  const fx = right + gaps.float
   const places = new Map()
-  const boxes = new Map()
   const top = []
   const tall = []
   let y = 0
+  let width = 0
   for (let r = 0; r < rows; r++) {
-    const cards = layers[r].filter(isCard)
-    let cx = fx
+    let along = 0
     let high = slot.h
-    for (const i of [...cards].reverse()) {
+    for (const i of [...layers[r]].sort((p, q) => px[p] - px[q])) {
+      px[i] += along
+      if (!isCard(i)) continue
       const k = kids[items[i].card]
-      const f = frames.get(k)
-      if (!f) continue
-      boxes.set(k, { x: cx, y, w: f.w, h: f.h })
-      cx += f.w + gaps.stack
-      high = Math.max(high, f.h)
-    }
-    for (const i of cards) {
-      const s = size[i].file ? size[i] : slot
-      places.set(kids[items[i].card].id, { x: px[i], y, w: s.w, h: s.h })
+      const s = frames.get(k) ?? (size[i].file ? size[i] : slot)
+      places.set(k.id, { x: px[i], y, w: s.w, h: s.h })
+      along += Math.max(0, s.w - slot.w)
       high = Math.max(high, s.h)
+      width = Math.max(width, px[i] + s.w)
     }
     top.push(y)
     tall.push(high)
-    y += tall[r] + gaps.gap
+    y += high + gaps.gap
   }
-  const width = Math.max(right, ...[...boxes.values()].map(b => b.x + b.w))
-  return { places, frames: boxes, routes: routes(top, tall), width, height: rows ? y - gaps.gap : 0 }
+  return { places, routes: routes(top, tall), width, height: rows ? y - gaps.gap : 0 }
 }
 
 /**
@@ -201,7 +186,7 @@ export function layoutSheet(root, cardSize) {
   }
   const boxes = new Map(kids.map((k, i) => [k.id, { x: px[i], y: top[items[i].row], w: size[i].w, h: size[i].h }]))
   const right = Math.max(...[...boxes.values()].map(b => b.x + b.w))
-  return { boxes, spine: boxes, routes: routes(top, tall), width: right + FRAME_PAD.right, height: y - SHEET.gap + FRAME_PAD.bottom }
+  return { boxes, routes: routes(top, tall), width: right + FRAME_PAD.right, height: y - SHEET.gap + FRAME_PAD.bottom }
 }
 
 // Where each place across moves to, to make room for the cards that have opened. Each maps to one at
@@ -346,6 +331,7 @@ function drawRows(kids, localEdges, cardWidth, gaps, late = false) {
   const routes = (top, tall) => new Map(lines.map(t => [t.e.key, {
     upper: kids[t.upper],
     lower: kids[t.lower],
+    leave: top[row[t.upper]] + tall[row[t.upper]],
     pass: t.pass.map(i => ({ x: px[i], y0: top[items[i].row], y1: top[items[i].row] + tall[items[i].row] })),
     back: !t.e.twin && t.upper !== t.a,
   }]))
