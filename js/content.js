@@ -13,6 +13,7 @@ import { plainText, THUMBNAIL, thumbnail, SMALL_NETWORK, smallNetwork, SMALL_SHA
 import { graphError } from './graph.js'
 import { networkError } from './network.js'
 import { shapeError } from './shape.js'
+import { cyclesError } from './cycles.js'
 import { prepare } from './model.js'
 
 export const KINDS = {
@@ -145,8 +146,8 @@ export function buildAtlas({ index, files }) {
 
     const { body, quizzes, graphs } = splitBody(n.bodyLines)
     for (const g of graphs) {
-      const problem = (g.shape ? shapeError : g.network ? networkError : graphError)(g.src)
-      if (problem) report('error', n.file, g.line ?? n.line, `${g.shape ? 'Shape' : g.network ? 'Network' : 'Graph'} in “${n.title}”: ${problem}`, n.id)
+      const problem = (g.shape ? shapeError : g.network ? networkError : g.cycles ? cyclesError : graphError)(g.src)
+      if (problem) report('error', n.file, g.line ?? n.line, `${g.shape ? 'Shape' : g.network ? 'Network' : g.cycles ? 'Cycles' : 'Graph'} in “${n.title}”: ${problem}`, n.id)
     }
     n.body = body
     n.quiz = quizzes.flatMap(lines => parseQuiz(lines, (line, msg) => report('error', n.file, line, `Quiz in “${n.title}”: ${msg}`, n.id)))
@@ -295,7 +296,7 @@ function splitBody(lines) {
     for (const [, src] of line.text.matchAll(SMALL_SHAPE)) graphs.push({ line: line.line, src, shape: true })
   }
   for (let i = 0; i < lines.length; i++) {
-    const g = /^\s*(`{3,}|~{3,})\s*(graph|network)\s*$/i.exec(lines[i].text)
+    const g = /^\s*(`{3,}|~{3,})\s*(graph|network|cycles)\s*$/i.exec(lines[i].text)
     if (g) {
       // A graph stays in the text, where markdown.js draws it; here it is only set aside to be checked.
       const block = []
@@ -305,7 +306,7 @@ function splitBody(lines) {
         kept.push(lines[i].text)
       }
       if (i < lines.length) kept.push(lines[i].text)
-      graphs.push({ line: block[0]?.line, src: block.map(l => l.text).join('\n'), network: g[2].toLowerCase() === 'network' })
+      graphs.push({ line: block[0]?.line, src: block.map(l => l.text).join('\n'), network: g[2].toLowerCase() === 'network', cycles: g[2].toLowerCase() === 'cycles' })
       continue
     }
     const m = /^\s*(`{3,}|~{3,})\s*quiz\s*$/i.exec(lines[i].text)

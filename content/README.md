@@ -216,6 +216,26 @@ A table cell or a quiz question can hold a small one, written with semicolons fo
 
 An edge or a vertex that isn't in the graph shows up in **content problems**, so a `heavy:` or `path:` line can't quietly point at nothing. That makes it worth using `classes:` and `path:` for what a diagram claims: a colouring or a walk that is written out is checked.
 
+## Cycles of addition
+
+A fenced block marked `cycles` draws the numbers modulo $n$ round a circle, with an arrow from each $x$ to $x + a$ and a colour for each cycle. It is the one drawing a reader can change: a slider and a box set each of the two numbers. It is used in *Cycles of Addition*, in Number Theory.
+
+````markdown
+```cycles
+n: 12
+add: 5
+```
+````
+
+| Line | Meaning |
+| --- | --- |
+| `n: 12` | The modulus the drawing starts with. |
+| `add: 5` | The number added, from 0 to $n - 1$. |
+| `max: 60` | The largest modulus that can be chosen: 60 unless it says, and at most 120. |
+| `size: 320` | The width in pixels. |
+
+A block that can't be read shows up in **content problems**.
+
 ## Drawings of shapes
 
 A plane figure or a solid is drawn by its name, with the letters its formulas use, in a table cell or on a line of its own, as in *Table of Areas & Volumes*:

@@ -52,7 +52,7 @@ export class Flashcards {
     this.banner.querySelector('.deck-keep').onclick = () => this.keepShared()
     root.querySelector('.shut').onclick = () => this.close()
     // A click on the card turns it over, unless it was on a link in the entry, which goes to the map.
-    this.card.addEventListener('click', e => { if (!e.target.closest('a')) this.flip() })
+    this.card.addEventListener('click', e => { if (!e.target.closest('a, .cy-controls')) this.flip() })
     root.addEventListener('click', e => { if (e.target === root) this.close() })
     deck.onChange(() => this.sync())
   }
@@ -176,7 +176,7 @@ export class Flashcards {
 
   /** Keys while the deck is open: Space or Enter turns the card, the arrows move, Esc closes. */
   key(e) {
-    if (!this.isOpen) return false
+    if (!this.isOpen || e.target.closest?.('.cy-controls')) return false // the arrows move a slider there
     if (this.sharing && e.key === 'Escape') { this.showShare(false); return true }
     const actions = { ' ': () => this.flip(), Enter: () => this.flip(), ArrowRight: () => this.move(1),
       ArrowLeft: () => this.move(-1), Escape: () => this.close() }

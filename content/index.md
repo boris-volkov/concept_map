@@ -13,4 +13,5 @@ The map is assembled from the files below, in this order. Each file is one subje
 - [Probability & Statistics](statistics.md)
 - [Linear Algebra](linear-algebra.md)
 - [Graph Theory](graph-theory.md)
+- [Number Theory](number-theory.md)
 - [Calculus](calculus.md)

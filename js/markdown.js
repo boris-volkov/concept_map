@@ -4,7 +4,8 @@
 // [links](url), [[concept-id]] links, images, lists, > quotes, tables, math
 // between $...$ or $$...$$, small graphs of functions in ```graph blocks (see
 // graph.js), small diagrams of vertices and edges in ```network blocks (see
-// network.js), and small drawings of shapes in {{ shape: cone }} (see shape.js).
+// network.js), small drawings of shapes in {{ shape: cone }} (see shape.js), and
+// the cycles of addition modulo n in ```cycles blocks (see cycles.js).
 // Raw HTML such as an <iframe> passes through, so a Desmos graph or a video can
 // sit inside a concept's description.
 
@@ -12,6 +13,7 @@ import { texToMathML } from './tex.js'
 import { graph } from './graph.js'
 import { network } from './network.js'
 import { shape } from './shape.js'
+import { cycles } from './cycles.js'
 
 const MATH = '\u0000' // brackets the index of a stashed formula
 const HELD = '\u0001' // brackets the index of a stashed inline fragment
@@ -130,7 +132,8 @@ function blocks(lines, opts) {
       for (i++; i < lines.length && !lines[i].trim().startsWith(m[1]); i++) body.push(lines[i])
       i++
       const kind = m[2].trim().toLowerCase()
-      html += kind === 'graph' ? graph(body.join('\n')) : kind === 'network' ? network(body.join('\n')) : `<pre><code>${esc(body.join('\n'))}</code></pre>`
+      html += kind === 'graph' ? graph(body.join('\n')) : kind === 'network' ? network(body.join('\n'))
+        : kind === 'cycles' ? cycles(body.join('\n')) : `<pre><code>${esc(body.join('\n'))}</code></pre>`
     } else if (RULE.test(line)) {
       html += '<hr>'
       i++
