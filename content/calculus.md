@@ -541,7 +541,7 @@ $$\int f(x)\,dx = F(x) + C.$$
 kind: formula
 prereqs: antiderivatives, inverse-derivatives, integration-by-parts, trig-substitution, partial-fractions
 
-In the rules, $u$ and $v$ are differentiable functions of $x$, and $F$ is an antiderivative of $f$. In the other tables $a > 0$, and $b$, $c$, $m$ and $n$ are constants. Each integral holds up to an added constant $C$, wherever both sides are defined. The last column is substitution at work: the same integral for a linear inside function $u = mx + b$, with $m \ne 0$.
+In the rules, $u$ and $v$ are differentiable functions of $x$, and $F$ is an antiderivative of $f$. In the other tables $a > 0$, and $b$, $c$ and $n$ are constants. Each integral holds up to an added constant $C$, wherever both sides are defined. Each also holds with $x$ replaced by any differentiable function $u$ and $dx$ by $du = u'\,dx$, which is the substitution rule.
 
 : Rules
 | Rule | Formula |
@@ -549,7 +549,7 @@ In the rules, $u$ and $v$ are differentiable functions of $x$, and $F$ is an ant
 | constant multiple | $\int cf\,dx = c\int f\,dx$ |
 | sum and difference | $\int (f \pm g)\,dx = \int f\,dx \pm \int g\,dx$ |
 | substitution | $\int f(u)\,u'\,dx = F(u)$ |
-| linear substitution | $\int f(mx + b)\,dx = \dfrac{1}{m}F(mx + b)$ |
+| linear substitution | $\int f(mx + b)\,dx = \dfrac{1}{m}F(mx + b)$, for $m \ne 0$ |
 | parts | $\int uv'\,dx = uv - \int u'v\,dx$ |
 | repeated parts | $\int uv''\,dx = uv' - u'v + \int u''v\,dx$ |
 | power | $\int u^n u'\,dx = \dfrac{u^{n+1}}{n + 1}$, for $n \ne -1$ |
@@ -558,41 +558,41 @@ In the rules, $u$ and $v$ are differentiable functions of $x$, and $F$ is an ant
 | inverse | $\int f^{-1}(x)\,dx = xf^{-1}(x) - F\big(f^{-1}(x)\big)$ |
 
 : Powers and Roots
-| $f(x)$ | $\int f(x)\,dx$ | $\int f(u)\,dx$ |
-| --- | --- | --- |
-| $c$ | $cx$ | $cx$ |
-| $x$ | $\dfrac{x^2}{2}$ | $\dfrac{u^2}{2m}$ |
-| $x^n$, $n \ne -1$ | $\dfrac{x^{n+1}}{n + 1}$ | $\dfrac{u^{n+1}}{m(n + 1)}$ |
-| $\dfrac{1}{x}$ | $\ln\lvert x \rvert$ | $\dfrac{\ln\lvert u \rvert}{m}$ |
-| $\dfrac{1}{x^2}$ | $-\dfrac{1}{x}$ | $-\dfrac{1}{mu}$ |
-| $\dfrac{1}{x^n}$, $n \ne 1$ | $-\dfrac{1}{(n - 1)x^{n-1}}$ | $-\dfrac{1}{m(n - 1)u^{n-1}}$ |
-| $\sqrt{x}$ | $\dfrac{2x\sqrt{x}}{3}$ | $\dfrac{2u\sqrt{u}}{3m}$ |
-| $\dfrac{1}{\sqrt{x}}$ | $2\sqrt{x}$ | $\dfrac{2\sqrt{u}}{m}$ |
-| $\sqrt[3]{x}$ | $\dfrac{3x\sqrt[3]{x}}{4}$ | $\dfrac{3u\sqrt[3]{u}}{4m}$ |
-| $\lvert x \rvert$ | $\dfrac{x\lvert x \rvert}{2}$ | $\dfrac{u\lvert u \rvert}{2m}$ |
+| $f(x)$ | $\int f(x)\,dx$ |
+| --- | --- |
+| $c$ | $cx$ |
+| $x$ | $\dfrac{x^2}{2}$ |
+| $x^n$, $n \ne -1$ | $\dfrac{x^{n+1}}{n + 1}$ |
+| $\dfrac{1}{x}$ | $\ln\lvert x \rvert$ |
+| $\dfrac{1}{x^2}$ | $-\dfrac{1}{x}$ |
+| $\dfrac{1}{x^n}$, $n \ne 1$ | $-\dfrac{1}{(n - 1)x^{n-1}}$ |
+| $\sqrt{x}$ | $\dfrac{2x\sqrt{x}}{3}$ |
+| $\dfrac{1}{\sqrt{x}}$ | $2\sqrt{x}$ |
+| $\sqrt[3]{x}$ | $\dfrac{3x\sqrt[3]{x}}{4}$ |
+| $\lvert x \rvert$ | $\dfrac{x\lvert x \rvert}{2}$ |
 
 : Exponentials and Logarithms
-| $f(x)$ | $\int f(x)\,dx$ | $\int f(u)\,dx$ |
-| --- | --- | --- |
-| $e^x$ | $e^x$ | $\dfrac{e^u}{m}$ |
-| $a^x$ | $\dfrac{a^x}{\ln a}$ | $\dfrac{a^u}{m\ln a}$ |
-| $\ln x$ | $x\ln x - x$ | $\dfrac{u\ln u - u}{m}$ |
-| $\ln\lvert x \rvert$ | $x\ln\lvert x \rvert - x$ | $\dfrac{u\ln\lvert u \rvert - u}{m}$ |
-| $\log_a x$ | $\dfrac{x\ln x - x}{\ln a}$ | $\dfrac{u\ln u - u}{m\ln a}$ |
+| $f(x)$ | $\int f(x)\,dx$ |
+| --- | --- |
+| $e^x$ | $e^x$ |
+| $a^x$ | $\dfrac{a^x}{\ln a}$ |
+| $\ln x$ | $x\ln x - x$ |
+| $\ln\lvert x \rvert$ | $x\ln\lvert x \rvert - x$ |
+| $\log_a x$ | $\dfrac{x\ln x - x}{\ln a}$ |
 
 : Trigonometric Functions
-| $f(x)$ | $\int f(x)\,dx$ | $\int f(u)\,dx$ |
-| --- | --- | --- |
-| $\sin x$ | $-\cos x$ | $-\dfrac{\cos u}{m}$ |
-| $\cos x$ | $\sin x$ | $\dfrac{\sin u}{m}$ |
-| $\tan x$ | $-\ln\lvert \cos x \rvert$ | $-\dfrac{\ln\lvert \cos u \rvert}{m}$ |
-| $\cot x$ | $\ln\lvert \sin x \rvert$ | $\dfrac{\ln\lvert \sin u \rvert}{m}$ |
-| $\sec x$ | $\ln\lvert \sec x + \tan x \rvert$ | $\dfrac{\ln\lvert \sec u + \tan u \rvert}{m}$ |
-| $\csc x$ | $-\ln\lvert \csc x + \cot x \rvert$ | $-\dfrac{\ln\lvert \csc u + \cot u \rvert}{m}$ |
-| $\sec^2 x$ | $\tan x$ | $\dfrac{\tan u}{m}$ |
-| $\csc^2 x$ | $-\cot x$ | $-\dfrac{\cot u}{m}$ |
-| $\sec x \tan x$ | $\sec x$ | $\dfrac{\sec u}{m}$ |
-| $\csc x \cot x$ | $-\csc x$ | $-\dfrac{\csc u}{m}$ |
+| $f(x)$ | $\int f(x)\,dx$ |
+| --- | --- |
+| $\sin x$ | $-\cos x$ |
+| $\cos x$ | $\sin x$ |
+| $\tan x$ | $-\ln\lvert \cos x \rvert$ |
+| $\cot x$ | $\ln\lvert \sin x \rvert$ |
+| $\sec x$ | $\ln\lvert \sec x + \tan x \rvert$ |
+| $\csc x$ | $-\ln\lvert \csc x + \cot x \rvert$ |
+| $\sec^2 x$ | $\tan x$ |
+| $\csc^2 x$ | $-\cot x$ |
+| $\sec x \tan x$ | $\sec x$ |
+| $\csc x \cot x$ | $-\csc x$ |
 
 : Powers of Trigonometric Functions
 | $f(x)$ | $\int f(x)\,dx$ |
@@ -607,14 +607,14 @@ In the rules, $u$ and $v$ are differentiable functions of $x$, and $F$ is an ant
 | $\sin x \cos x$ | $\dfrac{\sin^2 x}{2}$ |
 
 : Inverse Trigonometric Functions
-| $f(x)$ | $\int f(x)\,dx$ | $\int f(u)\,dx$ |
-| --- | --- | --- |
-| $\arcsin x$ | $x\arcsin x + \sqrt{1 - x^2}$ | $\dfrac{u\arcsin u + \sqrt{1 - u^2}}{m}$ |
-| $\arccos x$ | $x\arccos x - \sqrt{1 - x^2}$ | $\dfrac{u\arccos u - \sqrt{1 - u^2}}{m}$ |
-| $\arctan x$ | $x\arctan x - \dfrac{\ln(1 + x^2)}{2}$ | $\dfrac{1}{m}\left(u\arctan u - \dfrac{\ln(1 + u^2)}{2}\right)$ |
-| $\operatorname{arccot} x$ | $x\operatorname{arccot} x + \dfrac{\ln(1 + x^2)}{2}$ | $\dfrac{1}{m}\left(u\operatorname{arccot} u + \dfrac{\ln(1 + u^2)}{2}\right)$ |
-| $\operatorname{arcsec} x$ | $x\operatorname{arcsec} x - \ln\left(\lvert x \rvert + \sqrt{x^2 - 1}\right)$ | $\dfrac{1}{m}\left(u\operatorname{arcsec} u - \ln\left(\lvert u \rvert + \sqrt{u^2 - 1}\right)\right)$ |
-| $\operatorname{arccsc} x$ | $x\operatorname{arccsc} x + \ln\left(\lvert x \rvert + \sqrt{x^2 - 1}\right)$ | $\dfrac{1}{m}\left(u\operatorname{arccsc} u + \ln\left(\lvert u \rvert + \sqrt{u^2 - 1}\right)\right)$ |
+| $f(x)$ | $\int f(x)\,dx$ |
+| --- | --- |
+| $\arcsin x$ | $x\arcsin x + \sqrt{1 - x^2}$ |
+| $\arccos x$ | $x\arccos x - \sqrt{1 - x^2}$ |
+| $\arctan x$ | $x\arctan x - \dfrac{\ln(1 + x^2)}{2}$ |
+| $\operatorname{arccot} x$ | $x\operatorname{arccot} x + \dfrac{\ln(1 + x^2)}{2}$ |
+| $\operatorname{arcsec} x$ | $x\operatorname{arcsec} x - \ln\left(\lvert x \rvert + \sqrt{x^2 - 1}\right)$ |
+| $\operatorname{arccsc} x$ | $x\operatorname{arccsc} x + \ln\left(\lvert x \rvert + \sqrt{x^2 - 1}\right)$ |
 
 These hold where $\lvert x \rvert \le 1$ for $\arcsin$ and $\arccos$, and $\lvert x \rvert \ge 1$ for $\operatorname{arcsec}$ and $\operatorname{arccsc}$.
 
