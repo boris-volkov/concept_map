@@ -38,13 +38,15 @@ const r1 = v => Math.round(v * 10) / 10
 export class AtlasMap {
   // A sheet (see sheet.js) is one of these too, with its frame for a viewport and a world, and
   // the main map's camera.
-  constructor({ viewport, world, svg, atlas, camera, onSelect, onView, onPop }) {
+  constructor({ viewport, world, svg, atlas, camera, onSelect, onView, onPop, onEdit, onAdd }) {
     this.viewport = viewport
     this.world = world
     this.svg = svg
     this.onSelect = onSelect
     this.onView = onView
     this.onPop = onPop
+    this.onEdit = onEdit // only where the page can save a content file: these put the editor's buttons on what is open
+    this.onAdd = onAdd
     this.sheets = [] // the trees of prerequisites popped out of this map
     this.open = new Set() // ids of what is open: domains and topics, and concepts
     this.readmes = new Set() // ids of the topics whose README is open, and of the open concepts whose "i" is
@@ -158,7 +160,7 @@ export class AtlasMap {
     const open = this.isFileOpen(n)
     el.className = `node leaf kind-${n.kind}${open ? ' is-open doc' : ''}`
     if (open) {
-      el.innerHTML = docs.conceptDoc(n, this.atlas, { info: this.readmes.has(n.id) })
+      el.innerHTML = docs.conceptDoc(n, this.atlas, { info: this.readmes.has(n.id), edit: !!this.onEdit })
       el.removeAttribute('tabindex')
       el.setAttribute('role', 'article')
       el.setAttribute('aria-label', n.plainTitle)
@@ -190,7 +192,7 @@ export class AtlasMap {
     if (descendants(n).every(d => d.children.length || d.kind === 'axiom')) el.classList.add('axioms')
     el.tabIndex = 0
     el.setAttribute('role', 'button')
-    el.innerHTML = groupFace(n) + frameHead(n)
+    el.innerHTML = groupFace(n) + frameHead(n, !!this.onEdit)
     el.setAttribute('aria-label', `${n.plainTitle}, ${n.depth === 0 ? 'subject' : 'topic'}`)
     this.markProgress(n, el)
   }
@@ -536,6 +538,8 @@ export class AtlasMap {
     if (!n) return this.background()
     const keyboard = e.type === 'keydown'
     if (n.children.length) {
+      if (hit('.frame-head .add')) return this.onAdd?.(n)
+      if (hit('.frame-head .edit')) return this.onEdit?.(n)
       if (hit('.frame-head .open-all')) return this.openInside(n)
       if (hit('.frame-head .about')) return this.toggleReadme(n)
       if (hit('.frame-head .shut')) return this.collapse(n)
@@ -549,6 +553,7 @@ export class AtlasMap {
       return this.expand(n)
     }
     if (!this.isFileOpen(n)) return this.openFile(n, { at: hit('.quiz-badge') ? '.practice' : null, keyboard })
+    if (hit('.doc-head .edit')) return this.onEdit?.(n)
     if (hit('.doc-head .pop')) return this.onPop?.(n)
     if (hit('.doc-head .card-add')) return deck.toggle(n.id)
     if (hit('.doc-head .about')) return this.toggleInfo(n)
@@ -828,8 +833,10 @@ function groupFace(n) {
 }
 
 // An open folder's head: its title, its count, and its buttons.
-const frameHead = n => `<div class="frame-head">
-  <span class="frame-title">${renderInline(n.title)}</span>
+const frameHead = (n, edit) => `<div class="frame-head">
+  <span class="frame-title">${renderInline(n.title)}</span>${edit ? `
+  <button type="button" class="add" title="Add a card or a topic inside" aria-label="Add to ${esc(n.plainTitle)}">Add</button>
+  <button type="button" class="edit" title="Edit its title and text" aria-label="Edit ${esc(n.plainTitle)}">Edit</button>` : ''}
   <button type="button" class="open-all" title="Open everything inside" aria-label="Open everything inside ${esc(n.plainTitle)}">+</button>
   <button type="button" class="about" title="About this ${n.depth === 0 ? 'subject' : 'topic'}" aria-label="About ${esc(n.plainTitle)}">i</button>
   <button type="button" class="shut" title="Close this ${n.depth === 0 ? 'subject' : 'topic'}" aria-label="Close ${esc(n.plainTitle)}">×</button>

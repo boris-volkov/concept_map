@@ -84,6 +84,26 @@ export function parseQuiz(lines, report) {
   })
 }
 
+/**
+ * A parsed question as the editor's form holds it: its prompt, its choices or else its answer as
+ * written, a hint and a why, with the blank lines around them gone.
+ */
+export function tidyQuiz(q) {
+  const text = s => (s ?? '').replace(/\n{2,}/g, '\n\n').trim()
+  const choices = q.choices.map(c => ({ text: c.text.trim(), right: !!c.right }))
+  return { prompt: text(q.prompt), choices, answer: choices.length ? '' : text(q.answerText ?? q.answer), hint: text(q.hint), why: text(q.why) }
+}
+
+/** The lines of a ```quiz block for such questions: what parseQuiz reads back as the same questions. */
+export function writeQuiz(questions) {
+  return questions.map(q => [
+    `Q: ${q.prompt}`,
+    ...(q.choices.length ? q.choices.map(c => `${c.right ? '+' : '-'} ${c.text}`) : [`A: ${q.answer}`]),
+    ...(q.hint ? [`Hint: ${q.hint}`] : []),
+    ...(q.why ? [`Why: ${q.why}`] : []),
+  ].join('\n')).join('\n\n')
+}
+
 function parseAnswer(raw) {
   let s = raw.trim()
   if (!s) return null

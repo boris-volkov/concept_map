@@ -2,6 +2,8 @@
 
 Everything on the map comes from the Markdown files in this folder. There is nothing to compile: save a file and the map redraws (when it is running from `python serve.py`; see the main README). This file is not part of the map; only the files linked from [index.md](index.md) are.
 
+Small changes don't need this file at all: when the map is running from `python serve.py`, the **Edit** button on an open concept and the **Add** button on an open topic open a form that writes the Markdown for you (see the main README). What follows is the format it writes, for everything the form doesn't cover: tables, graphs, diagrams, and moving things around.
+
 ## The shape of a file
 
 Each file is one **subject**, written as an outline. The heading level says what is inside what:

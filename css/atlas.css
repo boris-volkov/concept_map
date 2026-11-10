@@ -1244,3 +1244,102 @@ merror { color: #b22; background: #fbe3e0; }
   #key { display: none; } /* it would cover the open file */
   #hint { bottom: 70px; }
 }
+
+/* ---------- the editor (edit.js): only on the author's own computer, served by serve.py ---------- */
+
+/* Its buttons on what is open: words, not signs, as the + on a frame already opens everything in it. */
+.doc-head .edit, .frame-head :is(.edit, .add) { width: auto; padding: 0 8px; border-radius: 0; font-size: 12px; }
+.doc-head:has(.edit) { grid-template-columns: 1fr auto auto auto auto auto; }
+.doc-head .edit { grid-column: 2; }
+.doc-head:has(.edit) .pop { grid-column: 3; }
+.doc-head:has(.edit) .card-add { grid-column: 4; }
+.doc-head:has(.edit) .about { grid-column: 5; }
+.doc-head:has(.edit) .shut { grid-column: 6; }
+
+.editor {
+  width: min(1240px, 96vw);
+  height: min(900px, 94vh);
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--ink-3);
+  border-top: 4px solid var(--c, var(--ink-3));
+  box-shadow: var(--lift);
+}
+.editor[open] { display: grid; grid-template-rows: auto 1fr auto; }
+.editor::backdrop { background: rgba(43, 33, 24, 0.45); }
+.ed-head { display: flex; align-items: center; gap: 10px; padding: 9px 12px 9px 18px; border-bottom: 1px solid var(--rule); }
+.ed-head h2 { margin: 0 auto 0 0; font-size: 18px; }
+.ed-shut { width: 26px; height: 26px; padding: 0; border-radius: 50%; border: 1px solid var(--card-edge); background: var(--card); cursor: pointer; }
+.ed-shut:hover { background: var(--ink-2); color: var(--card); }
+.ed-main { display: grid; grid-template-columns: minmax(0, 1fr) 500px; min-height: 0; }
+.ed-form, .ed-side { overflow-y: auto; padding: 14px 18px 18px; }
+.ed-side { background: var(--paper); border-left: 1px solid var(--rule); }
+.ed-side-label { margin-bottom: 8px; font-size: 12px; color: var(--ink-3); }
+/* The card itself, taken off the map: where it stands is the editor's business. */
+.ed-card.node { position: static; width: auto; cursor: default; z-index: auto; }
+.ed-card .draft-quiz { padding-left: 1.4em; font-size: 14.5px; }
+.ed-card .draft-quiz > li { margin-bottom: 12px; }
+.ed-card .draft-choices { margin: 4px 0; padding-left: 1.2em; }
+.ed-card .draft-choices .is-right { font-weight: bold; color: var(--right); }
+.ed-card .draft-choices .is-right::after { content: "  ✓"; }
+.ed-card :is(.draft-answer, .draft-note) { margin: 4px 0; font-size: 13.5px; color: var(--ink-2); }
+
+.ed-field { display: block; margin-bottom: 14px; }
+.ed-label { display: block; margin-bottom: 4px; font-size: 13px; font-weight: bold; color: var(--ink-2); }
+.ed-hint, .ed-note { display: block; margin-top: 3px; font-size: 12px; color: var(--ink-3); }
+.ed-note { margin: 0 0 12px; }
+.ed-sub { margin: 20px 0 4px; padding-top: 14px; font-size: 15px; border-top: 1px solid var(--rule); }
+.ed-form :is(input[type="text"], textarea) {
+  display: block;
+  width: 100%;
+  padding: 6px 9px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+  background: #fffdf6;
+  border: 1px solid var(--card-edge);
+  border-radius: 0;
+}
+.ed-form textarea { font-family: Consolas, "DejaVu Sans Mono", Menlo, monospace; font-size: 13.5px; line-height: 1.5; resize: vertical; }
+.ed-form :is(input, textarea):focus { outline: none; border-color: var(--ink-3); }
+.ed-kinds { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
+.ed-kinds button { padding: 5px 10px; font-size: 13px; background: var(--card); border: 1px solid var(--card-edge); cursor: pointer; }
+.ed-kinds button:hover { border-color: var(--ink-3); }
+.ed-kinds button.is-on { background: var(--ink-2); border-color: var(--ink-2); color: var(--card); }
+.ed-kinds .kind-theorem.is-on { background: var(--blue); border-color: var(--blue); }
+.ed-kinds .kind-definition.is-on { background: var(--green); border-color: var(--green); }
+.ed-kinds .kind-skill.is-on { background: var(--red); border-color: var(--red); }
+.ed-kinds .kind-heuristic.is-on { background: var(--violet); border-color: var(--violet); }
+.ed-kinds .kind-axiom.is-on { background: var(--gold-ink); border-color: var(--gold-ink); }
+.ed-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.ed-chips:not(:empty) { margin-bottom: 6px; }
+.ed-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 3px 2px 8px; font-size: 13px; background: color-mix(in srgb, var(--c) 9%, var(--card)); border: 1px solid color-mix(in srgb, var(--c) 40%, var(--card-edge)); }
+.ed-chip button { padding: 0 4px; border: 0; background: none; cursor: pointer; color: var(--ink-3); }
+.ed-chip button:hover { color: var(--wrong); }
+.ed-picker { position: relative; }
+.ed-results { position: absolute; z-index: 2; left: 0; right: 0; top: 100%; margin: 0; padding: 0; list-style: none; background: var(--card); border: 1px solid var(--ink-3); box-shadow: var(--lift); }
+.ed-results li { display: flex; justify-content: space-between; gap: 12px; padding: 5px 9px; font-size: 13.5px; border-left: 3px solid var(--c); cursor: pointer; }
+.ed-results li small { color: var(--ink-3); white-space: nowrap; }
+.ed-results li:is(.is-active, :hover) { background: color-mix(in srgb, var(--c) 10%, var(--card)); }
+.ed-plain { padding: 4px 10px; font-size: 12.5px; background: var(--card); border: 1px solid var(--card-edge); cursor: pointer; }
+.ed-plain:hover:not(:disabled) { border-color: var(--ink-3); }
+.ed-plain:disabled { opacity: 0.4; cursor: default; }
+.ed-q { position: relative; margin: 0 0 10px; padding: 8px 10px 10px; border: 1px solid var(--card-edge); display: grid; gap: 6px; }
+.ed-q legend { padding: 0 5px; font-size: 12.5px; color: var(--ink-2); }
+.ed-q-tools { display: flex; justify-content: flex-end; gap: 4px; }
+.ed-q-type { display: flex; gap: 16px; font-size: 13px; }
+.ed-choice { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; font-size: 12.5px; }
+
+.ed-foot { display: flex; align-items: center; gap: 10px; padding: 9px 18px; border-top: 1px solid var(--rule); background: var(--paper); }
+.ed-problems { flex: 1; min-width: 0; max-height: 84px; overflow-y: auto; margin: 0; padding: 0; list-style: none; font-size: 13px; }
+.ed-problems li { padding-left: 9px; border-left: 3px solid var(--gold-ink); }
+.ed-problems li + li { margin-top: 3px; }
+.ed-problems li.error { border-left-color: var(--wrong); color: var(--wrong); }
+.ed-where { font-size: 12px; color: var(--ink-3); white-space: nowrap; }
+.ed-cancel, .ed-save { padding: 7px 18px; font-size: 14px; border: 1px solid var(--card-edge); background: var(--card); cursor: pointer; }
+.ed-save { background: var(--c, var(--ink-2)); border-color: var(--c, var(--ink-2)); color: #fff; font-weight: bold; }
+.ed-save:disabled { opacity: 0.4; cursor: default; }
+@media (max-width: 900px) { .ed-main { grid-template-columns: 1fr; overflow-y: auto; } .ed-form, .ed-side { overflow: visible; } .ed-side { border-left: 0; border-top: 1px solid var(--rule); } }

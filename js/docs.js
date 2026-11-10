@@ -22,7 +22,7 @@ const TREE_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" 
   '<circle cx="8" cy="12.5" r="2"/><path d="M4.6 5.2 6.9 10.8M11.4 5.2 9.1 10.8"/></svg>'
 
 /** A concept, open: its content and its exercises. `info`: with the band its "i" opens. */
-export function conceptDoc(n, atlas, { info = false } = {}) {
+export function conceptDoc(n, atlas, { info = false, edit = false } = {}) {
   const resolve = finder(atlas)
   const kind = `${KINDS[n.kind] ?? esc(n.kind)}<span class="doc-check" title="Mastered"> ✓</span>`
   const pop = `<button type="button" class="pop" ${n.requires.length
@@ -32,7 +32,9 @@ export function conceptDoc(n, atlas, { info = false } = {}) {
     `aria-pressed="false">${CARD_ICON}</button>`
   const about = `<button type="button" class="about${info ? ' is-on' : ''}" title="What it builds on, and what builds on it" ` +
     `aria-label="About ${esc(n.plainTitle)}" aria-expanded="${info}">i</button>`
-  return `${head(kind, renderInline(n.title), n.plainTitle, pop + card + about)}
+  // Only where the page can save (see edit.js): on this computer, served by serve.py.
+  const pencil = edit ? `<button type="button" class="edit" title="Edit this card" aria-label="Edit ${esc(n.plainTitle)}">Edit</button>` : ''
+  return `${head(kind, renderInline(n.title), n.plainTitle, pencil + pop + card + about)}
     ${info ? conceptInfo(n) : ''}
     <div class="doc-body">
       ${entry(n, resolve)}
@@ -110,6 +112,29 @@ export const cardBack = (n, atlas) => `<div class="card-back">
     <h3 class="card-name">${renderInline(n.title)}</h3>
     ${entry(n, id => atlas.nodes.get(id))}
   </div>`
+
+/**
+ * A card that is being written in the editor, as it will read on the map: its head, its entry,
+ * and its questions set out with their answers showing.
+ */
+export function draftDoc(d, atlas) {
+  const resolve = finder(atlas)
+  const opts = { resolve }
+  const questions = (d.quiz ?? []).map(q => `<li>${renderMarkdown(q.prompt || '*No question yet.*', opts)}
+      ${q.choices.length
+        ? `<ul class="draft-choices">${q.choices.map(c => `<li class="${c.right ? 'is-right' : ''}">${renderInline(c.text, opts)}</li>`).join('')}</ul>`
+        : `<p class="draft-answer">Answer: <strong>${esc(q.answer)}</strong></p>`}
+      ${q.hint ? `<p class="draft-note"><em>Hint.</em> ${renderInline(q.hint, opts)}</p>` : ''}
+      ${q.why ? `<div class="draft-note"><em>Why.</em> ${renderMarkdown(q.why, opts).replace(/^<p>|<\/p>$/g, '')}</div>` : ''}</li>`)
+  return `<header class="doc-head">
+      <span class="doc-kind">${KINDS[d.kind] ?? esc(d.kind)}</span>
+      <h2 class="doc-title">${renderInline(d.title.trim() || 'Untitled')}</h2>
+    </header>
+    <div class="doc-body">
+      ${entry({ kind: d.kind, body: d.body.trim() }, resolve)}
+      ${questions.length ? `<section class="practice"><h3>Exercises</h3><ol class="draft-quiz">${questions.join('')}</ol></section>` : ''}
+    </div>`
+}
 
 /** Brings the marks of mastery, and the flashcard button, inside an open file up to date. `n`: the file's concept or topic, if any. */
 export function refresh(el, n = null) {

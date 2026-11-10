@@ -17,14 +17,13 @@ const LOCAL = /^(localhost|127\.0\.0\.1|\[::1\])$|\.localhost$/.test(location.ho
 // A phone, where the index covers the map rather than standing beside it (see the stylesheet).
 const NARROW = matchMedia('(max-width: 760px)')
 
-let atlas, map, search, cards, sourceKey
+let atlas, map, search, cards, sources, sourceKey
 let lastUsed // the map, or the sheet, where something was last selected: Esc goes to it
 
 start()
 
 async function start() {
   const shared = sharedIds() // read now: the map rewrites the address as it selects things
-  let sources
   try {
     sources = await loadSources(CONTENT)
   } catch (e) {
@@ -33,11 +32,13 @@ async function start() {
   sourceKey = keyOf(sources)
   atlas = buildAtlas(sources)
   const view = readView()
+  const editing = LOCAL && await canSave()
   // Before the map is made, so that it starts out the size it keeps.
   if (view?.index) showIndex(true)
   map = new AtlasMap({
     viewport: $('viewport'), world: $('world'), svg: $('edges'), atlas,
     onSelect: selected, onView: saveView, onPop: n => popOut(map, n, $('pop')),
+    ...(editing ? { onEdit: n => editor().then(e => e.edit(n)), onAdd: n => editor().then(e => e.add(n)) } : {}),
   })
   search = new Search($('search'), $('search-results'), { onPick: n => go(n.id) })
   search.setAtlas(atlas)
@@ -180,7 +181,49 @@ function issues() {
   console.groupEnd()
 }
 
+// Whether this page can save a content file: only when serve.py is what serves it (see edit.js).
+async function canSave() {
+  try {
+    const res = await fetch('api/edit', { cache: 'no-store' })
+    return res.ok && (await res.json()).ok === true
+  } catch {
+    return false
+  }
+}
+
+// The editor is fetched the first time it is asked for, so the published page never loads it.
+let editorMade
+function editor() {
+  editorMade ??= import('./edit.js').then(({ Editor }) => new Editor({
+    getAtlas: () => atlas, getSources: () => sources, search,
+    onSaved: async id => {
+      await reload()
+      go(id)
+    },
+  }))
+  return editorMade
+}
+
 const keyOf = s => s.indexText + '\u0000' + s.files.map(f => `${f.path}\n${f.text ?? f.error}`).join('\u0000')
+
+// Reads the content files again and, if any has changed, redraws everything from them.
+async function reload() {
+  const fresh = await loadSources(CONTENT)
+  const key = keyOf(fresh)
+  if (key === sourceKey) return
+  sources = fresh
+  sourceKey = key
+  atlas = buildAtlas(sources)
+  map.setAtlas(atlas)
+  map.relayout()
+  redrawSheets(map)
+  search.setAtlas(atlas)
+  cards.setAtlas(atlas)
+  titles()
+  issues()
+  if (!$('panel').hidden) showIndex(true)
+  toast('Redrawn from the content files')
+}
 
 function watch() {
   let busy = false
@@ -188,20 +231,7 @@ function watch() {
     if (document.hidden || busy) return
     busy = true
     try {
-      const sources = await loadSources(CONTENT)
-      const key = keyOf(sources)
-      if (key === sourceKey) return
-      sourceKey = key
-      atlas = buildAtlas(sources)
-      map.setAtlas(atlas)
-      map.relayout()
-      redrawSheets(map)
-      search.setAtlas(atlas)
-      cards.setAtlas(atlas)
-      titles()
-      issues()
-      if (!$('panel').hidden) showIndex(true)
-      toast('Redrawn from the content files')
+      await reload()
     } catch {
       // A file mid-save or the server restarting: try again on the next tick.
     } finally {

@@ -222,8 +222,9 @@ export function buildAtlas({ index, files }) {
 
 const isInside = (n, a) => { for (let p = n.parent; p; p = p.parent) if (p === a) return true; return false }
 
-// Splits one file into raw heading records, in document order.
-function parseOutline(file, text, out) {
+// Splits one file into raw heading records, in document order. (source.js uses it too, to find
+// the lines of a heading for the editor.)
+export function parseOutline(file, text, out) {
   const stack = []
   let node = null
   let fence = null

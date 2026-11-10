@@ -66,16 +66,23 @@ export class Search {
     return s - e.node.depth * 0.5
   }
 
-  update() {
-    const q = this.input.value.trim().toLowerCase()
-    if (!q) return this.close()
+  /** The best matches for what was typed, best first. (The editor uses it to pick prerequisites.) */
+  find(q, limit) {
+    q = q.trim().toLowerCase()
+    if (!q) return []
     const tokens = q.split(/\s+/)
-    this.results = this.entries
+    return this.entries
       .map(e => ({ e, s: this.score(e, q, tokens) }))
       .filter(r => r.s > 0)
       .sort((a, b) => b.s - a.s || a.e.node.order - b.e.node.order)
-      .slice(0, 12)
+      .slice(0, limit)
       .map(r => r.e.node)
+  }
+
+  update() {
+    const q = this.input.value.trim().toLowerCase()
+    if (!q) return this.close()
+    this.results = this.find(q, 12)
     this.active = 0
     this.list.innerHTML = this.results.length
       ? this.results.map((n, i) => `<li role="option" data-i="${i}" style="--c:${n.color}">
