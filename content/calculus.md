@@ -20,11 +20,12 @@ For instance, $\frac{x^2 - 1}{x - 1}$ is undefined at $x = 1$, but
 $$\lim_{x \to 1} \frac{x^2 - 1}{x - 1} = \lim_{x \to 1} (x + 1) = 2.$$
 
 ### One-Sided Limits
+kind: definition
 prereqs: limit-concept, piecewise-functions
 
-Approaching from one side only:
-- from the left, $x \to a^-$;
-- from the right, $x \to a^+$.
+The left-hand limit
+$$\lim_{x \to a^-} f(x) = L$$
+means that $f(x)$ can be made as close to $L$ as desired by taking $x$ close enough to $a$ with $x < a$. The right-hand limit, written with $x \to a^+$, is the same with $x > a$.
 
 The limit exists exactly when the two agree:
 $$\lim_{x \to a} f(x) = L \iff \lim_{x \to a^-} f(x) = \lim_{x \to a^+} f(x) = L.$$
@@ -56,11 +57,37 @@ The usual rewrites:
 - combine fractions.
 
 ### Limits at Infinity
+kind: definition
 prereqs: limit-concept, asymptotes
 
-What $f(x)$ approaches as $x$ grows without bound, as in
+The statement
+$$\lim_{x \to \infty} f(x) = L$$
+means that $f(x)$ can be made as close to $L$ as desired by taking $x$ large enough. With $x \to -\infty$ it is the same, for $x$ negative and large enough in size. In either case the line $y = L$ is a horizontal asymptote of the graph of $f$.
+
+For instance,
 $$\lim_{x \to \infty} \frac{3x^2 + 1}{x^2} = 3.$$
-These are horizontal asymptotes, made precise.
+
+### Infinite Limits {#infinite-limits}
+kind: definition
+prereqs: one-sided-limits
+
+The statement
+$$\lim_{x \to a} f(x) = \infty$$
+means that $f(x)$ can be made as large as desired by taking $x$ close enough to $a$, with $x \ne a$. With $-\infty$ it means that $f(x)$ can be made as large and negative as desired. One-sided infinite limits are defined in the same way.
+
+Such a limit does not exist, since $\infty$ is not a number: the notation records the way in which it fails to exist. If any one-sided limit of $f$ at $a$ is $\infty$ or $-\infty$, the line $x = a$ is a vertical asymptote of the graph of $f$.
+
+For instance,
+$$\lim_{x \to 0} \frac{1}{x^2} = \infty.$$
+```graph
+y = 1/x^2
+x: -3, 3
+y: -0.5, 5
+asymptote: x = 0
+```
+
+But $\frac{1}{x}$ has no limit at $0$, finite or infinite, because its one-sided limits differ:
+$$\begin{aligned} \lim_{x \to 0^-} \frac{1}{x} &= -\infty, \\ \lim_{x \to 0^+} \frac{1}{x} &= \infty. \end{aligned}$$
 
 ### Squeeze Theorem
 kind: theorem
@@ -109,6 +136,23 @@ $$0 < |x - a| < \delta \implies |f(x) - L| < \varepsilon.$$
 built-on: limits
 
 The instantaneous rate of change: the slope of a curve at a point.
+
+### Increments {#increments}
+kind: definition
+prereqs: function-notation
+
+An increment is a change in a variable. When $x$ changes from $x_1$ to $x_2$, its increment is
+$$\Delta x = x_2 - x_1,$$
+and the corresponding increment of $y = f(x)$ is
+$$\Delta y = f(x_2) - f(x_1) = f(x_1 + \Delta x) - f(x_1).$$
+An increment may be positive, negative or zero. The symbol $\Delta x$ is a single quantity, not $\Delta$ times $x$.
+
+The quotient of the two,
+$$\frac{\Delta y}{\Delta x},$$
+is the [[average-rate-of-change|average rate of change]] of $f$ from $x_1$ to $x_2$.
+
+**Example.** For $f(x) = x^2$, as $x$ goes from $3$ to $3.1$:
+$$\begin{aligned} \Delta x &= 0.1, \\ \Delta y &= 3.1^2 - 3^2 = 0.61. \end{aligned}$$
 
 ### The Difference Quotient {#difference-quotient}
 kind: formula
@@ -208,6 +252,59 @@ prereqs: derivative-definition, point-slope
 The tangent to $y = f(x)$ at $x = a$ is
 $$y - f(a) = f'(a)(x - a):$$
 a point from $f$, a slope from $f'$.
+
+### Differentials {#differentials}
+kind: definition
+prereqs: differentiability
+
+Let $y = f(x)$, with $f$ differentiable at $x$.
+- The differential $dx$ of the independent variable is itself an independent variable: it may be given any real value.
+- The differential $dy$ of the dependent variable is defined by
+$$dy = f'(x)\,dx.$$
+
+So $dy$ depends on two things, the point $x$ and the increment $dx$, and for a fixed $x$ it is proportional to $dx$. When $dx \ne 0$, dividing gives
+$$\frac{dy}{dx} = f'(x),$$
+so that the Leibniz notation for the derivative is a true quotient of differentials.
+
+The differential is not the change in $y$. That is the [[increments|increment]]
+$$\Delta y = f(x + dx) - f(x),$$
+the rise along the curve, while $dy$ is the rise along the tangent line over the same run $dx$. The two differ by an amount that is small even compared with $dx$:
+$$\lim_{dx \to 0} \frac{\Delta y - dy}{dx} = 0.$$
+
+For $y = x^2$ the differential is $dy = 2x\,dx$. At $x = 1$ with $dx = 1$, the tangent rises by $dy = 2$ and the curve by $\Delta y = 3$:
+```graph
+y = x^2
+y = 2x-1 | dashed
+x: -0.5, 3.5
+y: -1, 4.5
+segment: 1, 1, 2, 1
+segment: 2, 1, 2, 3
+segment: 2, 3, 2, 4 | dashed
+label: 1.5, 1 "dx" below
+label: 2, 2 "dy" right
+label: 2, 3.5 "Δy − dy" right
+point: 1, 1 above-left
+```
+
+: The Differential and the Increment of $y = x^2$ at $x = 1$
+| $dx$ | $dy = 2\,dx$ | $\Delta y = (1 + dx)^2 - 1$ | $\Delta y - dy$ |
+| --- | --- | --- | --- |
+| $1$ | $2$ | $3$ | $1$ |
+| $0.1$ | $0.2$ | $0.21$ | $0.01$ |
+| $0.01$ | $0.02$ | $0.0201$ | $0.0001$ |
+
+```quiz
+Q: For $y = x^3$, what is $dy$ at $x = 2$ when $dx = 0.1$?
+A: 1.2
+Why: $dy = 3x^2\,dx = 12(0.1)$.
+
+Q: For $y = f(x)$, the differential $dy$ is the rise over the run $dx$ along
+- the graph of $f$
++ the tangent line at $x$
+- the secant line from $x$ to $x + dx$
+- the $x$-axis
+Why: $dy = f'(x)\,dx$, and $f'(x)$ is the slope of the tangent.
+```
 
 ### The Power Rule {#power-rule}
 kind: theorem
@@ -382,9 +479,18 @@ These hold where $\lvert x \rvert < 1$ for $\arcsin$ and $\arccos$, and $\lvert 
 | $\dfrac{1}{x}$ | $(-1)^n\dfrac{n!}{x^{n+1}}$ |
 
 ### Higher Derivatives
+kind: definition
 prereqs: power-rule
 
-The derivative of the derivative, $f''$, measures how the rate of change is itself changing: acceleration from velocity, or how a graph bends.
+The second derivative of $f$ is the derivative of $f'$, and the $n$-th derivative is the derivative of the one before it:
+$$\begin{aligned} f'' &= (f')', \\ f^{(n)} &= \big(f^{(n-1)}\big)'. \end{aligned}$$
+For $y = f(x)$ they are also written
+$$\frac{d^2y}{dx^2} \quad\text{and}\quad \frac{d^ny}{dx^n}.$$
+
+The second derivative measures how the rate of change is itself changing: acceleration from velocity, or how a graph bends.
+
+**Example.** For $f(x) = x^3$:
+$$\begin{aligned} f'(x) &= 3x^2, \\ f''(x) &= 6x, \\ f'''(x) &= 6, \\ f^{(4)}(x) &= 0. \end{aligned}$$
 
 ## Applications of Derivatives {#derivative-applications}
 built-on: derivatives
@@ -417,15 +523,53 @@ $$f(a + \Delta x) \approx f(a) + f'(a)\,\Delta x.$$
 That is how, in your head,
 $$\sqrt{4.1} \approx 2 + \frac{1}{4}(0.1) = 2.025.$$
 
+### Increasing & Decreasing Functions {#increasing-decreasing}
+kind: definition
+prereqs: function-notation, interval-notation
+
+On an interval $I$, a function $f$ is
+- increasing if $f(x_1) < f(x_2)$ whenever $x_1 < x_2$ in $I$;
+- decreasing if $f(x_1) > f(x_2)$ whenever $x_1 < x_2$ in $I$;
+- monotonic if it is one or the other.
+
+With $\le$ and $\ge$ in place of $<$ and $>$, the function is non-decreasing or non-increasing.
+
+For instance, $x^2$ is decreasing on $(-\infty, 0]$ and increasing on $[0, \infty)$, and so is not monotonic on $\mathbb{R}$.
+
+### Local & Absolute Extrema {#extrema}
+kind: definition
+prereqs: domain-and-range, interval-notation
+
+Let $c$ be in the domain $D$ of $f$. The value $f(c)$ is
+- an absolute maximum of $f$ if $f(c) \ge f(x)$ for every $x$ in $D$;
+- a local maximum of $f$ if $f(c) \ge f(x)$ for every $x$ in some open interval containing $c$.
+
+An absolute minimum and a local minimum are defined in the same way, with $\le$. Maxima and minima together are called extrema.
+
+A local extremum compares $f(c)$ with the values on both sides of $c$, so an endpoint of the domain is never a local extremum, though it may be an absolute one.
+
+The function $f(x) = x^3 - 3x$ has the local maximum $f(-1) = 2$ and the local minimum $f(1) = -2$. It has no absolute extrema, since it takes arbitrarily large values of both signs:
+```graph
+y = x^3-3x
+x: -2.5, 2.5
+y: -3.5, 3.5
+point: -1, 2 above
+point: 1, -2 below
+```
+
 ### Critical Points
 kind: definition
 prereqs: differentiability
 
-Points where $f' = 0$ or $f'$ doesn't exist: the only places a smooth function can turn around.
+A number $c$ in the domain of $f$ is a critical point of $f$ if
+$$f'(c) = 0$$
+or $f'(c)$ does not exist.
+
+A [[extrema|local extremum]] can occur only at a critical point. The converse is false: $x^3$ has a critical point at $0$ and no extremum there.
 
 ### Extreme Value Theorem {#evt}
 kind: theorem
-prereqs: continuity, completeness-axiom
+prereqs: continuity, completeness-axiom, extrema
 
 If $f$ is continuous on the closed interval $[a, b]$, then $f$ attains a maximum and a minimum value on $[a, b]$.
 
@@ -462,7 +606,7 @@ Why: The critical point $x = 1$ gives $-2$, and the ends give $0$ and $18$.
 
 ### First Derivative Test
 kind: theorem
-prereqs: critical-points, mvt
+prereqs: critical-points, mvt, extrema
 
 Let $c$ be a critical point of a continuous $f$. If, at $c$, $f'$
 - changes from positive to negative, $f(c)$ is a local maximum;
@@ -471,7 +615,7 @@ Let $c$ be a critical point of a continuous $f$. If, at $c$, $f'$
 
 ### Concavity {#concave-up-and-down}
 kind: definition
-prereqs: derivative-definition
+prereqs: derivative-definition, increasing-decreasing
 
 A differentiable function is concave up on an interval if $f'$ is increasing there, and concave down if $f'$ is decreasing there. A point where the concavity changes is an inflection point.
 
@@ -518,9 +662,15 @@ If $\lim f(x)$ and $\lim g(x)$ are both $0$ or both $\pm\infty$, and $\lim \frac
 $$\lim \frac{f(x)}{g(x)} = \lim \frac{f'(x)}{g'(x)}.$$
 
 ### Position, Velocity & Acceleration {#motion}
+kind: definition
 prereqs: higher-derivatives
 
-Velocity is the derivative of position, and acceleration the derivative of velocity. A ball thrown upward from height $s_0$ with speed $v_0$, in metres and seconds, has
+If $s(t)$ is the position at time $t$ of a body moving along a line, then its
+- velocity is $v(t) = s'(t)$;
+- acceleration is $a(t) = v'(t) = s''(t)$;
+- speed is $|v(t)|$.
+
+A ball thrown upward from height $s_0$ with speed $v_0$, in metres and seconds, has
 $$\begin{aligned} s(t) &= -4.9t^2 + v_0 t + s_0, \\ v(t) &= s'(t) = -9.8t + v_0, \\ a(t) &= v'(t) = -9.8. \end{aligned}$$
 
 ## Integrals
@@ -534,8 +684,22 @@ prereqs: power-rule, trig-derivatives, exp-log-derivatives
 
 $F$ is an antiderivative of $f$ on an interval if, there,
 $$F'(x) = f(x).$$
-Any two differ by a constant, so the indefinite integral is written
+Any two antiderivatives of $f$ on an interval differ by a constant, so if $F$ is one of them, every other is $F(x) + C$ for some constant $C$.
+
+### The Indefinite Integral {#indefinite-integral}
+kind: definition
+prereqs: antiderivatives
+
+The indefinite integral of $f$ is the family of all its antiderivatives on an interval. If $F$ is any one of them,
 $$\int f(x)\,dx = F(x) + C.$$
+Here $f(x)$ is the integrand, $x$ is the variable of integration, and $C$, an arbitrary constant, is the constant of integration.
+
+> **!** An indefinite integral is a family of functions. A [[definite-integral|definite integral]] is a number.
+
+**Example.**
+$$\int x^2\,dx = \frac{x^3}{3} + C,$$
+since
+$$\frac{d}{dx}\left(\frac{x^3}{3} + C\right) = x^2.$$
 
 ### Table of Integrals {#integral-table}
 kind: formula
@@ -671,9 +835,19 @@ These hold where $\lvert x \rvert \le 1$ for $\arcsin$ and $\arccos$, and $\lver
 kind: definition
 prereqs: sigma-notation, area-basic, function-notation
 
-Approximating the area under a curve with rectangles:
-$$\sum_{i=1}^{n} f(x_i)\,\Delta x.$$
-Thinner rectangles give a better fit.
+Divide $[a, b]$ into $n$ subintervals of equal width
+$$\Delta x = \frac{b - a}{n},$$
+with endpoints $x_i = a + i\,\Delta x$, and choose a sample point $x_i^*$ in the $i$-th subinterval $[x_{i-1}, x_i]$. The Riemann sum of $f$ for these choices is
+$$\sum_{i=1}^{n} f(x_i^*)\,\Delta x.$$
+
+It is the total signed area of $n$ rectangles, the $i$-th of width $\Delta x$ and height $f(x_i^*)$, and it approximates the area under the curve. Thinner rectangles give a better fit.
+
+: The Usual Sample Points
+| Sum | $x_i^*$ |
+| --- | --- |
+| left | $x_{i-1}$ |
+| right | $x_i$ |
+| midpoint | $\dfrac{x_{i-1} + x_i}{2}$ |
 
 ### The Definite Integral {#definite-integral}
 kind: definition
@@ -681,7 +855,9 @@ prereqs: riemann-sums, limit-concept
 
 For $f$ on $[a, b]$, with $\Delta x = \frac{b - a}{n}$ and sample points $x_i^*$ in the $i$-th subinterval:
 $$\int_a^b f(x)\,dx = \lim_{n \to \infty} \sum_{i=1}^{n} f(x_i^*)\,\Delta x$$
-when the limit exists. It is the signed area between the graph and the $x$-axis.
+when the limit exists and is the same for every choice of sample points; $f$ is then integrable on $[a, b]$. Here $f(x)$ is the integrand, and $a$ and $b$ are the lower and upper limits of integration.
+
+It is the signed area between the graph and the $x$-axis.
 
 ### Properties of Integrals {#integral-properties}
 kind: theorem
@@ -777,11 +953,20 @@ This is adding fractions in reverse:
 $$\frac{1}{x(x + 1)} = \frac{1}{x} - \frac{1}{x + 1}.$$
 
 ### Improper Integrals
+kind: definition
 prereqs: ftc, limits-at-infinity
 
-Integrals over infinite intervals, or across a blow-up, defined as limits:
-$$\int_1^\infty \frac{1}{x^2}\,dx = \lim_{b \to \infty} \left(1 - \frac{1}{b}\right) = 1,$$
-but $\int_1^\infty \frac{1}{x}\,dx$ is infinite.
+An integral over an infinite interval, or of a function that is unbounded on the interval, is defined as a limit of ordinary integrals.
+- If $f$ is continuous on $[a, \infty)$:
+$$\int_a^\infty f(x)\,dx = \lim_{b \to \infty} \int_a^b f(x)\,dx.$$
+- If $f$ is continuous on $(a, b]$ and unbounded near $a$:
+$$\int_a^b f(x)\,dx = \lim_{t \to a^+} \int_t^b f(x)\,dx.$$
+
+The other cases are defined in the same way. The integral converges if the limit exists as a finite number, and diverges otherwise.
+
+For instance,
+$$\int_1^\infty \frac{1}{x^2}\,dx = \lim_{b \to \infty} \left(1 - \frac{1}{b}\right) = 1$$
+converges, but $\int_1^\infty \frac{1}{x}\,dx$ diverges.
 
 ### Numerical Integration {#trapezoidal-rule}
 kind: technique
@@ -851,9 +1036,17 @@ Equations about rates of change, whose solutions are functions.
 kind: definition
 prereqs: antiderivatives
 
-An equation linking a function to its derivatives, like
+A differential equation is an equation relating an unknown function to one or more of its derivatives, like
 $$y' = 0.03y.$$
-A solution is a whole function, and an initial condition picks out one of many.
+- Its order is the order of the highest derivative in it.
+- A solution on an interval is a function that satisfies the equation at every point of the interval.
+- The general solution is the family of all its solutions.
+- An initial condition $y(x_0) = y_0$ picks out one solution, and the equation together with the condition is an initial value problem.
+
+**Example.** The general solution of $y' = 0.03y$ is
+$$y = Ce^{0.03t},$$
+and the solution with $y(0) = 100$ is
+$$y = 100e^{0.03t}.$$
 
 ### Slope Fields
 prereqs: diffeq-basics, tangent-lines
@@ -909,17 +1102,29 @@ built-on: integrals
 Adding up infinitely many numbers, and when that makes sense.
 
 ### Limits of Sequences {#sequence-limits}
+kind: definition
 prereqs: sequences, limits-at-infinity
 
-Where the terms of a sequence head, as in
-$$\frac{n}{n + 1} \to 1.$$
+A sequence $(a_n)$ has the limit $L$, written
+$$\lim_{n \to \infty} a_n = L,$$
+if for every $\varepsilon > 0$ there is an $N$ such that
+$$n > N \implies |a_n - L| < \varepsilon.$$
 A sequence converges if it has a limit and diverges otherwise.
+
+For instance,
+$$\lim_{n \to \infty} \frac{n}{n + 1} = 1.$$
 
 ### Series & Convergence {#series-convergence}
 kind: definition
-prereqs: sequence-limits, infinite-geometric-series
+prereqs: sequence-limits, infinite-geometric-series, sigma-notation
 
-An infinite sum converges when its partial sums approach a limit. For example,
+An infinite series is the sum $\sum_{n=1}^{\infty} a_n$ of the terms of a sequence. Its $n$-th partial sum is
+$$s_n = \sum_{k=1}^{n} a_k = a_1 + a_2 + \cdots + a_n.$$
+The series converges, with sum $s$, if its sequence of partial sums converges to $s$:
+$$\sum_{n=1}^{\infty} a_n = \lim_{n \to \infty} s_n = s.$$
+Otherwise it diverges.
+
+For example,
 $$1 + \frac{1}{2} + \frac{1}{4} + \cdots = 2$$
 converges, while
 $$1 + \frac{1}{2} + \frac{1}{3} + \cdots$$
@@ -964,6 +1169,22 @@ prereqs: series-convergence
 Terms alternating in sign and shrinking steadily to 0 make a convergent series, as in
 $$1 - \frac{1}{2} + \frac{1}{3} - \cdots = \ln 2.$$
 
+### Absolute & Conditional Convergence {#absolute-convergence}
+kind: definition
+prereqs: series-convergence, absolute-value
+
+A series $\sum a_n$
+- converges absolutely if $\sum |a_n|$ converges;
+- converges conditionally if it converges but $\sum |a_n|$ diverges.
+
+Every absolutely convergent series converges.
+
+: Two Alternating Series
+| Series | $\sum \lvert a_n \rvert$ | Convergence |
+| --- | --- | --- |
+| $\displaystyle\sum_{n=1}^{\infty} \frac{(-1)^{n+1}}{n^2}$ | $\displaystyle\sum_{n=1}^{\infty} \frac{1}{n^2}$, which converges | absolute |
+| $\displaystyle\sum_{n=1}^{\infty} \frac{(-1)^{n+1}}{n}$ | $\displaystyle\sum_{n=1}^{\infty} \frac{1}{n}$, which diverges | conditional |
+
 ### Choosing a Series Test {#choosing-a-series-test}
 kind: skill
 prereqs: nth-term-test, comparison-tests, ratio-test
@@ -981,9 +1202,11 @@ Try these in order:
 kind: definition
 prereqs: ratio-test, polynomial-functions
 
-Polynomials of infinite degree,
-$$\sum_{n=0}^{\infty} c_n (x - a)^n,$$
-which converge on an interval around $a$ found with the ratio test.
+A power series centred at $a$, with coefficients $c_n$, is a series of the form
+$$\sum_{n=0}^{\infty} c_n (x - a)^n.$$
+It has a radius of convergence $R$, with $0 \le R \le \infty$: the series converges when $|x - a| < R$ and diverges when $|x - a| > R$. The set of all $x$ at which it converges is its interval of convergence.
+
+A power series is a polynomial of infinite degree. Its radius is found with the ratio test, and the two ends of the interval are checked separately.
 
 ### Taylor & Maclaurin Series {#taylor-series}
 kind: definition
