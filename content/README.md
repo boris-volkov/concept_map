@@ -256,6 +256,7 @@ A plane figure or a solid is drawn by its name, with the letters its formulas us
 | Pyramids and cones | `pyramid`, `square-pyramid`, `cone`, `cone-frustum`, `pyramid-frustum` |
 | Round solids | `sphere`, `hemisphere`, `spherical-cap`, `spherical-segment`, `spherical-sector`, `spherical-shell`, `ellipsoid`, `paraboloid`, `torus` |
 | Regular solids | `tetrahedron`, `cube`, `octahedron`, `dodecahedron`, `icosahedron` |
+| Fractions | `fraction 3/4`: a circle cut into 4 equal pieces with 3 shaded, as in *What a Fraction Is*; up to 24 pieces |
 
 A name that isn't one of these shows up in **content problems**. A new shape is a new entry in `SHAPES`, in `js/shape.js`.
 

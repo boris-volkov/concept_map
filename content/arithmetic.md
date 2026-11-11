@@ -235,6 +235,26 @@ prereqs: number-line
 
 $\frac{a}{b}$ means $a$ pieces of size $\frac{1}{b}$, when the whole is cut into $b$ equal pieces. It is also a division, $a \div b$, and a point on the number line.
 
+The bottom number, the **denominator**, says how many equal pieces the whole is cut into, and so how big each piece is. The top number, the **numerator**, says how many of those pieces are taken. Here the whole is a circle:
+
+: Parts of a Circle
+| $\dfrac{1}{2}$ | $\dfrac{1}{4}$ | $\dfrac{3}{4}$ | $\dfrac{5}{8}$ |
+| :-: | :-: | :-: | :-: |
+| {{ shape: fraction 1/2 }} | {{ shape: fraction 1/4 }} | {{ shape: fraction 3/4 }} | {{ shape: fraction 5/8 }} |
+
+The pieces must be equal: a circle cut into 4 pieces of different sizes does not show quarters. The more pieces the whole is cut into, the smaller each one is, so $\frac{1}{8} < \frac{1}{4}$.
+
+```quiz
+Q: A pizza is cut into 8 equal slices and 3 are eaten. What fraction of the pizza is eaten?
+A: 3/8
+
+Q: In $\frac{5}{6}$, what does the 6 tell you?
+- how many pieces are taken
++ how many equal pieces the whole is cut into
+- how big the whole is
+Why: The denominator counts the equal pieces the whole is cut into.
+```
+
 ### Equivalent Fractions
 kind: theorem
 prereqs: fraction-concept, multiplication
@@ -264,6 +284,41 @@ prereqs: fraction-concept, division
 A whole number and a fraction together, like $2\frac{1}{3}$. It is the same as an improper fraction,
 $$2\frac{1}{3} = \frac{7}{3},$$
 and converting between the two forms is a division with remainder.
+
+### Converting Mixed Numbers & Improper Fractions {#mixed-number-conversion}
+kind: skill
+prereqs: mixed-numbers, long-division
+
+To write a mixed number as an improper fraction, multiply the whole number by the denominator and add the numerator; that is the new numerator, over the same denominator:
+$$w\frac{a}{b} = \frac{wb + a}{b}.$$
+To go back, divide the numerator by the denominator: the quotient is the whole number, and the remainder is the new numerator, over the same denominator:
+$$\frac{n}{b} = q\frac{r}{b}, \quad\text{where } n = qb + r,\ 0 \le r < b.$$
+
+> **!** The denominator never changes in either direction. Only the whole number and the numerator trade places.
+
+**Example.** Mixed to improper: $3$ wholes are $3 \times 4 = 12$ quarters, and $3$ more make $15$:
+$$3\frac{3}{4} = \frac{3 \times 4 + 3}{4} = \frac{15}{4}.$$
+Improper to mixed: $17 \div 5 = 3$ remainder $2$, so
+$$\frac{17}{5} = 3\frac{2}{5}.$$
+
+A mixed number is a sum, $w\frac{a}{b} = w + \frac{a}{b}$, which is why the conversion works: $3 + \frac{3}{4} = \frac{12}{4} + \frac{3}{4}$.
+
+```quiz
+Q: Write $2\frac{3}{5}$ as an improper fraction.
+A: 13/5
+Why: $2 \times 5 + 3 = 13$.
+
+Q: Write $\frac{22}{7}$ as a mixed number. What is its whole-number part?
+A: 3
+Why: $22 \div 7 = 3$ remainder $1$, so $\frac{22}{7} = 3\frac{1}{7}$.
+
+Q: Which is equal to $4\frac{1}{3}$?
+- $\frac{5}{3}$
+- $\frac{7}{3}$
++ $\frac{13}{3}$
+- $\frac{12}{3}$
+Why: $4 \times 3 + 1 = 13$.
+```
 
 ### Adding Fractions
 kind: formula
@@ -421,6 +476,39 @@ prereqs: number-line
 
 Numbers below zero: the number line continued to the left. $-3$ is three steps left of 0, like a temperature below freezing or a debt.
 
+### The Negative Sign {#negative-sign}
+kind: definition
+prereqs: integer-multiplication
+
+Written in front of a number or an expression, a minus sign means its opposite, and taking the opposite is the same as multiplying by $-1$:
+$$-a = (-1) \cdot a.$$
+
+The opposite of $a$ is the number the same distance from 0 on the other side, so the minus sign flips the sign of whatever it is in front of, which need not be positive:
+$$\begin{aligned} -(5) &= (-1)(5) = -5 \\ -(-5) &= (-1)(-5) = 5 \\ -x &= 4 \quad\text{when } x = -4 \end{aligned}$$
+
+Reading the minus sign as $-1$ settles the usual questions about it:
+$$\begin{aligned} -(x + 3) &= (-1)(x + 3) = -x - 3 \\ -3^2 &= (-1) \cdot 3^2 = -9 \\ (-3)^2 &= (-3)(-3) = 9 \end{aligned}$$
+
+> **!** In $-3^2$ the exponent comes first and the minus sign after, since the minus sign is a multiplication by $-1$. Only brackets, as in $(-3)^2$, square the negative.
+
+The same sign is used for subtraction, $a - b$, which is adding the opposite: $a - b = a + (-b)$. In Algebra, $-a$ is defined as the number that adds to $a$ to make $0$, and that it equals $(-1)a$ is then proved: see [[negatives-in-products]].
+
+```quiz
+Q: $-(-7) =$
+A: 7
+
+Q: $-2^4 =$
+A: -16
+Why: $-2^4 = (-1) \cdot 2^4 = -16$.
+
+Q: Which is equal to $-(x - 6)$?
+- $-x - 6$
++ $-x + 6$
+- $x + 6$
+- $x - 6$
+Why: $(-1)(x - 6) = -x + 6$.
+```
+
 ### Absolute Value
 kind: definition
 prereqs: negative-numbers
@@ -483,8 +571,51 @@ kind: definition
 prereqs: negative-numbers, fractions-to-decimals, square-roots
 
 The number systems, each contained in the next:
-$$\mathbb{N} \subset \mathbb{Z} \subset \mathbb{Q} \subset \mathbb{R}$$
-- the natural numbers $\mathbb{N} = \{0, 1, 2, \ldots\}$ (some authors start at 1);
-- the integers $\mathbb{Z}$;
+$$\mathbb{N} \subset \mathbb{Z} \subset \mathbb{Q} \subset \mathbb{R} \subset \mathbb{C}$$
+- the natural numbers $\mathbb{N} = \{0, 1, 2, \ldots\}$ (some authors start at 1, and call $\{0, 1, 2, \ldots\}$ the whole numbers);
+- the integers $\mathbb{Z} = \{\ldots, -2, -1, 0, 1, 2, \ldots\}$;
 - the rationals $\mathbb{Q} = \left\{ \frac{p}{q} : p, q \in \mathbb{Z},\ q \ne 0 \right\}$;
-- the reals $\mathbb{R}$, which also contain the irrationals such as $\sqrt{2}$ and $\pi$.
+- the reals $\mathbb{R}$, every point of the number line, which also contain the irrationals such as $\sqrt{2}$ and $\pi$;
+- the complex numbers $\mathbb{C} = \{a + bi : a, b \in \mathbb{R}\}$, where $i^2 = -1$.
+
+A set of numbers is **closed** under an operation when doing that operation to any numbers in the set always gives an answer in the set. Each system is built because some operation is not closed in the one before it: there are problems whose answers it does not contain, and the next system adds those answers, keeping everything the old one had.
+
+: Why Each System Is Needed
+| System | Closed under | Not closed under | A problem with no answer | So we add |
+| --- | --- | --- | --- | --- |
+| $\mathbb{N}$ | $+$, $\times$ | $-$ | $3 - 5$; $x + 5 = 3$ | the negatives: $\mathbb{Z}$ |
+| $\mathbb{Z}$ | $+$, $-$, $\times$ | $\div$ | $1 \div 3$; $3x = 1$ | the fractions: $\mathbb{Q}$ |
+| $\mathbb{Q}$ | $+$, $-$, $\times$, $\div$ by non-zero | roots, limits | $\sqrt{2}$; $x^2 = 2$ | the irrationals: $\mathbb{R}$ |
+| $\mathbb{R}$ | $+$, $-$, $\times$, $\div$ by non-zero, roots of non-negatives | roots of negatives | $\sqrt{-1}$; $x^2 = -1$ | the imaginary unit $i$: $\mathbb{C}$ |
+| $\mathbb{C}$ | $+$, $-$, $\times$, $\div$ by non-zero, all roots | | none: every polynomial equation has a solution | |
+
+Read down the table, the story is one of equations:
+- in $\mathbb{N}$, $x + 5 = 3$ has no solution, because subtraction can go below zero. The integers add the negative numbers, and in $\mathbb{Z}$ every subtraction has an answer.
+- In $\mathbb{Z}$, $3x = 1$ has no solution, because dividing whole things can leave parts. The rationals add the fractions, and in $\mathbb{Q}$ every division by a non-zero number has an answer.
+- In $\mathbb{Q}$, $x^2 = 2$ has no solution, because the square root of 2 is [[sqrt-2-irrational|not a fraction]]: the rationals leave gaps in the number line. The reals fill every gap, adding the irrationals such as $\sqrt{2}$, $\pi$ and $e$.
+- In $\mathbb{R}$, $x^2 = -1$ has no solution, because no real number squares to a negative. The [[complex-numbers|complex numbers]] add $i = \sqrt{-1}$, and then, by the [[fundamental-theorem-of-algebra|fundamental theorem of algebra]], every polynomial equation has a solution, so the building stops.
+
+The irrationals on their own are not closed under anything useful: $\sqrt{2} \cdot \sqrt{2} = 2$ and $\sqrt{2} + (-\sqrt{2}) = 0$ are rational.
+
+```quiz
+Q: Which is the smallest number system in which $7 - 10$ has an answer?
+- $\mathbb{N}$
++ $\mathbb{Z}$
+- $\mathbb{Q}$
+- $\mathbb{R}$
+Why: $7 - 10 = -3$, a negative integer, which is not a natural number.
+
+Q: Which is the smallest number system in which $x^2 = 5$ has a solution?
+- $\mathbb{Z}$
+- $\mathbb{Q}$
++ $\mathbb{R}$
+- $\mathbb{C}$
+Why: $\sqrt{5}$ is irrational, so it is real but not rational.
+
+Q: Which operation are the integers not closed under?
+- addition
+- subtraction
+- multiplication
++ division
+Why: $1 \div 2 = \frac{1}{2}$ is not an integer.
+```

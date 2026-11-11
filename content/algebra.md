@@ -3261,6 +3261,8 @@ Add like terms and multiply like binomials, replacing $i^2$ with $-1$:
 $$(2 + i)(3 - i) = 6 + i - i^2 = 7 + i.$$
 Divide using the conjugate.
 
+In the [[complex-plane|complex plane]], adding is adding arrows, tip to tail. Multiplying has a picture too, seen best in polar form: the lengths multiply and the angles add, so multiplying by $i$ turns a number a quarter turn about $0$. See [[complex-multiplication-geometry]].
+
 ### Dividing Complex Numbers {#complex-division}
 kind: skill
 prereqs: conjugate-product

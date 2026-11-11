@@ -502,26 +502,46 @@ kind: technique
 prereqs: implicit-differentiation
 
 1. identify which rate you know, and which one you need;
-2. connect the two with an equation;
-3. differentiate implicitly, usually with respect to time;
-4. plug in for everything except what you are solving for.
+2. write an equation connecting the quantities whose rates those are;
+3. substitute for every other changing quantity, using another relation (similar triangles, a fixed length), until the equation holds **only** the quantities whose rates you know and need;
+4. take $\frac{d}{dt}$ of both sides, differentiating implicitly;
+5. plug in the values at the instant asked about, and solve.
 
-> **!** Do not plug in for variables before differentiating. A quantity that changes must stay a variable until step 3 is done.
+> **!** Do not plug in for variables before differentiating. A quantity that changes must stay a variable until step 4 is done; only constants may be put in sooner.
 
 When quantities are linked by an equation, their rates are linked by its derivative: how fast a ladder's top slides down a wall as its foot slides out.
 
-**Example.** A 10 m ladder leans on a wall, its foot sliding out at 1 m/s. When the foot is 6 m out, the top is 8 m up. From $x^2 + y^2 = 100$:
-$$\begin{aligned} 2x\frac{dx}{dt} + 2y\frac{dy}{dt} &= 0 \\ 2(6)(1) + 2(8)\frac{dy}{dt} &= 0 \\ \frac{dy}{dt} &= -\frac{3}{4} \end{aligned}$$
-so the top slides down at $\frac{3}{4}$ m/s.
+**Example.** A 10 m ladder leans on a wall, its foot sliding out at 1 m/s. How fast is the top sliding down when the foot is 6 m out? We know $\frac{dx}{dt} = 1$ and need $\frac{dy}{dt}$. The ladder links $x$ and $y$ alone, so there is nothing else to substitute for:
+$$x^2 + y^2 = 100.$$
+Take $\frac{d}{dt}$ of both sides. Both $x$ and $y$ are functions of $t$, so the chain rule leaves a $\frac{dx}{dt}$ and a $\frac{dy}{dt}$ behind:
+$$\begin{aligned} \frac{d}{dt}\left(x^2 + y^2\right) &= \frac{d}{dt}(100) \\ 2x\frac{dx}{dt} + 2y\frac{dy}{dt} &= 0 \end{aligned}$$
+Only now plug in. When $x = 6$, $y = 8$, so
+$$\begin{aligned} 2(6)(1) + 2(8)\frac{dy}{dt} &= 0 \\ \frac{dy}{dt} &= -\frac{3}{4} \end{aligned}$$
+and the top slides down at $\frac{3}{4}$ m/s.
+
+**Example.** Water pours at $2$ m³/min into a cone, point down, 10 m deep with a radius of 5 m across the top. How fast is the water rising when it is 4 m deep? We know $\frac{dV}{dt} = 2$ and need $\frac{dh}{dt}$, but the volume of the water also depends on its radius $r$, which changes too:
+$$V = \frac{1}{3}\pi r^2 h.$$
+We neither know nor need $\frac{dr}{dt}$, so $r$ has to go. By similar triangles $\frac{r}{h} = \frac{5}{10}$, so $r = \frac{h}{2}$, and
+$$V = \frac{1}{3}\pi \left(\frac{h}{2}\right)^2 h = \frac{\pi}{12} h^3.$$
+Now take $\frac{d}{dt}$ of both sides:
+$$\begin{aligned} \frac{d}{dt}V &= \frac{d}{dt}\left(\frac{\pi}{12} h^3\right) \\ \frac{dV}{dt} &= \frac{\pi}{4} h^2 \frac{dh}{dt} \end{aligned}$$
+and plug in $h = 4$:
+$$\begin{aligned} 2 &= \frac{\pi}{4}(16)\frac{dh}{dt} \\ \frac{dh}{dt} &= \frac{1}{2\pi} \end{aligned}$$
+so the water rises at $\frac{1}{2\pi} \approx 0.16$ m/min.
 
 ### Linear Approximation
 kind: heuristic
 prereqs: tangent-lines
 
-Near a point a curve looks like its tangent line, so
-$$f(a + \Delta x) \approx f(a) + f'(a)\,\Delta x.$$
-That is how, in your head,
-$$\sqrt{4.1} \approx 2 + \frac{1}{4}(0.1) = 2.025.$$
+Near $x = a$ a curve looks like its tangent line, so for $x$ near $a$ the value $f(x)$ is close to the $y$ on the tangent,
+$$y - f(a) = f'(a)(x - a),$$
+that is,
+$$f(x) \approx f(a) + f'(a)(x - a).$$
+
+This is the [[point-slope|point-slope form]] of the tangent, through the point $(a, f(a))$ with slope $f'(a)$, solved for $y$. Choose an $a$ close to $x$ where $f(a)$ and $f'(a)$ are easy to find.
+
+**Example.** For $\sqrt{4.1}$, take $f(x) = \sqrt{x}$ and $a = 4$, so $f(4) = 2$ and $f'(4) = \frac{1}{2\sqrt{4}} = \frac{1}{4}$:
+$$\sqrt{4.1} \approx 2 + \frac{1}{4}(4.1 - 4) = 2.025.$$
 
 ### Increasing & Decreasing Functions {#increasing-decreasing}
 kind: definition
@@ -660,6 +680,28 @@ prereqs: mvt, limits-at-infinity
 
 If $\lim f(x)$ and $\lim g(x)$ are both $0$ or both $\pm\infty$, and $\lim \frac{f'(x)}{g'(x)}$ exists, then
 $$\lim \frac{f(x)}{g(x)} = \lim \frac{f'(x)}{g'(x)}.$$
+
+> **!** Differentiate the top and the bottom separately. This is not the quotient rule.
+
+The rule applies only to the forms $\frac{0}{0}$ and $\frac{\infty}{\infty}$. The other indeterminate forms are first rewritten as one of these:
+
+: Indeterminate Forms
+| Form | Example | Rewrite |
+| --- | --- | --- |
+| $\dfrac{0}{0}$ | $\displaystyle\lim_{x \to 0} \frac{\sin x}{x}$ | none: apply the rule |
+| $\dfrac{\infty}{\infty}$ | $\displaystyle\lim_{x \to \infty} \frac{\ln x}{x}$ | none: apply the rule |
+| $0 \cdot \infty$ | $\displaystyle\lim_{x \to 0^+} x \ln x$ | $fg = \dfrac{f}{1/g}$ |
+| $\infty - \infty$ | $\displaystyle\lim_{x \to 0^+} \left(\frac{1}{x} - \frac{1}{\sin x}\right)$ | one fraction, over a common denominator |
+| $1^\infty$ | $\displaystyle\lim_{x \to \infty} \left(1 + \frac{1}{x}\right)^x$ | $f^g = e^{g \ln f}$ |
+| $0^0$ | $\displaystyle\lim_{x \to 0^+} x^x$ | $f^g = e^{g \ln f}$ |
+| $\infty^0$ | $\displaystyle\lim_{x \to \infty} x^{1/x}$ | $f^g = e^{g \ln f}$ |
+
+For the three powers, find the limit $L$ of the exponent $g \ln f$, a $0 \cdot \infty$ form; the limit of $f^g$ is then $e^L$.
+
+Forms such as $\frac{1}{0}$, $\frac{0}{\infty}$, $\infty + \infty$, $\infty \cdot \infty$ and $0^\infty$ are not indeterminate: their limits can be read off, and the rule does not apply to them.
+
+**Example.**
+$$\lim_{x \to 0^+} x \ln x = \lim_{x \to 0^+} \frac{\ln x}{1/x} = \lim_{x \to 0^+} \frac{1/x}{-1/x^2} = \lim_{x \to 0^+} (-x) = 0.$$
 
 ### Position, Velocity & Acceleration {#motion}
 kind: definition

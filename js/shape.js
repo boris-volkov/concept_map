@@ -25,14 +25,35 @@ export function shape(src) {
   if (problem) return `<p class="graph-error">Shape: ${esc(problem)}</p>`
   const name = src.trim().toLowerCase()
   const s = new Sketch()
-  SHAPES[name](s)
+  const part = FRACTION.exec(name)
+  if (part) fractionCircle(s, +part[1], +part[2])
+  else SHAPES[name](s)
   return `<figure class="graph shape"><svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" ` +
     `aria-label="${esc(`A diagram of a ${name.replace(/-/g, ' ')}`)}">${s.out.join('')}</svg></figure>`
 }
 
 /** What is wrong with the name of a shape, if anything: for the list of content problems. */
 export function shapeError(src) {
-  return Object.hasOwn(SHAPES, src.trim().toLowerCase()) ? '' : `there is no shape "${src.trim()}": try ${Object.keys(SHAPES).join(', ')}`
+  const name = src.trim().toLowerCase()
+  const part = FRACTION.exec(name)
+  if (part) {
+    const [a, b] = [+part[1], +part[2]]
+    return b < 1 || b > 24 ? `a fraction circle is cut into 1 to 24 pieces, not ${b}`
+      : a > b ? `a fraction circle can shade at most all ${b} of its pieces, not ${a}` : ''
+  }
+  return Object.hasOwn(SHAPES, name) ? '' : `there is no shape "${src.trim()}": try ${Object.keys(SHAPES).join(', ')}, or fraction a/b`
+}
+
+// `fraction 3/4`: a circle cut into 4 equal pieces from the top, clockwise, with 3 of them shaded.
+const FRACTION = /^fraction\s+(\d+)\s*\/\s*(\d+)$/
+
+function fractionCircle(s, a, b) {
+  const c = [W / 2, H / 2]
+  const r = 38
+  const at = k => onCircle(c, r, PI / 2 - (2 * PI * k) / b)
+  for (let k = 0; k < a; k++) s.skin(b === 1 ? circle(c, r) : `M${pt(c)}L${pt(at(k))}${arc(r, at(k + 1), 0, 1)}z`, 0.45)
+  s.rim(circle(c, r))
+  if (b > 1) for (let k = 0; k < b; k++) s.rim(line([c, at(k)]))
 }
 
 // ---- points, in the plane or in space ----

@@ -559,7 +559,24 @@ kind: theorem
 prereqs: binomial-distribution, expected-value
 
 A binomial variable with $n$ trials and success probability $p$ has
-$$\mu = np, \quad \sigma^2 = np(1 - p).$$
+$$\begin{aligned} \mu &= np, \\ \sigma^2 &= np(1 - p), \\ \sigma &= \sqrt{np(1 - p)}. \end{aligned}$$
+
+Writing $q = 1 - p$ for the probability of a failure, $\sigma^2 = npq$ and $\sigma = \sqrt{npq}$.
+
+*Why.* A binomial is a sum of $n$ independent trials, each worth $1$ for a success and $0$ for a failure. One trial has mean $p$ and variance $(1 - p)^2 p + (0 - p)^2(1 - p) = p(1 - p)$, and for independent trials both add up.
+
+**Example.** For 50 free throws by a 70% shooter, $\mu = 50(0.7) = 35$ baskets, and
+$$\sigma = \sqrt{50(0.7)(0.3)} = \sqrt{10.5} \approx 3.24.$$
+
+```quiz
+Q: A fair coin is flipped 100 times. What is the standard deviation of the number of heads?
+A: 5
+Why: $\sqrt{100 \cdot \frac{1}{2} \cdot \frac{1}{2}} = \sqrt{25} = 5$.
+
+Q: A die is rolled 60 times. What is the expected number of sixes?
+A: 10
+Why: $np = 60 \cdot \frac{1}{6} = 10$.
+```
 
 ### Law of Large Numbers
 kind: theorem
@@ -589,12 +606,128 @@ A fair die's expected roll is
 $$\frac{1 + 2 + 3 + 4 + 5 + 6}{6} = 3.5,$$
 though no single roll is.
 
+### Variance of a Random Variable {#random-variable-variance}
+kind: definition
+prereqs: expected-value, standard-deviation
+
+The variance of a random variable $X$ with mean $\mu = E[X]$ is the expected squared distance from the mean, and its standard deviation is the square root of that:
+$$\begin{aligned} \sigma^2 = \operatorname{Var}(X) &= \sum_x (x - \mu)^2 \, P(X = x), \\ \sigma &= \sqrt{\operatorname{Var}(X)}. \end{aligned}$$
+
+**Example.** For a fair die, $\mu = 3.5$, and
+$$\sigma^2 = \frac{(2.5)^2 + (1.5)^2 + (0.5)^2 + (0.5)^2 + (1.5)^2 + (2.5)^2}{6} = \frac{35}{12} \approx 2.92,$$
+so $\sigma \approx 1.71$.
+
+### Combining Random Variables {#combining-random-variables}
+kind: theorem
+prereqs: random-variable-variance
+
+For random variables $X$ and $Y$ and constants $a$ and $b$:
+$$\begin{aligned} E[a + bX] &= a + bE[X], & \sigma_{a + bX} &= \lvert b \rvert \sigma_X, \\ E[X \pm Y] &= E[X] \pm E[Y]. \end{aligned}$$
+If $X$ and $Y$ are independent,
+$$\operatorname{Var}(X \pm Y) = \operatorname{Var}(X) + \operatorname{Var}(Y).$$
+
+> **!** Variances add for a difference too, and standard deviations never add: $\sigma_{X + Y} = \sqrt{\sigma_X^2 + \sigma_Y^2}$.
+
+Adding a constant shifts the mean but not the spread; multiplying by $b$ scales both.
+
+### Geometric Distribution
+kind: definition
+prereqs: independent-events, random-variables
+
+A random variable $X$ is geometric, with parameter $p$, when it counts the trials up to and including the first success, in a setting with these four conditions, **BITS**:
+- **B**inary: each trial has two outcomes, success or failure;
+- **I**ndependent: the result of one trial does not change the chances of another;
+- **T**rials: they go on until the first success;
+- **S**ame: each trial succeeds with the same probability, $p$.
+Then, for $k = 1, 2, 3, \ldots$,
+$$P(X = k) = (1 - p)^{k - 1} p,$$
+and
+$$\begin{aligned} \mu &= \frac{1}{p}, \\ \sigma &= \frac{\sqrt{1 - p}}{p}. \end{aligned}$$
+
+The first success comes after the $k$th trial exactly when the first $k$ trials all fail:
+$$\begin{aligned} P(X > k) &= (1 - p)^k, \\ P(X \le k) &= 1 - (1 - p)^k. \end{aligned}$$
+
+**Example.** Rolling a die until a six comes up, $p = \frac{1}{6}$. The chance that the first six is on the third roll is
+$$\left(\frac{5}{6}\right)^2 \frac{1}{6} = \frac{25}{216} \approx 0.116,$$
+and it takes $\frac{1}{p} = 6$ rolls on average.
+
+```quiz
+Q: A basketball player makes 40% of her shots. What is the probability that her first basket is on her third shot?
+A: 0.144
+Why: $(0.6)^2(0.4) = 0.144$.
+
+Q: On average, how many tries does it take to get the first success when $p = 0.25$?
+A: 4
+Why: $\mu = \frac{1}{p} = 4$.
+```
+
+### Table of Distributions {#distribution-table}
+kind: formula
+prereqs: binomial-mean, geometric-distribution, combining-random-variables, normal-distribution
+
+The formulas for the distributions of a first course in statistics, with $q = 1 - p$.
+
+: Discrete Random Variables
+| | Any | Binomial | Geometric |
+| --- | --- | --- | --- |
+| counts | | successes in $n$ trials | trials to the first success |
+| conditions | | BINS | BITS |
+| values | | $0, 1, \ldots, n$ | $1, 2, 3, \ldots$ |
+| $P(X = k)$ | $P(k)$, summing to $1$ | $\binom{n}{k} p^k q^{n - k}$ | $q^{k - 1} p$ |
+| $P(X \le k)$ | $\sum_{x \le k} P(x)$ | $\sum_{j = 0}^{k} \binom{n}{j} p^j q^{n - j}$ | $1 - q^k$ |
+| mean $\mu$ | $\sum x \, P(x)$ | $np$ | $\dfrac{1}{p}$ |
+| variance $\sigma^2$ | $\sum (x - \mu)^2 P(x)$ | $npq$ | $\dfrac{q}{p^2}$ |
+| standard deviation $\sigma$ | $\sqrt{\sigma^2}$ | $\sqrt{npq}$ | $\dfrac{\sqrt{q}}{p}$ |
+
+: The Normal Distribution
+| | |
+| --- | --- |
+| parameters | mean $\mu$, standard deviation $\sigma$ |
+| standardising | $z = \dfrac{x - \mu}{\sigma}$ |
+| within $1\sigma$, $2\sigma$, $3\sigma$ | $68\%$, $95\%$, $99.7\%$ |
+| approximates the binomial | $\mu = np$, $\sigma = \sqrt{npq}$, when $np \ge 10$ and $nq \ge 10$ |
+| density | $f(x) = \dfrac{1}{\sigma\sqrt{2\pi}} e^{-\frac{(x - \mu)^2}{2\sigma^2}}$ |
+
+: Combining Random Variables
+| | Mean | Standard deviation |
+| --- | --- | --- |
+| $a + bX$ | $a + b\mu_X$ | $\lvert b \rvert \sigma_X$ |
+| $X + Y$ | $\mu_X + \mu_Y$ | $\sqrt{\sigma_X^2 + \sigma_Y^2}$, if independent |
+| $X - Y$ | $\mu_X - \mu_Y$ | $\sqrt{\sigma_X^2 + \sigma_Y^2}$, if independent |
+
 ### Binomial Distribution
 kind: definition
 prereqs: combinations, independent-events, random-variables
 
-The number of successes in $n$ independent tries, each succeeding with probability $p$:
-$$P(k) = \binom{n}{k} p^k (1 - p)^{n - k}.$$
+A random variable $X$ is binomial, with parameters $n$ and $p$, when it counts the successes in a setting with these four conditions, **BINS**:
+- **B**inary: each trial has two outcomes, success or failure;
+- **I**ndependent: the result of one trial does not change the chances of another;
+- **N**umber: the number of trials, $n$, is fixed in advance;
+- **S**ame: each trial succeeds with the same probability, $p$.
+Then, for $k = 0, 1, \ldots, n$,
+$$P(X = k) = \binom{n}{k} p^k (1 - p)^{n - k}.$$
+
+Check all four before using the binomial formulas. The usual ways a setting fails:
+- the number of trials is not fixed, as in "roll until a six": that is a [[geometric-distribution|geometric]] setting instead;
+- the trials are not independent, as in drawing cards without putting them back. When the sample is less than 10% of the population, the dependence is small enough to ignore;
+- the probability changes from trial to trial, as in questions of different difficulty.
+
+```quiz
+Q: Which of these is a binomial setting?
+- drawing 5 cards without replacement and counting the hearts
+- rolling a die until a 6 comes up, and counting the rolls
++ shooting 20 free throws with a 75% success rate, and counting the baskets
+- counting how many students pass tests of different difficulty
+Hint: Check BINS: binary, independent, number fixed, same probability.
+Why: Only the free throws have a fixed number of independent trials with the same $p$.
+
+Q: Rolling a die until a 6 comes up fails which binomial condition?
+- binary
+- independent
++ number of trials fixed
+- same probability
+Why: The number of rolls is not decided in advance.
+```
 
 ### Normal Distribution
 kind: definition
@@ -733,6 +866,16 @@ kind: property
 prereqs: random-sampling, standard-deviation
 
 The value of a statistic varies from sample to sample. The distribution of those values is its sampling distribution, and larger samples make it narrower, by a factor of $\frac{1}{\sqrt{n}}$.
+
+For a random sample of size $n$, from a population with proportion $p$, or with mean $\mu$ and standard deviation $\sigma$:
+
+: Sampling Distributions
+| Statistic | Mean | Standard deviation | Approximately normal when |
+| --- | --- | --- | --- |
+| sample proportion $\hat{p}$ | $p$ | $\sqrt{\dfrac{p(1 - p)}{n}}$ | $np \ge 10$ and $n(1 - p) \ge 10$ |
+| sample mean $\bar{x}$ | $\mu$ | $\dfrac{\sigma}{\sqrt{n}}$ | the population is normal, or $n \ge 30$ |
+
+Both standard deviations assume independent observations: sampling with replacement, or a sample less than 10% of the population.
 
 ### Quick Margin of Error {#quick-margin}
 kind: heuristic

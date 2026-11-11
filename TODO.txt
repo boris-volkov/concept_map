@@ -1,0 +1,19 @@
+[x] In related rates, let's emphasize that the equation we create needs to include ONLY the derivatives that we know and need, and that any other variables need to be substituted for. also in the example, show the step of taking d/dt of both sides of the equation so we can see the implicit differentiation. 
+
+[x] somewhere there needs to be a definition of the negative sign, as equivalent to multiplication by -1
+
+[x] for binomial distribution: show the variance formula and standard deviation. all relevant formulas for the distributions that the high schoolers need to know. as well as the BINS (binary, independent, number is fixed, same probability for each trial) type acronyms for deciding when the binomial distribution is the right one to use 
+
+[x] linear approximation formula, make it look like point-slope form of a line, don't use trianglex
+
+[x] show all of the indeterminate forms for l'hopital's rule
+
+[x] make number systems entry more extensive, emphasize that some operation isn't closed in the previous number systems which is why the next number system needs to be added. natural numbers can't handle all of subtraction which is why we needed to include negatives in the integers. etc. 
+
+[x] in the what a fraction is, include a picture of a circle being divided into parts
+
+[x] new skill: converting mixed number to improper and back
+
+[x] for imaginary number math: add the geometric interpretation where angles add and lengths multiply
+
+[x] for the polar form of a complex number, put the general form which also includes the magnitude

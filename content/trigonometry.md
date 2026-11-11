@@ -972,8 +972,15 @@ Other ways to describe points and curves than $y$ as a function of $x$: by a dis
 kind: theorem
 prereqs: polar-complex, sum-difference-formulas
 
-For all real $\theta$ and integers $n$:
-$$(\cos\theta + i\sin\theta)^n = \cos n\theta + i \sin n\theta$$
+For all real $r \ge 0$ and $\theta$, and integers $n$ (with $r > 0$ when $n < 0$):
+$$\big[r(\cos\theta + i\sin\theta)\big]^n = r^n(\cos n\theta + i \sin n\theta).$$
+In particular, for $r = 1$,
+$$(\cos\theta + i\sin\theta)^n = \cos n\theta + i \sin n\theta.$$
+
+It is [[complex-multiplication-geometry|multiplication in polar form]], done $n$ times: the length is multiplied by itself $n$ times, and the angle is added to itself $n$ times.
+
+**Example.** $1 + i = \sqrt{2}\left(\cos\frac{\pi}{4} + i\sin\frac{\pi}{4}\right)$, so
+$$(1 + i)^8 = \left(\sqrt{2}\right)^8 (\cos 2\pi + i\sin 2\pi) = 16.$$
 
 ### Polar Coordinates
 kind: definition
@@ -993,9 +1000,58 @@ traces the unit circle. A curve with a direction and a speed.
 kind: definition
 prereqs: polar-coordinates, complex-arithmetic
 
-A complex number with length $r$ and angle $\theta$:
-$$a + bi = r(\cos\theta + i\sin\theta).$$
-In this form multiplying is easy: multiply the lengths and add the angles.
+A complex number $a + bi$ with length $r$ and angle $\theta$ is written
+$$a + bi = r(\cos\theta + i\sin\theta),$$
+where $r = \lvert a + bi \rvert = \sqrt{a^2 + b^2}$ is its modulus and $\theta$ its argument, the angle from the positive real axis to the point $(a, b)$.
+In this form multiplying is easy: [[complex-multiplication-geometry|multiply the lengths and add the angles]].
+
+### Multiplying Complex Numbers in Polar Form {#complex-multiplication-geometry}
+kind: theorem
+prereqs: polar-complex, sum-difference-formulas
+
+For $z_1 = r_1(\cos\theta_1 + i\sin\theta_1)$ and $z_2 = r_2(\cos\theta_2 + i\sin\theta_2)$:
+$$\begin{aligned} z_1 z_2 &= r_1 r_2\big(\cos(\theta_1 + \theta_2) + i\sin(\theta_1 + \theta_2)\big), \\ \frac{z_1}{z_2} &= \frac{r_1}{r_2}\big(\cos(\theta_1 - \theta_2) + i\sin(\theta_1 - \theta_2)\big), \quad z_2 \ne 0. \end{aligned}$$
+So when complex numbers are multiplied, the lengths multiply and the angles add; when they are divided, the lengths divide and the angles subtract.
+
+*Proof.* Multiply out, and use the sum formulas for cosine and sine:
+$$\begin{aligned} z_1 z_2 &= r_1 r_2 \big[(\cos\theta_1\cos\theta_2 - \sin\theta_1\sin\theta_2) + i(\sin\theta_1\cos\theta_2 + \cos\theta_1\sin\theta_2)\big] \\ &= r_1 r_2\big(\cos(\theta_1 + \theta_2) + i\sin(\theta_1 + \theta_2)\big). \end{aligned}$$
+The quotient $w = \frac{z_1}{z_2}$ is the number with $w z_2 = z_1$, and by the product rule that is the length $\frac{r_1}{r_2}$ and the angle $\theta_1 - \theta_2$. $\square$
+
+**Example.** $z_1 = 1 + i$ has length $\sqrt{2}$ and angle $45°$, and $z_2 = 1 + \sqrt{3}i$ has length $2$ and angle $60°$. Their product has length $2\sqrt{2}$ and angle $105°$:
+$$(1 + i)(1 + \sqrt{3}i) = (1 - \sqrt{3}) + (1 + \sqrt{3})i.$$
+```graph
+x: -1.5, 2.5
+y: -0.5, 3.2
+grid: 1, 1
+segment: 0, 0, 1, 1
+segment: 0, 0, 1, sqrt(3)
+segment: 0, 0, 1-sqrt(3), 1+sqrt(3)
+arc: 0, 0, 0.45, 0, pi/4
+arc: 0, 0, 0.7, 0, pi/3
+arc: 0, 0, 0.3, 0, 7*pi/12
+point: 1, 1 "z₁ = 1 + i" right
+point: 1, sqrt(3) "z₂ = 1 + √3 i" right
+point: 1-sqrt(3), 1+sqrt(3) "z₁z₂" left
+```
+
+Multiplying by $i$, which has length $1$ and angle $90°$, turns a number a quarter turn anticlockwise about $0$ and leaves its length alone:
+$$i(3 + 2i) = -2 + 3i.$$
+Multiplying by $i$ twice is a half turn, which is why $i^2 = -1$.
+
+```quiz
+Q: $z_1$ has length 3 and angle $20°$, and $z_2$ has length 2 and angle $50°$. What is the angle of $z_1 z_2$, in degrees?
+A: 70
+
+Q: In the same example, what is the length of $z_1 z_2$?
+A: 6
+
+Q: Multiplying a complex number by $i$ does what to it in the complex plane?
+- reflects it in the real axis
++ turns it $90°$ anticlockwise about $0$
+- doubles its length
+- turns it $180°$ about $0$
+Why: $i$ has length 1 and angle $90°$, so lengths are kept and $90°$ is added to the angle.
+```
 
 ### Polar Graphs
 kind: property
@@ -1009,13 +1065,18 @@ which are awkward or impossible as $y = f(x)$.
 kind: form
 prereqs: polar-complex
 
-$$z = r(\cos\theta + i\sin\theta).$$
+$$z = r(\cos\theta + i\sin\theta), \quad r = \lvert z \rvert \ge 0.$$
 
 | Reads off | From |
 | --- | --- |
-| modulus | $r$ |
-| argument | $\theta$ |
+| modulus, the length | $r = \sqrt{a^2 + b^2}$ |
+| argument, the angle | $\theta$, with $\tan\theta = \dfrac{b}{a}$, in the quadrant of $(a, b)$ |
 | rectangular form | $a = r\cos\theta$, $b = r\sin\theta$ |
+
+It is also written $z = r \operatorname{cis}\theta$, and, by Euler's formula, $z = re^{i\theta}$. With $r = 1$ it is a point on the unit circle; the general form scales that point out to distance $r$ from $0$.
+
+**Example.**
+$$-2 + 2i = 2\sqrt{2}\left(\cos\frac{3\pi}{4} + i\sin\frac{3\pi}{4}\right).$$
 
 ### Converting Polar & Rectangular {#polar-conversion}
 kind: skill
