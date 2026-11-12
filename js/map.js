@@ -193,6 +193,7 @@ export class AtlasMap {
     el.tabIndex = 0
     el.setAttribute('role', 'button')
     el.innerHTML = groupFace(n) + frameHead(n, !!this.onEdit)
+    delete el.dataset.bands // its lines went with what it showed
     el.setAttribute('aria-label', `${n.plainTitle}, ${n.depth === 0 ? 'subject' : 'topic'}`)
     this.markProgress(n, el)
   }
@@ -337,10 +338,26 @@ export class AtlasMap {
       el.style.height = `${r1(b.h)}px`
     }
     this.boxes = boxes
+    this.drawBands(visible, layout.bands ?? new Map())
     this.laidOut()
     this.drawEdges()
     this.highlight()
     return boxes
+  }
+
+  // The faint lines between the bands of kinds in each open topic, drawn inside its frame. Only a
+  // frame whose lines have moved is touched.
+  drawBands(visible, bands) {
+    for (const n of visible) {
+      if (!n.children.length) continue
+      const el = this.els.get(n.id)
+      const ys = (this.isOpen(n) && bands.get(n.id)) || []
+      const key = ys.map(r1).join(' ')
+      if ((el.dataset.bands ?? '') === key) continue
+      el.dataset.bands = key
+      for (const r of el.querySelectorAll(':scope > .band-rule')) r.remove()
+      el.insertAdjacentHTML('beforeend', ys.map(y => `<div class="band-rule" style="top: ${r1(y)}px"></div>`).join(''))
+    }
   }
 
   lay() {

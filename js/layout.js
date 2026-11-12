@@ -13,9 +13,8 @@
 //
 // Below that there are no lines. Folders open wide, so they stand one under another, a level at a
 // time, those of a level close together, and opening one moves only what is below it. Concepts
-// are small, so they stand in rows, a row to each level, what stands together being at the same
-// level, unless their topic is marked "rows: kinds". Each open folder lays out its own contents,
-// inside out.
+// are small, so they stand in rows, in bands by kind (see BANDS), a faint line between bands. Each
+// open folder lays out its own contents, inside out.
 //
 // How a row wraps depends only on how many boxes it holds, never on what is open. Boxes line up at
 // the start of their rows, so whatever opens pushes only what lies after it, right and down.
@@ -32,11 +31,14 @@ const README_GAP = 22 // between an open topic's README and its contents
 const GAP = { level: 44, wrap: 16, card: 14 } // between levels, the lines of a level that wraps, and boxes side by side
 const ASPECT = 1.5 // a crowded level wraps until its folder is about this wide for its height
 const NOMINAL = { w: 210, h: 68 } // what a box counts as when wrapping, open or not
-const COLUMN_ASPECT = 1.6 // the more of this, the more columns a topic of topics gets
-const FEW = 12 // a topic in rows by kind with no more cards than this runs on, without a row for each kind
-// The rows of a topic marked "rows: kinds": what is proved, what is true of the thing, how it is written, what to do with it.
-const KIND_ROW = { axiom: 0, theorem: 0, rule: 0, formula: 2, form: 2, skill: 3, technique: 3 }
-const kindRow = n => KIND_ROW[n.kind] ?? 1
+// A topic's concepts stand in bands by kind, a faint line between bands: what is so (definitions,
+// axioms, theorems, properties), how it is written (formulas and forms), and what to do with it.
+export const BANDS = [
+  { name: 'Statements', kinds: ['axiom', 'definition', 'theorem', 'property', 'rule', 'concept'] },
+  { name: 'Formulas', kinds: ['formula', 'form'] },
+  { name: 'Skills', kinds: ['skill', 'technique', 'heuristic'] },
+]
+const bandOf = n => Math.max(0, BANDS.findIndex(b => b.kinds.includes(n.kind)))
 
 /**
  * root: the atlas root; isOpen(node); cardSize(node) → {w, h}, with `file: true` for an open
@@ -50,6 +52,7 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
   const rel = new Map()
   const notes = new Map() // open topic → the size of its README
   const graphs = new Map() // the root or an open domain → its drawing (see layoutGraph)
+  const rules = new Map() // an open topic → where the lines between its bands run, down its contents
   const open = n => n.children.length > 0 && isOpen(n)
   // An open topic's contents start under its head, and under its README when that is open.
   const top = n => {
@@ -72,14 +75,12 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
   const arrange = container => {
     const kids = container.children
     const size = kids.map(measure)
-    // Rows by kind leave the prerequisites out of it: the cards keep the order they are written in. A
-    // small topic has too few of each kind to fill a row, so it runs on, in balanced rows.
-    const bands = container.rowsByKind && kids.length > FEW
-    const rows = container.rowsByKind ? kids.map(k => (bands ? kindRow(k) : 0)) : null
-    const line = container.rowsByKind && !bands ? columnCount(kids.length) : container.wrap
-    const level = rows ?? levelsOf(kids, container.localEdges)
-    // Folders open wide, so a folder of folders stands them one to a line.
-    const pos = placeLevels(size, level, kids.some(k => k.children.length) ? 1 : line)
+    // Folders open wide, so a folder of folders stands them one to a line, a level at a time.
+    // Concepts stand in bands by kind, keeping the order they are written in.
+    const folders = kids.some(k => k.children.length)
+    const level = folders ? levelsOf(kids, container.localEdges) : kids.map(bandOf)
+    const pos = placeLevels(size, level, folders ? 1 : container.wrap)
+    if (!folders && pos.rules.length) rules.set(container, pos.rules)
     kids.forEach((k, i) => rel.set(k, { x: pos.x[i], y: pos.y[i], w: size[i].w, h: size[i].h }))
     return { w: pos.w, h: pos.h }
   }
@@ -100,6 +101,7 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
 
   const boxes = new Map()
   const routes = new Map()
+  const bands = new Map() // an open topic's id → the heights, down its frame, of the lines between its bands
   const place = (container, ox, oy) => {
     const d = graphs.get(container)
     if (d) {
@@ -109,11 +111,13 @@ export function computeLayout(root, isOpen, cardSize, headerWidth, readmeSize = 
       const r = rel.get(k)
       const box = { x: ox + r.x, y: oy + r.y, w: r.w, h: r.h }
       boxes.set(k.id, box)
-      if (open(k)) place(k, box.x + FRAME_PAD.left, box.y + top(k))
+      if (!open(k)) continue
+      if (rules.has(k)) bands.set(k.id, rules.get(k).map(y => top(k) + y))
+      place(k, box.x + FRAME_PAD.left, box.y + top(k))
     }
   }
   place(root, 0, 0)
-  return { boxes, routes, width: whole.w, height: whole.h }
+  return { boxes, routes, bands, width: whole.w, height: whole.h }
 }
 
 /**
@@ -338,9 +342,6 @@ function drawRows(kids, localEdges, cardWidth, gaps, late = false) {
   return { rows, items, layers, isCard, px, right, routes }
 }
 
-// How many boxes to a row keep n of them about as wide as a screen.
-const columnCount = n => Math.max(1, Math.round(Math.sqrt(n * COLUMN_ASPECT)))
-
 /**
  * Each child's level: one below the furthest of its siblings that it builds on. The few links that
  * close a loop between topics are turned round first, so that every link points one way. A two-way
@@ -368,7 +369,7 @@ function levelsOf(kids, links) {
  */
 function placeLevels(size, level, wrap) {
   const n = size.length
-  if (!n) return { x: [], y: [], w: 0, h: 0 }
+  if (!n) return { x: [], y: [], w: 0, h: 0, rules: [] }
   const limit = Math.max(Math.sqrt(n * (NOMINAL.w + GAP.wrap) * (NOMINAL.h + GAP.card) * ASPECT), NOMINAL.w)
   const lanes = []
   for (const l of [...new Set(level)].sort((p, q) => p - q)) {
@@ -381,7 +382,9 @@ function placeLevels(size, level, wrap) {
   const y = new Array(n)
   let top = 0
   let w = 0
+  const rules = [] // halfway down the gap between one level and the next
   lanes.forEach((lane, i) => {
+    if (i && lanes[i - 1].level !== lane.level) rules.push(top + GAP.level / 2)
     if (i) top += lanes[i - 1].level === lane.level ? GAP.wrap : GAP.level
     let left = 0
     lane.boxes.forEach((k, j) => {
@@ -393,7 +396,7 @@ function placeLevels(size, level, wrap) {
     w = Math.max(w, left)
     top += Math.max(...lane.boxes.map(k => size[k].h))
   })
-  return { x, y, w, h: top }
+  return { x, y, w, h: top, rules }
 }
 
 // Places a lane's boxes, in order and without overlap, as close as possible to where

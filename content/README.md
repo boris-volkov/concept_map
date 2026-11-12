@@ -73,7 +73,7 @@ Right under a heading, before the summary, these lines describe it. All are opti
 | `summary: …` | A summary, when the first paragraph won't do. |
 | `tags: grade-6, exam` | Extra words for the search box to find. |
 | `wrap: 4` | On a topic: lay its contents out at most 4 to a row across the page, in the order written, as the field axioms are (C A N I / C A N I / D). Without it, each row of a topic is a level, and a crowded one wraps by itself. |
-| `rows: kinds` | On a topic: lay its contents out in rows by kind, in the order written, whatever the prerequisites say: theorems on top, then definitions and properties, then forms and formulas, then skills and techniques. Use it with a `wrap:`, as Quadratics does, for a topic that reads best as a reference sheet. A topic of 12 cards or fewer runs on in balanced rows, still in that order. |
+| `rows: kinds` | No longer needed: every topic now lays its concepts out in three bands by kind, in the order written, a faint line between bands: statements (definitions, axioms, theorems, properties, rules), then formulas and forms, then skills, techniques and heuristics. What each kind is, as the colour key at the top of the map shows it, is written in [kinds.md](kinds.md). |
 | `id: lcm` | The same as `{#lcm}` on the heading. |
 | `built-on: algebra, trigonometry` | On a subject, or a topic directly inside one, naming others beside it: what someone studying alone really couldn't learn it without. These alone set its row and the lines around it (see *Prerequisites*). |
 | `parent: algebra` | Only on a file's `#` heading: put this file's contents inside another topic (see *Splitting a big subject*). |

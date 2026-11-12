@@ -32,6 +32,14 @@
       <span class="brand-mark" aria-hidden="true">§</span>
       <span class="brand-title" id="atlas-title">Mathematics Concept Atlas</span>
     </div>
+    <!-- The colours of the kinds; each opens what that kind is (content/kinds.md). -->
+    <div class="kinds-key" role="group" aria-label="What the colours mean">
+      <button type="button" class="kind-definition" data-kind="definition" title="What is a definition?">Definition</button>
+      <button type="button" class="kind-axiom" data-kind="axiom" title="What is an axiom?">Axiom</button>
+      <button type="button" class="kind-theorem" data-kind="theorem" title="What is a theorem?">Theorem</button>
+      <button type="button" class="kind-heuristic" data-kind="heuristic" title="What is a heuristic?">Heuristic</button>
+      <button type="button" class="kind-skill" data-kind="skill" title="What is a skill?">Skill</button>
+    </div>
     <div class="search" role="search">
       <input id="search" type="search" placeholder="Find a concept…" autocomplete="off" spellcheck="false"
              aria-label="Find a concept" aria-controls="search-results" aria-expanded="false">
@@ -115,6 +123,15 @@
         <button type="submit" class="pop-yes" autofocus>Pop out</button>
       </footer>
     </form>
+  </dialog>
+
+  <!-- What each kind of card is, opened from the colour key (main.js). -->
+  <dialog id="kinds" aria-labelledby="kinds-title">
+    <header class="kinds-head">
+      <h2 id="kinds-title">Kinds of statement</h2>
+      <form method="dialog"><button type="submit" class="shut" title="Close (Esc)" aria-label="Close">×</button></form>
+    </header>
+    <div class="kinds-body"></div>
   </dialog>
 
   <button id="issues" type="button" hidden></button>

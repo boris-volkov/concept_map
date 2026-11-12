@@ -1,9 +1,9 @@
 // Starts the atlas: loads the content, builds the map, and wires up the controls.
 
-import { loadSources, buildAtlas } from './content.js'
+import { loadSources, buildAtlas, fetchText, KINDS } from './content.js'
 import { AtlasMap } from './map.js'
 import { Search } from './search.js'
-import { esc } from './markdown.js'
+import { esc, renderMarkdown } from './markdown.js'
 import { index } from './docs.js'
 import { Flashcards, sharedIds } from './flashcards.js'
 import { popOut, showSheets, redrawSheets } from './sheet.js'
@@ -97,6 +97,12 @@ function wire() {
   $('btn-zoom-in').onclick = () => map.zoomBy(1.3)
   $('btn-zoom-out').onclick = () => map.zoomBy(1 / 1.3)
   $('btn-fit').onclick = () => map.fitAll()
+  document.querySelector('.kinds-key').onclick = e => {
+    const b = e.target.closest('[data-kind]')
+    if (b) explainKind(b.dataset.kind)
+  }
+  // A click on the dimmed map around it closes it.
+  $('kinds').onclick = e => { if (e.target === $('kinds')) $('kinds').close() }
   window.addEventListener('popstate', () => {
     const shared = sharedIds()
     if (shared) return cards.openShared(shared) // a link to a deck, pasted into this tab
@@ -158,6 +164,35 @@ function showIndex(on) {
   body.innerHTML = index(atlas)
   for (const d of body.querySelectorAll('details')) d.open = unfolded.has(d.dataset.domain)
   indexed = atlas
+}
+
+// What each kind of card is, from content/kinds.md, opened at the kind asked about. It is read
+// each time it opens, so that an edit to it shows at once.
+async function explainKind(kind) {
+  const box = $('kinds')
+  const body = box.querySelector('.kinds-body')
+  try {
+    body.innerHTML = kindsPage(await fetchText(CONTENT + 'kinds.md'))
+  } catch (e) {
+    body.innerHTML = `<p>The kinds could not be loaded: ${esc(e.message)}</p>`
+  }
+  if (!box.open) box.showModal()
+  const at = body.querySelector(`section[data-kind="${kind}"]`)
+  for (const s of body.querySelectorAll('section')) s.classList.toggle('is-on', s === at)
+  body.scrollTop = at ? at.offsetTop - body.offsetTop : 0
+}
+
+// The page: a "# " title (the dialog has its own), an introduction, and a section to each "## " heading.
+function kindsPage(text) {
+  const parts = text.replace(/^# .*\r?\n/, '').split(/^## +(.+?)\s*$/m)
+  let html = `<div class="kinds-intro">${renderMarkdown(parts[0])}</div>`
+  for (let i = 1; i < parts.length; i += 2) {
+    const name = parts[i].toLowerCase()
+    const kind = name in KINDS ? name : ''
+    html += `<section class="kind-${kind || 'none'}" data-kind="${kind}">
+      <h3>${esc(parts[i])}</h3>${renderMarkdown(parts[i + 1])}</section>`
+  }
+  return html
 }
 
 function issues() {
