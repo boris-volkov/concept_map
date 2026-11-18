@@ -169,6 +169,25 @@ $$\hat{y} = a + bx.$$
 | predicted $y$ at $x = 0$ | $a$ |
 | strength of the fit | $r$, with $r^2$ the share of variation explained |
 
+### Sample Standard Deviation {#sample-standard-deviation}
+kind: formula
+prereqs: standard-deviation
+
+The standard deviation of a sample $x_1, \ldots, x_n$ with mean $\bar{x}$ divides by $n - 1$ rather than $n$:
+$$s = \sqrt{\frac{1}{n - 1}\sum_{i=1}^{n} (x_i - \bar{x})^2}$$
+
+It estimates the standard deviation $\sigma$ of the population the sample came from. The deviations from $\bar{x}$ run a little smaller than those from the unknown $\mu$, since $\bar{x}$ is the centre of the sample itself, and dividing by $n - 1$ makes up for it: $s^2$ is an unbiased estimate of $\sigma^2$. The $n - 1$ is the number of degrees of freedom: the $n$ deviations add up to $0$, so only $n - 1$ of them are free.
+
+**Example.** For the sample $2, 4, 6$, $\bar{x} = 4$ and
+$$s = \sqrt{\frac{4 + 0 + 4}{2}} = 2,$$
+where the same three values taken as a whole population have $\sigma = \sqrt{\frac{8}{3}} \approx 1.63$.
+
+```quiz
+Q: What is the sample standard deviation of $1, 3, 5, 7$?
+A: 2.58
+Why: $\bar{x} = 4$, the squared deviations add up to $9 + 1 + 1 + 9 = 20$, and $\sqrt{\frac{20}{3}} \approx 2.58$.
+```
+
 ### Comparing Distributions {#comparing-distributions}
 kind: skill
 prereqs: measures-of-center, standard-deviation, distribution-shape
@@ -867,15 +886,402 @@ prereqs: random-sampling, standard-deviation
 
 The value of a statistic varies from sample to sample. The distribution of those values is its sampling distribution, and larger samples make it narrower, by a factor of $\frac{1}{\sqrt{n}}$.
 
-For a random sample of size $n$, from a population with proportion $p$, or with mean $\mu$ and standard deviation $\sigma$:
+The mean, standard deviation and shape of the sampling distribution of each statistic of a first course are collected in [[sampling-distribution-table]].
 
-: Sampling Distributions
-| Statistic | Mean | Standard deviation | Approximately normal when |
+The standard deviations all assume independent observations: sampling with replacement, or a sample less than 10% of the population.
+
+### Standard Error {#standard-error}
+kind: definition
+prereqs: sampling-distributions, sample-standard-deviation
+
+The standard error of a statistic is the standard deviation of its sampling distribution with each unknown parameter replaced by its estimate from the sample: $\hat{p}$ for $p$, and $s$ for $\sigma$.
+
+The standard deviation of a statistic depends on the parameters, which are what the sample is meant to find, so in practice it is the standard error that is computed:
+$$\begin{aligned} SE_{\hat{p}} &= \sqrt{\frac{\hat{p}(1 - \hat{p})}{n}}, \\ SE_{\bar{x}} &= \frac{s}{\sqrt{n}}. \end{aligned}$$
+The standard error of every statistic is in [[sampling-distribution-table]].
+
+A mean standardised with its standard error, $\frac{\bar{x} - \mu}{s / \sqrt{n}}$, varies a little more than a normal variable, since $s$ varies from sample to sample too. It follows a [[t-distribution]] with $n - 1$ degrees of freedom, which approaches the normal as $n$ grows.
+
+**Example.** A sample of 25 has $\bar{x} = 80$ and $s = 10$, so
+$$SE_{\bar{x}} = \frac{10}{\sqrt{25}} = 2.$$
+
+```quiz
+Q: In a poll of 100, 64 say yes. What is the standard error of $\hat{p}$?
+A: 0.048
+Why: $\sqrt{\frac{0.64 \cdot 0.36}{100}} = \frac{0.48}{10} = 0.048$.
+```
+
+### Sampling Distribution of a Proportion {#sampling-distribution-proportion}
+kind: formula
+prereqs: sampling-distributions, binomial-mean
+
+For a random sample of size $n$ from a population in which a proportion $p$ have some trait, the sample proportion $\hat{p} = \frac{X}{n}$, where $X$ counts those in the sample with the trait, has
+$$\begin{aligned} \mu_{\hat{p}} &= p, \\ \sigma_{\hat{p}} &= \sqrt{\frac{p(1 - p)}{n}}. \end{aligned}$$
+It is approximately normal when $np \ge 10$ and $n(1 - p) \ge 10$.
+
+The standard deviation needs independent observations: sampling with replacement, or a sample less than 10% of the population.
+
+*Why.* The count $X$ is binomial, with $\mu_X = np$ and $\sigma_X = \sqrt{np(1 - p)}$, and dividing a variable by $n$ divides its mean and its standard deviation by $n$:
+$$\sigma_{\hat{p}} = \frac{\sqrt{np(1 - p)}}{n} = \sqrt{\frac{p(1 - p)}{n}}.$$
+
+**Example.** If 60% of voters favour a measure, the proportion in favour in random polls of 400 has mean $0.6$ and standard deviation
+$$\sqrt{\frac{0.6 \cdot 0.4}{400}} \approx 0.0245,$$
+about 2.4 percentage points.
+
+```quiz
+Q: A fair coin is flipped 100 times. What is the standard deviation of the proportion of heads?
+A: 0.05
+Why: $\sqrt{\frac{0.5 \cdot 0.5}{100}} = \frac{0.5}{10} = 0.05$.
+```
+
+### Sampling Distribution of a Mean {#sampling-distribution-mean}
+kind: formula
+prereqs: sampling-distributions, combining-random-variables, clt
+
+For a random sample of size $n$ from a population with mean $\mu$ and standard deviation $\sigma$, the sample mean $\bar{x}$ has
+$$\begin{aligned} \mu_{\bar{x}} &= \mu, \\ \sigma_{\bar{x}} &= \frac{\sigma}{\sqrt{n}}. \end{aligned}$$
+It is exactly normal when the population is normal, and approximately normal for $n \ge 30$ by the [[clt]].
+
+The standard deviation needs independent observations: sampling with replacement, or a sample less than 10% of the population.
+
+*Why.* $\bar{x} = \frac{1}{n}(X_1 + X_2 + \cdots + X_n)$, where the $X_i$ are independent and each has variance $\sigma^2$. Their variances add, so the sum has variance $n\sigma^2$, and dividing by $n$ divides the variance by $n^2$:
+$$\sigma^2_{\bar{x}} = \frac{n\sigma^2}{n^2} = \frac{\sigma^2}{n}.$$
+
+**Example.** Scores with $\mu = 100$ and $\sigma = 15$, averaged over random samples of 25, have mean $100$ and standard deviation
+$$\frac{15}{\sqrt{25}} = 3.$$
+
+```quiz
+Q: A population has $\sigma = 12$. What is the standard deviation of the mean of a random sample of 36?
+A: 2
+Why: $\frac{12}{\sqrt{36}} = \frac{12}{6} = 2$.
+```
+
+### Sampling Distribution of a Difference of Proportions {#difference-of-proportions}
+kind: formula
+prereqs: sampling-distribution-proportion, combining-random-variables
+
+For independent random samples of sizes $n_1$ and $n_2$ from populations with proportions $p_1$ and $p_2$, the difference of the sample proportions $\hat{p}_1 - \hat{p}_2$ has
+$$\begin{aligned} \mu_{\hat{p}_1 - \hat{p}_2} &= p_1 - p_2, \\ \sigma_{\hat{p}_1 - \hat{p}_2} &= \sqrt{\frac{p_1(1 - p_1)}{n_1} + \frac{p_2(1 - p_2)}{n_2}}. \end{aligned}$$
+It is approximately normal when $n_1p_1$, $n_1(1 - p_1)$, $n_2p_2$ and $n_2(1 - p_2)$ are all at least 10.
+
+The two samples must be independent of each other, and each less than 10% of its population.
+
+*Why.* For independent variables, the variance of a difference is the sum of the variances:
+$$\sigma^2_{\hat{p}_1 - \hat{p}_2} = \sigma^2_{\hat{p}_1} + \sigma^2_{\hat{p}_2} = \frac{p_1(1 - p_1)}{n_1} + \frac{p_2(1 - p_2)}{n_2}.$$
+
+> **!** The variances add although the proportions are subtracted, and it is the variances that add, not the standard deviations.
+
+**Example.** With $p_1 = 0.5$ in samples of $n_1 = 100$ and $p_2 = 0.4$ in samples of $n_2 = 150$, the difference has mean $0.1$ and standard deviation
+$$\sqrt{\frac{0.5 \cdot 0.5}{100} + \frac{0.4 \cdot 0.6}{150}} = \sqrt{0.0025 + 0.0016} \approx 0.064.$$
+
+```quiz
+Q: Two populations both have $p = 0.5$, and a random sample of 50 is taken from each. What is the standard deviation of $\hat{p}_1 - \hat{p}_2$?
+A: 0.1
+Why: $\sqrt{\frac{0.25}{50} + \frac{0.25}{50}} = \sqrt{0.01} = 0.1$.
+```
+
+### Sampling Distribution of a Difference of Means {#difference-of-means}
+kind: formula
+prereqs: sampling-distribution-mean, combining-random-variables
+
+For independent random samples of sizes $n_1$ and $n_2$ from populations with means $\mu_1$ and $\mu_2$ and standard deviations $\sigma_1$ and $\sigma_2$, the difference of the sample means $\bar{x}_1 - \bar{x}_2$ has
+$$\begin{aligned} \mu_{\bar{x}_1 - \bar{x}_2} &= \mu_1 - \mu_2, \\ \sigma_{\bar{x}_1 - \bar{x}_2} &= \sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}. \end{aligned}$$
+It is exactly normal when both populations are normal, and approximately normal when $n_1 \ge 30$ and $n_2 \ge 30$.
+
+The two samples must be independent of each other, and each less than 10% of its population. Two measurements on the same individuals are not independent samples: see [[paired-differences]].
+
+*Why.* For independent variables, the variance of a difference is the sum of the variances:
+$$\sigma^2_{\bar{x}_1 - \bar{x}_2} = \sigma^2_{\bar{x}_1} + \sigma^2_{\bar{x}_2} = \frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}.$$
+
+> **!** Square the standard deviations before dividing by the sample sizes: $\frac{\sigma_1^2}{n_1}$, not $\frac{\sigma_1}{n_1}$.
+
+**Example.** With $\sigma_1 = 3$ and $n_1 = 36$, and $\sigma_2 = 2.5$ and $n_2 = 25$,
+$$\sigma_{\bar{x}_1 - \bar{x}_2} = \sqrt{\frac{9}{36} + \frac{6.25}{25}} = \sqrt{0.5} \approx 0.71.$$
+
+```quiz
+Q: One population has $\sigma_1 = 6$ and a sample of 9 is taken from it; another has $\sigma_2 = 8$ and a sample of 16 is taken from it. What is the standard deviation of $\bar{x}_1 - \bar{x}_2$?
+A: 2.83
+Why: $\sqrt{\frac{36}{9} + \frac{64}{16}} = \sqrt{8} \approx 2.83$.
+```
+
+### Sampling Distribution of a Mean Difference {#paired-differences}
+kind: formula
+prereqs: sampling-distribution-mean
+
+When the data come in pairs, as two measurements on each individual or on the two members of a matched pair, each pair gives one difference $d$. For a random sample of $n$ pairs, from a population of differences with mean $\mu_d$ and standard deviation $\sigma_d$, the mean difference $\bar{d}$ has
+$$\begin{aligned} \mu_{\bar{d}} &= \mu_d, \\ \sigma_{\bar{d}} &= \frac{\sigma_d}{\sqrt{n}}. \end{aligned}$$
+It is exactly normal when the differences are normal, and approximately normal for $n \ge 30$.
+
+This is the [[sampling-distribution-mean]] applied to the single list of differences.
+
+> **!** Paired data are not two independent samples, so the formula for a [[difference-of-means]] does not apply to them. The two measurements on one individual are usually correlated, and when they are positively correlated $\sigma_d$ is smaller than $\sqrt{\sigma_1^2 + \sigma_2^2}$, which is why pairing gives a narrower distribution.
+
+**Example.** Each of 16 students takes a test before and after a course. If the gains have standard deviation $\sigma_d = 4$ points, the mean gain has standard deviation
+$$\frac{4}{\sqrt{16}} = 1.$$
+
+```quiz
+Q: For 25 matched pairs, the differences have $\sigma_d = 10$. What is the standard deviation of $\bar{d}$?
+A: 2
+Why: $\frac{10}{\sqrt{25}} = 2$.
+
+Q: Weights of the same 20 people before and after a diet. Which formula gives the spread of the mean change?
+- $\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}$
++ $\frac{\sigma_d}{\sqrt{n}}$
+- $\sqrt{\frac{p(1 - p)}{n}}$
+Hint: Are the two lists of weights independent samples?
+Why: Each person gives a pair of measurements, so work with the 20 differences.
+```
+
+### Pooled Proportion {#pooled-proportion}
+kind: formula
+prereqs: difference-of-proportions, standard-error
+
+To test the hypothesis that $p_1 = p_2$, both samples are taken to estimate the same proportion, and are combined into one estimate. With $X_1$ successes in $n_1$ and $X_2$ in $n_2$,
+$$\hat{p}_c = \frac{X_1 + X_2}{n_1 + n_2},$$
+and the standard error of $\hat{p}_1 - \hat{p}_2$ is
+$$SE = \sqrt{\hat{p}_c(1 - \hat{p}_c)\left(\frac{1}{n_1} + \frac{1}{n_2}\right)}.$$
+
+This is the standard deviation of a [[difference-of-proportions]] with $p_1 = p_2 = p$, and $\hat{p}_c$ for $p$. A confidence interval for $p_1 - p_2$ does not assume the two are equal, and uses the unpooled standard error, with $\hat{p}_1$ and $\hat{p}_2$.
+
+**Example.** With 40 successes out of 100 and 45 out of 150,
+$$\hat{p}_c = \frac{85}{250} = 0.34,$$
+and
+$$SE = \sqrt{0.34 \cdot 0.66\left(\frac{1}{100} + \frac{1}{150}\right)} \approx 0.061.$$
+
+```quiz
+Q: A sample of 60 has 18 successes and a sample of 40 has 12. What is the pooled proportion?
+A: 0.3
+Why: $\frac{18 + 12}{60 + 40} = 0.3$.
+```
+
+### Sampling Distribution of a Regression Slope {#slope-sampling-distribution}
+kind: formula
+prereqs: least-squares, residuals, sampling-distributions, sample-standard-deviation
+
+Suppose that at each $x$ the responses $y$ are normal about a true line $\mu_y = \alpha + \beta x$, independently and with the same standard deviation $\sigma$. Then the slope $b$ of the [[least-squares]] line through $n$ points has
+$$\begin{aligned} \mu_b &= \beta, \\ \sigma_b &= \frac{\sigma}{\sigma_x\sqrt{n}}, \end{aligned}$$
+where $\sigma_x$ is the standard deviation of the $x$ values, dividing by $n$. Its standard error is
+$$SE_b = \frac{s}{s_x\sqrt{n - 1}}, \qquad\text{where}\qquad s = \sqrt{\frac{\sum (y_i - \hat{y}_i)^2}{n - 2}}$$
+is the standard deviation of the residuals, and $s_x$ is the [[sample-standard-deviation]] of the $x$ values.
+
+Both are the same quantity, $\sigma$ divided by $\sqrt{\sum (x_i - \bar{x})^2}$, since
+$$\sum (x_i - \bar{x})^2 = n\sigma_x^2 = (n - 1)s_x^2.$$
+Points spread more widely in $x$ pin the slope down better. The residuals have $n - 2$ degrees of freedom, as two numbers, $a$ and $b$, were estimated from the data.
+
+**Example.** For 27 points with residuals of standard deviation $s = 4$ and $x$ values with $s_x = 2$,
+$$SE_b = \frac{4}{2\sqrt{26}} \approx 0.39.$$
+
+### t Distribution {#t-distribution}
+kind: definition
+prereqs: standard-error, sampling-distribution-mean, normal-distribution
+
+For a random sample of size $n$ from a normal population with mean $\mu$, the statistic
+$$t = \frac{\bar{x} - \mu}{s / \sqrt{n}}$$
+has the $t$ distribution with $n - 1$ degrees of freedom. Each $t$ distribution is symmetric about $0$ and bell-shaped, with heavier tails than the standard normal, and it approaches the standard normal as the degrees of freedom grow. With $k$ degrees of freedom it has mean $0$ for $k > 1$ and variance $\frac{k}{k - 2}$ for $k > 2$.
+
+The tails are heavier because $s$ varies from sample to sample as well as $\bar{x}$, and a small $s$ makes $t$ large. Where the [[standard-error]] stands in for a standard deviation, $t$ stands in for $z$:
+
+: Degrees of Freedom
+| Statistic | Degrees of freedom |
+| --- | --- |
+| mean $\bar{x}$ | $n - 1$ |
+| mean difference $\bar{d}$, paired | $n - 1$, for $n$ pairs |
+| difference of means $\bar{x}_1 - \bar{x}_2$ | the smaller of $n_1 - 1$ and $n_2 - 1$, or the formula below |
+| slope $b$ | $n - 2$ |
+
+For a difference of means, technology uses Welch's formula, which gives more degrees of freedom than the cautious rule:
+$$\text{df} = \frac{\left(\dfrac{s_1^2}{n_1} + \dfrac{s_2^2}{n_2}\right)^2}{\dfrac{1}{n_1 - 1}\left(\dfrac{s_1^2}{n_1}\right)^2 + \dfrac{1}{n_2 - 1}\left(\dfrac{s_2^2}{n_2}\right)^2}.$$
+
+: Critical Values $t^*$ by Confidence
+| df | 90% | 95% | 99% |
+| ---: | ---: | ---: | ---: |
+| 1 | 6.314 | 12.706 | 63.657 |
+| 2 | 2.920 | 4.303 | 9.925 |
+| 3 | 2.353 | 3.182 | 5.841 |
+| 4 | 2.132 | 2.776 | 4.604 |
+| 5 | 2.015 | 2.571 | 4.032 |
+| 10 | 1.812 | 2.228 | 3.169 |
+| 15 | 1.753 | 2.131 | 2.947 |
+| 20 | 1.725 | 2.086 | 2.845 |
+| 30 | 1.697 | 2.042 | 2.750 |
+| 60 | 1.671 | 2.000 | 2.660 |
+| 120 | 1.658 | 1.980 | 2.617 |
+| $\infty$ | 1.645 | 1.960 | 2.576 |
+
+The procedures are robust: they need the population only roughly normal for $n$ around 15 to 30, if there are no outliers or strong skew, and not normal at all for $n \ge 30$.
+
+**Example.** A sample of 16 has $\bar{x} = 52$ and $s = 8$. With 15 degrees of freedom, $t^* = 2.131$ at 95%, and the interval is
+$$52 \pm 2.131 \cdot \frac{8}{\sqrt{16}} = 52 \pm 4.26.$$
+
+```quiz
+Q: How many degrees of freedom does a $t$ interval for the mean of a sample of 20 use?
+A: 19
+Why: $n - 1 = 19$.
+
+Q: As the degrees of freedom grow, the critical value $t^*$ at 95%
++ shrinks toward 1.96
+- grows without limit
+- stays the same
+- shrinks toward 0
+Why: The $t$ distribution approaches the standard normal, whose 95% critical value is 1.96.
+```
+
+### Chi-Square Distribution {#chi-square-distribution}
+kind: definition
+prereqs: normal-distribution, random-variables
+
+The sum of the squares of $k$ independent standard normal variables,
+$$\chi^2 = Z_1^2 + Z_2^2 + \cdots + Z_k^2,$$
+has the chi-square distribution with $k$ degrees of freedom. It takes only values $\ge 0$, is skewed to the right, and has
+$$\begin{aligned} \mu &= k, \\ \sigma &= \sqrt{2k}. \end{aligned}$$
+
+As $k$ grows the curve moves right, spreads out and becomes more symmetric. Its peak is at $k - 2$ for $k \ge 2$.
+
+: Critical Values $\chi^{2*}$ by Area to the Right
+| df | $0.10$ | $0.05$ | $0.01$ |
+| ---: | ---: | ---: | ---: |
+| 1 | 2.706 | 3.841 | 6.635 |
+| 2 | 4.605 | 5.991 | 9.210 |
+| 3 | 6.251 | 7.815 | 11.345 |
+| 4 | 7.779 | 9.488 | 13.277 |
+| 5 | 9.236 | 11.070 | 15.086 |
+| 6 | 10.645 | 12.592 | 16.812 |
+| 8 | 13.362 | 15.507 | 20.090 |
+| 10 | 15.987 | 18.307 | 23.209 |
+
+```quiz
+Q: What is the mean of a chi-square distribution with 8 degrees of freedom?
+A: 8
+
+Q: What is its standard deviation?
+A: 4
+Why: $\sqrt{2 \cdot 8} = 4$.
+```
+
+### Chi-Square Statistic {#chi-square-statistic}
+kind: formula
+prereqs: chi-square-distribution, two-way-tables
+
+For counts observed in categories, compared with the counts expected under a hypothesis,
+$$\chi^2 = \sum \frac{(O - E)^2}{E},$$
+summed over every category or cell. When the hypothesis holds, it is approximately chi-square, with:
+- for **goodness of fit**, $k$ categories with hypothesised proportions $p_i$ in a sample of $n$: $E = np_i$ and $\text{df} = k - 1$;
+- for **independence** or **homogeneity**, a two-way table of $r$ rows and $c$ columns: $E = \dfrac{\text{row total} \cdot \text{column total}}{\text{grand total}}$ and $\text{df} = (r - 1)(c - 1)$.
+
+It needs random samples, each less than 10% of its population, and every expected count at least 5. A large $\chi^2$, far out in the right tail, is evidence against the hypothesis.
+
+Use counts, never percentages: the same proportions in a larger sample give a larger $\chi^2$. Independence asks whether two variables of one sample are related; homogeneity asks whether several samples share one distribution. The arithmetic is the same.
+
+**Example.** A die rolled 60 times gives $8, 9, 12, 11, 6, 14$. If it is fair, each face has $E = 10$, and
+$$\chi^2 = \frac{4 + 1 + 4 + 1 + 16 + 16}{10} = 4.2,$$
+with 5 degrees of freedom. That is below the 5% critical value of 11.07, so the counts give no evidence that the die is unfair.
+
+```quiz
+Q: In a two-way table, a row totals 40, a column 30, and the whole table 120. What is the expected count in their cell?
+A: 10
+Why: $\frac{40 \cdot 30}{120} = 10$.
+
+Q: How many degrees of freedom does a test of independence on a table of 3 rows and 4 columns have?
+A: 6
+Why: $(3 - 1)(4 - 1) = 6$.
+```
+
+### Table of Sampling Distributions {#sampling-distribution-table}
+kind: formula
+prereqs: difference-of-proportions, difference-of-means, paired-differences, pooled-proportion, slope-sampling-distribution, t-distribution, chi-square-statistic
+
+The mean, standard deviation and standard error of each statistic of a first course, with $q = 1 - p$ and $\hat{q} = 1 - \hat{p}$. Each holds for random samples, each less than 10% of its population, and for two samples independent of each other. The standard error is the standard deviation with each parameter replaced by its estimate.
+
+: One Sample
+| Statistic | Mean | Standard deviation | Standard error |
 | --- | --- | --- | --- |
-| sample proportion $\hat{p}$ | $p$ | $\sqrt{\dfrac{p(1 - p)}{n}}$ | $np \ge 10$ and $n(1 - p) \ge 10$ |
-| sample mean $\bar{x}$ | $\mu$ | $\dfrac{\sigma}{\sqrt{n}}$ | the population is normal, or $n \ge 30$ |
+| count $X$ | $np$ | $\sqrt{npq}$ | $\sqrt{n\hat{p}\hat{q}}$ |
+| proportion $\hat{p}$ | $p$ | $\sqrt{\dfrac{pq}{n}}$ | $\sqrt{\dfrac{\hat{p}\hat{q}}{n}}$ |
+| mean $\bar{x}$ | $\mu$ | $\dfrac{\sigma}{\sqrt{n}}$ | $\dfrac{s}{\sqrt{n}}$ |
+| mean difference $\bar{d}$, paired | $\mu_d$ | $\dfrac{\sigma_d}{\sqrt{n}}$ | $\dfrac{s_d}{\sqrt{n}}$ |
 
-Both standard deviations assume independent observations: sampling with replacement, or a sample less than 10% of the population.
+: Two Independent Samples
+| Statistic | Mean | Standard deviation | Standard error |
+| --- | --- | --- | --- |
+| $\hat{p}_1 - \hat{p}_2$ | $p_1 - p_2$ | $\sqrt{\dfrac{p_1q_1}{n_1} + \dfrac{p_2q_2}{n_2}}$ | $\sqrt{\dfrac{\hat{p}_1\hat{q}_1}{n_1} + \dfrac{\hat{p}_2\hat{q}_2}{n_2}}$ |
+| $\hat{p}_1 - \hat{p}_2$, if $p_1 = p_2 = p$ | $0$ | $\sqrt{pq\left(\dfrac{1}{n_1} + \dfrac{1}{n_2}\right)}$ | $\sqrt{\hat{p}_c\hat{q}_c\left(\dfrac{1}{n_1} + \dfrac{1}{n_2}\right)}$ |
+| $\bar{x}_1 - \bar{x}_2$ | $\mu_1 - \mu_2$ | $\sqrt{\dfrac{\sigma_1^2}{n_1} + \dfrac{\sigma_2^2}{n_2}}$ | $\sqrt{\dfrac{s_1^2}{n_1} + \dfrac{s_2^2}{n_2}}$ |
+
+: Regression
+| Statistic | Mean | Standard deviation | Standard error |
+| --- | --- | --- | --- |
+| slope $b$ | $\beta$ | $\dfrac{\sigma}{\sigma_x\sqrt{n}}$ | $\dfrac{s}{s_x\sqrt{n - 1}}$ |
+
+: Estimates
+| Of | Estimate |
+| --- | --- |
+| $\sigma$, from a sample | $s = \sqrt{\dfrac{\sum (x_i - \bar{x})^2}{n - 1}}$ |
+| $p$, when $p_1 = p_2$ | $\hat{p}_c = \dfrac{X_1 + X_2}{n_1 + n_2}$ |
+| $\sigma$ about a regression line | $s = \sqrt{\dfrac{\sum (y_i - \hat{y}_i)^2}{n - 2}}$ |
+
+: Approximately Normal When
+| Statistic | Condition |
+| --- | --- |
+| $X$, $\hat{p}$ | $np \ge 10$ and $nq \ge 10$ |
+| $\bar{x}$ | the population is normal, or $n \ge 30$ |
+| $\bar{d}$ | the differences are normal, or $n \ge 30$ |
+| $\hat{p}_1 - \hat{p}_2$ | $n_1p_1$, $n_1q_1$, $n_2p_2$, $n_2q_2$ all $\ge 10$ |
+| $\bar{x}_1 - \bar{x}_2$ | both populations are normal, or $n_1 \ge 30$ and $n_2 \ge 30$ |
+| $b$ | the residuals are normal, with the same spread at every $x$ |
+
+: Using Them
+| | |
+| --- | --- |
+| standardised statistic | $\dfrac{\text{statistic} - \text{parameter}}{\text{standard deviation of statistic}}$ |
+| confidence interval | $\text{statistic} \pm z^* \cdot SE$ |
+| critical value $z^*$ at 90%, 95%, 99% | $1.645$, $1.960$, $2.576$ |
+
+With a standard error in place of a standard deviation, a mean, a mean difference, a difference of means or a slope is standardised on a [[t-distribution]] rather than the normal, and takes a critical value $t^*$ in place of $z^*$.
+
+: The t Statistic
+| Statistic | $t$ | Degrees of freedom |
+| --- | --- | --- |
+| $\bar{x}$ | $\dfrac{\bar{x} - \mu}{s / \sqrt{n}}$ | $n - 1$ |
+| $\bar{d}$ | $\dfrac{\bar{d} - \mu_d}{s_d / \sqrt{n}}$ | $n - 1$ |
+| $\bar{x}_1 - \bar{x}_2$ | $\dfrac{(\bar{x}_1 - \bar{x}_2) - (\mu_1 - \mu_2)}{\sqrt{s_1^2 / n_1 + s_2^2 / n_2}}$ | smaller of $n_1 - 1$, $n_2 - 1$ |
+| $b$ | $\dfrac{b - \beta}{SE_b}$ | $n - 2$ |
+
+: Critical Values $t^*$
+| df | 90% | 95% | 99% |
+| ---: | ---: | ---: | ---: |
+| 1 | 6.314 | 12.706 | 63.657 |
+| 2 | 2.920 | 4.303 | 9.925 |
+| 3 | 2.353 | 3.182 | 5.841 |
+| 4 | 2.132 | 2.776 | 4.604 |
+| 5 | 2.015 | 2.571 | 4.032 |
+| 10 | 1.812 | 2.228 | 3.169 |
+| 15 | 1.753 | 2.131 | 2.947 |
+| 20 | 1.725 | 2.086 | 2.845 |
+| 30 | 1.697 | 2.042 | 2.750 |
+| 60 | 1.671 | 2.000 | 2.660 |
+| 120 | 1.658 | 1.980 | 2.617 |
+| $\infty$ | 1.645 | 1.960 | 2.576 |
+
+: The Chi-Square Statistic
+| | Goodness of fit | Independence or homogeneity |
+| --- | --- | --- |
+| statistic | $\chi^2 = \sum \dfrac{(O - E)^2}{E}$ | $\chi^2 = \sum \dfrac{(O - E)^2}{E}$ |
+| expected count $E$ | $np_i$ | $\dfrac{\text{row total} \cdot \text{column total}}{\text{grand total}}$ |
+| degrees of freedom | $k - 1$ | $(r - 1)(c - 1)$ |
+| condition | every $E \ge 5$ | every $E \ge 5$ |
+| distribution's mean, sd | $\text{df}$, $\sqrt{2\,\text{df}}$ | $\text{df}$, $\sqrt{2\,\text{df}}$ |
+
+: Critical Values $\chi^{2*}$ by Area to the Right
+| df | $0.10$ | $0.05$ | $0.01$ |
+| ---: | ---: | ---: | ---: |
+| 1 | 2.706 | 3.841 | 6.635 |
+| 2 | 4.605 | 5.991 | 9.210 |
+| 3 | 6.251 | 7.815 | 11.345 |
+| 4 | 7.779 | 9.488 | 13.277 |
+| 5 | 9.236 | 11.070 | 15.086 |
+| 6 | 10.645 | 12.592 | 16.812 |
+| 8 | 13.362 | 15.507 | 20.090 |
+| 10 | 15.987 | 18.307 | 23.209 |
 
 ### Quick Margin of Error {#quick-margin}
 kind: heuristic
@@ -894,7 +1300,7 @@ Why: $\frac{1}{\sqrt{2500}} = \frac{1}{50}$.
 
 ### Margin of Error Formula {#margin-of-error}
 kind: formula
-prereqs: sampling-distributions, clt
+prereqs: standard-error, clt
 
 At 95% confidence, a sample proportion $\hat{p}$ and a sample mean $\bar{x}$ have margins of error
 $$E = 1.96\sqrt{\frac{\hat{p}(1 - \hat{p})}{n}}, \qquad E = 1.96\frac{s}{\sqrt{n}}.$$
