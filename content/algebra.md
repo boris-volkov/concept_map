@@ -812,9 +812,43 @@ a square bracket including its end and a round one leaving it out.
 kind: definition
 prereqs: function-notation
 
-The domain is every input a function accepts; the range is every output it produces. The function
-$$f(x) = \sqrt{x}$$
-has domain $[0, \infty)$, because negatives have no real square root.
+The domain of a function is the set of all its legal inputs; its range is the set of all the outputs it produces from them. When $f$ is given by a formula alone, an input is legal if the formula gives a real number:
+$$\text{domain of } f = \{x \in \mathbb{R} : f(x) \text{ is a real number}\}.$$
+
+Every real number is legal unless something in the formula makes it illegal, so the question to ask is: *what could go wrong?* In most functions, it is one of the first two cases here.
+
+: Algebraic Cases
+| Illegal | So require | Example | Graph | Domain |
+| --- | --- | --- | --- | --- |
+| dividing by zero | denominator $\ne 0$ | $\dfrac{1}{x - 2}$ | {{ y = 1/(x-2); x: -2, 6; y: -3, 3; asymptote: x = 2 }} | $(-\infty, 2) \cup (2, \infty)$ |
+| an even root of a negative number | inside of the root $\ge 0$ | $\sqrt{x - 2}$ | {{ y = sqrt(x-2); x: -2, 6; y: -3, 3 }} | $[2, \infty)$ |
+| both: an even root in a denominator | inside of the root $> 0$ | $\dfrac{1}{\sqrt{x - 2}}$ | {{ y = 1/sqrt(x-2); x: -2, 6; y: -3, 3; asymptote: x = 2 }} | $(2, \infty)$ |
+| a logarithm of zero or of a negative number | inside of the logarithm $> 0$ | $\ln(x - 2)$ | {{ y = ln(x-2); x: -2, 6; y: -3, 3; asymptote: x = 2 }} | $(2, \infty)$ |
+
+- Division: [[no-division-by-zero|zero has no reciprocal]].
+- Even roots: no real number has a negative square.
+- Logarithms: $\log_b x$ is the power of $b$ that gives $x$, and every power of a positive number is positive.
+
+The first two can be written as exponents: $x^{-1}$ is a division by $x$, and $x^{1/2}$ is a square root.
+
+: Trigonometric Cases
+| Illegal | So require | Example | Graph | Domain |
+| --- | --- | --- | --- | --- |
+| a tangent or secant where the cosine is $0$ | angle $\ne \dfrac{\pi}{2} + k\pi$ | $\tan x$ | {{ y = tan(x); x: -5, 5; y: -4, 4; grid: none }} | $x \ne \dfrac{\pi}{2} + k\pi$ |
+| a cotangent or cosecant where the sine is $0$ | angle $\ne k\pi$ | $\cot x$ | {{ y = cos(x)/sin(x); x: -5, 5; y: -4, 4; grid: none }} | $x \ne k\pi$ |
+| an arcsine or arccosine of a number beyond $\pm 1$ | $-1 \le \text{inside} \le 1$ | $\arcsin x$ | {{ y = arcsin(x); x: -3, 3; y: -2, 2 }} | $[-1, 1]$ |
+
+Here $k$ is any integer. The tangent, secant, cotangent and cosecant are division by zero again, since each is a fraction with a cosine or a sine in its denominator. The arcsine and arccosine undo the sine and cosine, which never go beyond $\pm 1$.
+
+A setting can rule out more inputs: the area $s^2$ of a square of side $s$ needs $s > 0$, though the formula accepts any number.
+
+These are often taken for illegal, but are legal:
+- zero in a numerator: $\frac{0}{5} = 0$;
+- the root of zero: $\sqrt{0} = 0$;
+- an odd root of a negative number: $\sqrt[3]{-8} = -2$;
+- a negative input, as long as what is under the root is not negative: $\sqrt{-x}$ at $x = -9$ is $\sqrt{9} = 3$.
+
+A polynomial has no division by a variable and no roots of one, so nothing can go wrong, and its domain is $\mathbb{R}$.
 
 #### Graphs of Functions {#function-graphs}
 kind: definition
@@ -987,15 +1021,46 @@ Why: $2 \cdot 9 - 1 = 17$.
 
 #### Finding a Domain {#finding-a-domain}
 kind: skill
-prereqs: domain-and-range
+prereqs: domain-and-range, linear-inequalities
 
-Start from all real numbers and remove what is not allowed:
-- a denominator cannot be $0$;
-- what is under an even root cannot be negative;
-- what is inside a logarithm must be positive;
-- a model allows only the inputs that make sense in its setting.
+1. start from all real numbers;
+2. look for anything that could make an input illegal: a denominator, an even root, a logarithm;
+3. write a condition for each one: denominator $\ne 0$, inside of an even root $\ge 0$, inside of a logarithm $> 0$;
+4. solve each condition for $x$;
+5. keep only the inputs that meet every condition, and that make sense in the setting if there is one.
 
-**Example.** For $f(x) = \frac{\sqrt{x + 2}}{x - 1}$, the domain is $x \ge -2$ with $x \ne 1$.
+> **!** Find the domain before simplifying. $\frac{x^2 - 4}{x - 2}$ simplifies to $x + 2$, but $x = 2$ is still illegal in it.
+
+**Example.** The function
+$$f(x) = \frac{\sqrt{x + 2}}{x - 1}$$
+has a root and a denominator, so there are two conditions:
+$$\begin{aligned} x + 2 \ge 0 &\implies x \ge -2 \\ x - 1 \ne 0 &\implies x \ne 1. \end{aligned}$$
+An input must meet both, so the domain is
+$$[-2, 1) \cup (1, \infty).$$
+
+```quiz
+Q: What is the domain of $f(x) = \dfrac{x}{x + 3}$?
+- $x \ne 0$
++ $x \ne -3$
+- $x \ne 3$
+- $x \ge -3$
+Hint: Only the denominator can make an input illegal.
+Why: The denominator is $0$ when $x = -3$. A numerator of $0$ is legal.
+
+Q: What is the domain of $f(x) = \sqrt{4 - x}$?
+- $x \ge 4$
+- $x \ge 0$
++ $x \le 4$
+- $x < 4$
+Hint: What is under the root has to be $0$ or more.
+Why: $4 - x \ge 0$ when $x \le 4$.
+
+Q: What is the domain of $f(x) = \sqrt[3]{x - 5}$?
++ all real numbers
+- $x \ge 5$
+- $x \ne 5$
+Why: A cube root is odd, and an odd root of a negative number is legal.
+```
 
 #### Composing Functions {#composing-functions}
 kind: skill
