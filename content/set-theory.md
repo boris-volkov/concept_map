@@ -390,6 +390,10 @@ A function $f\colon A \to B$ is
 - $f(x) = x^2$ is neither injective, as $(-1)^2 = 1^2$, nor surjective, as $-1$ is no square;
 - $f(x) = e^x$ is injective, but not surjective, as it is never negative.
 
+**Two-to-two.** Some mathematicians prefer to call an injective function *two-to-two*, because *one-to-one* sounds like "one input goes to one output", and that is true of every function. What makes a function injective takes two inputs to say: two different inputs always go to two different outputs,
+$$a \ne a' \implies f(a) \ne f(a').$$
+This is the contrapositive of the definition above, so it says the same thing. The function $x^2$ sends each one input to one output, but it is not two-to-two: it sends the two inputs $3$ and $-3$ to the single output $9$.
+
 ### Inverses & Bijections {#inverse-iff-bijection}
 kind: theorem
 prereqs: bijections
